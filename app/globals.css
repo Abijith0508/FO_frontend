@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --primary : #000000;
+  --secondary : #E0B073;
+  --gray : #ffffff;
+  --ruby : #A31545; 
+  --emerald : #45A190;
+  --glass : #02110c85;
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+.bg-secondary {
+  background-color: var(--secondary);
+}
+.bg-gray {
+  background-color: var(--gray);
+}
+.bg-ruby {
+  background-color: var(--ruby);
+}
+.bg-emerald {
+  background-color: var(--emerald);
+}
+
+/* Text Colors */
+.text-primary {
+  color: var(--primary);
+}
+.text-secondary {
+  color: var(--secondary);
+}
+.text-gray {
+  color: var(--gray);
+}
+.text-ruby {
+  color: var(--ruby);
+}
+.text-emerald {
+  color: var(--emerald);
+}
+
+/* Border Colors */
+.border-primary {
+  border-color: var(--primary);
+}
+.border-secondary {
+  border-color: var(--secondary);
+}
+.border-gray {
+  border-color: var(--gray);
+}
+.border-ruby {
+  border-color: var(--ruby);
+}
+.border-emerald {
+  border-color: var(--emerald);
+}
+
