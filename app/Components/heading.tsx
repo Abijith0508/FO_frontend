@@ -8,9 +8,9 @@ type Props = {
 const Heading = ({mainGp, subGp, thirdGp} : Props) => {
   return (
     <div className="px-[5px] flex items-center  col-start-2 col-end-13 row-start-1 row-end-2">
-        <div className="flex items-baseline">
+        <div className="flex items-baseline text-gray gap-2">
             {
-                mainGp && <div className='text-[40px] '>{mainGp}</div> 
+                mainGp && <div className='text-[40px]'>{mainGp}</div> 
             }
             {
                 subGp && <div className='text-[30px] pl-[10px]'>{subGp}</div> 
