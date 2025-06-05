@@ -9,16 +9,17 @@ type Stock = {
 };
 
 type Props = {
-    top10: Stock[]
+    top10: Stock[], 
+    className : string;
 }
-const LeadingStocks = ({top10} : Props) => {
+const LeadingStocks = ({top10, className} : Props) => {
     return (
-    <div className={`hidden md:block col-start-10 col-end-13 row-start-2 row-end-7 ${glass} overflow-hidden`}>
+    <div className={className}>
         <div className={`${grayText2} mb-5`}>Leading Stocks</div>
         <ScrollArea className='h-full w-full '>
             <div className="flex flex-col overflow:hidden gap-5 text-gray-300">
-                {top10.map((stock : Stock) => (
-                    <div key={stock.ticker}>
+                {top10.map((stock : Stock, index) => (
+                    <div key={index}>
                         {stock.name}
                     </div>
 

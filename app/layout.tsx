@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={font.className} >
-      <body className = 'bg-primary'>
+      <body className =  "bg-[url('./img/mountains2.jpg')] " >
         {children}
       </body>
     </html>

@@ -6,15 +6,18 @@ import tickMark from '../img/tickMark.png'
 type Props = { 
     total : number; 
     subTotal : number;
+    className : string;
 }
 
-const Total = ({ total, subTotal }: Props) => {
-  const formattedTotal = total.toLocaleString();
-  const formattedSubTotal = subTotal.toLocaleString();
+const Total = ({ total, subTotal, className }: Props) => {
+  const formattedTotal = total.toLocaleString('en-IN');
+  const formattedSubTotal = subTotal.toLocaleString('en-IN');
+  // const formattedTotal = total ; 
+  // const formattedSubTotal = total;
   const percentage : number = 99
 
   return (
-    <div className={`col-start-2 col-end-13 md:col-end-10 row-start-2 row-span-2 ${glass} px-15`}>
+    <div className={className}>
       <div className="flex flex-col items-center justify-center ">
         <div className = {`${grayText}`}>Wallet</div>
         <div className = ''>

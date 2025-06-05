@@ -3,6 +3,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* @custom-variant dark (&:is(.dark *)); */
+
 :root {
   --primary: oklch(0.205 0 0);
   --primary-foreground: #ffffff;
@@ -49,7 +51,7 @@
 
   --background: oklch(1 0 0); /* pure white */
   --foreground: oklch(0.145 0 0); /* text */
-  
+
   --glass: #02110c85;
 }
 
