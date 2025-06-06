@@ -68,18 +68,19 @@ export default function Home() {
   }, []);
   return (
     <div className="text-white text-center bg-transparent p-0 m-0 ">
-      <SideBar/>
+      
       <div
         className="w-full h-[1500px] px-[30px] bg-transparent text-white grid grid-rows-12
        grid-cols-12 gap-[15px]"
       >
+        <SideBar/>
         <Heading mainGp = {mainGp} subGp={subGp} thirdGp={thirdGp}/>
 
-        <Total total={total} subTotal={subTotal} className={`col-start-1 md:col-start-2 col-end-13 md:col-end-10 row-start-2 row-span-2 ${glass} px-15`}/>
+        <Total total={total} subTotal={subTotal} className={`col-start-1 md:col-start-3 col-end-13 md:col-end-10 row-start-2 row-span-2 ${glass} px-15`}/>
         <LeadingStocks top10={top10} className={`hidden md:block col-start-10 col-end-13 row-start-2 row-end-7 ${glass} overflow-hidden`}/>
-        <Strategies className={`flex flex-col col-start-1 md:col-start-2 col-end-13 md:col-end-10  row-start-4 row-end-7 ${glass}`}/>
-        <Advisorwise className={`flex flex-col col-start-1 md:col-start-2 col-end-13 sm: row-start-7 row-end-10 ${glass}`}/>
-        <Entitywise className={`flex flex-col col-start-1 md:col-start-2 col-end-13 row-start-10 row-end-13 ${glass}`}/>
+        <Strategies className={`flex flex-col col-start-1 md:col-start-3 col-end-13 md:col-end-10  row-start-4 row-end-7 ${glass}`}/>
+        <Advisorwise className={`flex flex-col col-start-1 md:col-start-3 col-end-13 sm: row-start-7 row-end-10 ${glass}`}/>
+        <Entitywise className={`flex flex-col col-start-1 md:col-start-3 col-end-13 row-start-10 row-end-13 ${glass}`}/>
       </div>
       <div className='w-full h-[400] bg-primary mt-[15px]'></div>
     </div>

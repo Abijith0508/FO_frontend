@@ -54,7 +54,7 @@ const Strategies = ({className} : Props) => {
                 </CarouselItem>
                 <CarouselItem key={2} className = 'flex justify-center w-full'>   
                     <div className="h-full w-full  flex items-center justify-center">
-                        <BChart data={chartData} className = 'max-w-full max-h-full'/>
+                        <BChart data={chartData} className=''/>
                     </div>    
                 </CarouselItem>
             </CarouselContent>
