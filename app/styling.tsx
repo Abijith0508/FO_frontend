@@ -2,3 +2,4 @@ export const sideglass = "bg-gradient-to-r from-white/10 to-white/0 backdrop-sat
 export const glass = "bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl p-6 shadow-lg";
 export const grayText = "text-gray text-[20px]"
 export const grayText2 = "text-gray text-[15px]"
+export const sideTitle = "leading-5 text-start hover:no-underline no-underline text-lg  text-gray-300 hover:text-white transition-colors duration-500 text-start border-none"

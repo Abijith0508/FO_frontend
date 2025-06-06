@@ -1,6 +1,6 @@
 'use client'; 
 import Link from "next/link";
-import { sideglass } from "../styling";
+import { sideglass, sideTitle } from "../styling";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Accordion,
@@ -12,13 +12,6 @@ import { Home } from "lucide-react";
 import { useState } from "react";
 import { useRef, useEffect } from "react";
 import { glass } from "../styling";
-
-type Props = { 
-    // mainGp : string; 
-    // subGp : string;
-    // thirdGp : string;
-    className : string
-}
 
 type MenuItem = {
   title: string
@@ -68,30 +61,28 @@ const menuItems: MenuItem[] = [
   { title: 'Account', href: '/account', icon: Home},
 ]
 
-type props = {
-    className : string
-}
-
 function SideBar(){   
   return (
     // <ScrollArea className='h-full w-full p-5'>
         <Accordion type="single" collapsible 
             className={`fixed left-0 h-full w-[calc((100%/11.3*2))]  ${sideglass} shadow-md 
-                    transition-transform duration-300 ease-in-out z-10
+                     z-10
                     py-5 px-auto 
                     justify-around top-1/2 transform-all -translate-y-1/2 
-                    flex flex-col`}
+                    flex flex-col
+                    pl-[3%] pr-5
+                    `}
         >
         {menuItems.map((item, index) => (
             item.children ? (
-                <AccordionItem key={index} value={`item-${index}`} className="flex flex-col  border-none pl-4 pr-5">
-                    <AccordionTrigger className = "text-lg p-0 m-0 hover:no-underline no-underline text-gray-100 hover:text-white transition-colors">{item.title}</AccordionTrigger>
-                    <AccordionContent className="flex flex-col text-gray-500 justify-around items-start gap-2 text-lg hover:text-white">
+                <AccordionItem key={index} value={`item-${index}`} className="flex flex-col gap-[5%] border-none ">
+                    <AccordionTrigger className = {`p-0 m-0 ${sideTitle}`}>{item.title}</AccordionTrigger>
+                    <AccordionContent className="flex flex-col h-full text-gray-500  items-start text-lg hover:text-white gap-5">
                         {item.children.map((child, idx) => (
                         <Link
                             key={idx}
                             href={child.href}
-                            className=" hover:no-underline no-underline text-gray-100 text-lg hover:text-white text-gray-300"
+                            className= {`${sideTitle} text-gray-400 hover:text-gray-300`}
                         >
                             {child.title}
                         </Link>
@@ -102,7 +93,7 @@ function SideBar(){
                 <Link
                 key={index}
                 href={item.href ?? "#"}
-                className="pl-4 text-lg underline-none text-gray-300 hover:text-white transition-colors text-start border-none"
+                className= {`${sideTitle}`}
                 // onClick = {handleClick}
                 >
                     {item.title}
