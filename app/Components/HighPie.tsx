@@ -1,19 +1,5 @@
 'use client';
 
-import React from 'react';
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-
-type DataItem = {
-  name: string;
-  value: number;
-};
-
-type Props = {
-  data: DataItem[];
-  className : string;
-};
-
 const COLORS = [
   // === Base tones ===
   "#E0B073", // gold base
@@ -36,9 +22,69 @@ const COLORS = [
   "#A0E2D2", // pastel emerald
 ];
 
-const PieChart = ({ data, className }: Props) => {
+import React from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import { filterFunction, groupBy } from './filterFunction';
+import { useEffect, useState } from 'react';
+
+
+
+type Props = {
+  data: any;
+  filters : string[];
+  className : string;
+  groupByField : any;
+};
+
+const dummy = [
+  { name: "Strategy A", value: 400 },
+  { name: "Strategy B", value: 300 },
+  { name: "Strategy C", value: 300 },
+  { name: "Strategy D", value: 200 },
+  { name: "Strategy A", value: 400 },
+  { name: "Strategy B", value: 300 },
+];
+
+type PiePoint = {
+  name: string;
+  y: number;
+  drilldown?: string;
+};
+type DrillType = {
+  id: string; // should match the 'drilldown' key from the main series
+  name: string; // name of the drilldown chart (appears in the tooltip/legend)
+  type?: 'pie' | 'column' | 'bar' | string; // optional, override chart type
+  data: Array<[string, number]> | Array<{ name: string; y: number }>;
+};
+
+const PieChart = ({ data, groupByField , className }: Props) => {
   // Transform data to Highcharts format [{ name: string, y: number }, ...]
-  const chartData = data.map(({ name, value }) => ({ name, y: value }));
+  
+  const [chartData, setChartData] = useState<PiePoint[]>([]);
+  const [drillData, setDrillData] = useState<DrillType[]>([]);
+
+  //first Time setting of stratGrouping
+  useEffect(()=>{
+    const grouping = groupBy(data, groupByField);
+    // alert(groupByField)
+    console.log(grouping)
+    
+    const arr = grouping.map(item => ({
+      name: String(item[groupByField]), // dynamic access
+      y: Number(item.sumOfClosingCosts),
+      // drilldown: ...
+    }));
+    setChartData(arr);
+  }, [])
+  
+  //   useEffect(()=>{
+  //   const arr = chartData.map
+  // }, [filters]);
+
+
+  // const drillData = filterFunction(data, filters)
+  // console.log(drillData)
 
   const options: Highcharts.Options = {
     chart: {
@@ -63,22 +109,22 @@ const PieChart = ({ data, className }: Props) => {
       shadow: true,
     },
     plotOptions: {
-  pie: {
-    cursor: 'pointer',
-    borderWidth: 0,
-    innerSize: '50%',
-    dataLabels: {
-      enabled: false,
-    },
-    point: {
-      events: {
-        click: function () {
-          // You can access name/y here
-          alert(`Clicked slice:, ${this.name}, ${this.y}`);
-          // Your custom logic
+      pie: {
+      cursor: 'pointer',
+      borderWidth: 0,
+      innerSize: '50%',
+      dataLabels: {
+        enabled: false,
+      },
+      point: {
+        events: {
+          click: function () {
+            // You can access name/y here
+            alert(`Clicked slice:, ${this.name}, ${this.y}`);
+            // Your custom logic
+          },
         },
       },
-    },
   },
 },
     series: [
@@ -100,6 +146,9 @@ const PieChart = ({ data, className }: Props) => {
     credits: {
       enabled: false,
     },
+    // drilldown: {
+    //   series: drillData,
+    // },
   };
 
   return (

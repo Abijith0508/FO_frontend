@@ -1,14 +1,14 @@
 'use client'; 
 import Link from "next/link";
-import { sideglass, sideTitle } from "../styling";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { sideglass, sideTitle, responsive } from "../styling";
+// import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Home } from "lucide-react";
+
 import { useState } from "react";
 import { useRef, useEffect } from "react";
 import { glass } from "../styling";
@@ -21,7 +21,7 @@ type MenuItem = {
 }
 
 const menuItems: MenuItem[] = [
-  { title: 'Dashboard', href: '/', icon: Home},
+  { title: 'Dashboard', href: '/', icon: 'none'},
   {
     title: 'Transactions',
     children: [
@@ -30,7 +30,7 @@ const menuItems: MenuItem[] = [
       { title: 'PMS', href: '/transactions/pms' },
       { title: 'AIF', href: '/transactions/aif' },
       { title: 'Other', href: '/transactions/other' },
-    ], icon: Home
+    ], icon: 'none'
   },
   {
     title: 'Analytics',
@@ -41,7 +41,7 @@ const menuItems: MenuItem[] = [
       { title: 'US Stocks', href: '/analytics/us-stocks' },
       { title: 'Equity Stocks', href: '/analytics/equity-stocks' },
       { title: 'Equity Mutual Funds', href: '/analytics/equity-mutual-funds' },
-    ], icon: Home
+    ], icon: 'none'
   },
   {
     title: 'Masters',
@@ -56,27 +56,31 @@ const menuItems: MenuItem[] = [
       { title: 'Custom Tags', href: '/masters/tags' },
       { title: 'Dmat Accounts', href: '/masters/dmat-accounts' },
       { title: 'Dmat Wise Stocks', href: '/masters/dmat-wise-stocks' },
-    ],icon: Home
+    ],icon: 'none'
   },
-  { title: 'Account', href: '/account', icon: Home},
+  { title: 'Account', href: '/account', icon: 'none'},
 ]
 
 function SideBar(){   
   return (
     // <ScrollArea className='h-full w-full p-5'>
         <Accordion type="single" collapsible 
-            className={`fixed left-0 h-full w-[calc((100%/11.3*2))]  ${sideglass} shadow-md 
-                     z-10
+            className={` scroll-auto fixed left-0 h-full 
+                    lg:w-[calc((100%/11.3*2))]
+                    w-full
+                    ${sideglass} shadow-md 
+                    z-50
                     py-5 px-auto 
                     justify-around top-1/2 transform-all -translate-y-1/2 
                     flex flex-col
-                    pl-[3%] pr-5
+                    pl-[10%]
+                    lg:pl-[3%] pr-5
                     `}
         >
         {menuItems.map((item, index) => (
             item.children ? (
-                <AccordionItem key={index} value={`item-${index}`} className="flex flex-col gap-[5%] border-none ">
-                    <AccordionTrigger className = {`p-0 m-0 ${sideTitle}`}>{item.title}</AccordionTrigger>
+                <AccordionItem key={index} value={`item-${index}`} className="flex flex-col gap-[1%] border-white/20">
+                    <AccordionTrigger className = {`text-start p-0 m-0 ${sideTitle}`}>{item.title}</AccordionTrigger>
                     <AccordionContent className="flex flex-col h-full text-gray-500  items-start text-lg hover:text-white gap-5">
                         {item.children.map((child, idx) => (
                         <Link

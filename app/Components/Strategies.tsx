@@ -13,25 +13,43 @@ import PChart from "./HighPie";
 import BChart from "./BarChart";
 
 const chartData = [
-  { name: "Product A", value: 400 },
-  { name: "Product B", value: 300 },
-  { name: "Product C", value: 300 },
-  { name: "Product D", value: 200 },
-  { name: "Product A", value: 400 },
-  { name: "Product B", value: 300 },
-//   { name: "Product C", value: 300 },
-//   { name: "Product C", value: 300 },
-//   { name: "Product D", value: 200 },
-//   { name: "Product A", value: 400 },
-//   { name: "Product B", value: 300 },
-//   { name: "Product C", value: 300 }
+  { name: "Strategy A", value: 400 },
+  { name: "Strategy B", value: 300 },
+  { name: "Strategy C", value: 300 },
+  { name: "Strategy D", value: 200 },
+  { name: "Strategy A", value: 400 },
+  { name: "Strategy B", value: 300 },
 ];
 // {top10} : Props
-type Props = { 
-    className : string
+interface DataItem{
+  id: number;
+  entity: string;
+  advisor: string;
+  substrategy: string;
+  isin: string;
+  folio_no: string;
+  name: string;
+  quantity: string;
+  avg_cost: string;
+  market_price: string;
+  closing_cost: string;
+  closing_value: string;
+  unrealized_gain: string;
+  irr: string;
+  gain_cq: string | null;
+  irr_cq: string | null;
+  asset_type: string;
+  strategy: string;
 }
 
-const Strategies = ({className} : Props) => {
+type Props = { 
+    className : string, 
+    //have to change
+    data : any,
+    filters : string[]
+}
+
+const Strategies = ({className, data, filters} : Props) => {
     return (
     <div className ={className} >
         <div className={`${grayText2}`}>Strategies</div>
@@ -49,7 +67,7 @@ const Strategies = ({className} : Props) => {
                 {/* <CarouselItem> */}
                 <CarouselItem key={1} className = 'flex justify-center'>
                     <div className="h-full w-full flex items-center justify-center">
-                        <PChart data={chartData} className = 'max-w-full max-h-full'/>
+                        <PChart data={data} groupByField="strategy" filters={filters} className = 'max-w-full max-h-full'/>
                     </div>               
                 </CarouselItem>
                 <CarouselItem key={2} className = 'flex justify-center w-full'>   
