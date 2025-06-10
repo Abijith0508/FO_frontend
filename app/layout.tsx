@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Roboto, Lexend_Deca, Geist } from "next/font/google";
+import 'react-tooltip/dist/react-tooltip.css'
 
 const font = Geist({
   weight: ["400", "700"],

@@ -66,8 +66,8 @@ function SideBar(){
     // <ScrollArea className='h-full w-full p-5'>
         <Accordion type="single" collapsible 
             className={` scroll-auto fixed left-0 h-full 
-                    lg:w-[calc((100%/11.3*2))]
-                    w-full
+                    w-[calc((100%/11.3*2))]
+                    
                     ${sideglass} shadow-md 
                     z-50
                     py-5 px-auto 

@@ -25,10 +25,12 @@ function groupBy(
 ): {
   [key: string]: string | number;
 }[] {
-  const grouped: { [key: string]: { sumOfClosingCosts: number; sumOfUnrealizedGain: number } } = {};
+  const grouped: { [key: string]: { sumOfClosingCosts: number; sumOfUnrealizedGain: number, sumOfClosingValue: number } } = {};
 
   data.forEach((item) => {
-    const key = String(item[criterion]);  // 🔧 Fix: Ensure key is a string
+    const key = String(item[criterion]);  // 🔧 Fix: Ensure key is a stringc
+    
+    const closingValue = parseFloat(item.closing_value) || 0;
     const closingCost = parseFloat(item.closing_cost) || 0;
     const unrealizedGain = parseFloat(item.unrealized_gain) || 0;
 
@@ -36,19 +38,40 @@ function groupBy(
       grouped[key] = {
         sumOfClosingCosts: 0,
         sumOfUnrealizedGain: 0,
+        sumOfClosingValue: 0
       };
     }
 
     grouped[key].sumOfClosingCosts += closingCost;
     grouped[key].sumOfUnrealizedGain += unrealizedGain;
+    grouped[key].sumOfClosingValue += closingValue;
+
   });
 
   return Object.entries(grouped).map(([groupValue, values]) => ({
     [criterion]: groupValue,
+    sumOfClosingValue: values.sumOfClosingValue,
     sumOfClosingCosts: values.sumOfClosingCosts,
     sumOfUnrealizedGain: values.sumOfUnrealizedGain,
   }));
 }
+
+const filterUpdate = (
+  setFilters: React.Dispatch<React.SetStateAction<string[]>>, 
+  groupByField: string, 
+  value: string
+) => {
+  const newFilter = `${groupByField}:${value}`;
+
+  // Add the new filter if it's not already present (to avoid duplicates)
+  setFilters((prevFilters: string[]) => {
+    if (prevFilters.length == 0) return [newFilter]
+    if (prevFilters.includes(newFilter)) {
+      return prevFilters; // no change
+    }
+    return [...prevFilters, newFilter];
+  });
+};
 
 const filterFunction = (data: DataItem[], filters: string[]): DataItem[] => {
   // alert('filter')
@@ -60,4 +83,4 @@ const filterFunction = (data: DataItem[], filters: string[]): DataItem[] => {
   });
 };
 
-export { filterFunction, groupBy };
+export { filterFunction, groupBy, filterUpdate };

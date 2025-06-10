@@ -10,9 +10,35 @@ import Autoplay from "embla-carousel-autoplay"
 import PChart from "./HighPie";
 import BChart from "./BarChart";
 
-type Props = { 
-    className : string
+interface DataItem{
+  id: number;
+  entity: string;
+  advisor: string;
+  substrategy: string;
+  isin: string;
+  folio_no: string;
+  name: string;
+  quantity: string;
+  avg_cost: string;
+  market_price: string;
+  closing_cost: string;
+  closing_value: string;
+  unrealized_gain: string;
+  irr: string;
+  gain_cq: string | null;
+  irr_cq: string | null;
+  asset_type: string;
+  strategy: string;
 }
+
+type Props = { 
+    className : string, 
+    //have to change
+    data : DataItem[],
+    filters : string[], 
+    setFilters : any
+}
+
 
 const chartData = [
   { name: "Advisor A", value: 400 },
@@ -22,7 +48,7 @@ const chartData = [
 ];
 
 
-const Advisorwise = ({className} : Props) => {
+const Advisorwise = ({className, data, filters, setFilters} : Props) => {
   return (
     <div className={className}>
         <div className={`${grayText2}`}>Advisor-Wise</div>
@@ -43,12 +69,12 @@ const Advisorwise = ({className} : Props) => {
                 {/* <CarouselItem> */}
                 <CarouselItem key={1} className = 'flex justify-center'>
                     <div className="h-full w-full flex items-center justify-center">
-                        <PChart data={chartData} className = 'max-w-full max-h-full'/>
+                        <PChart data={data} groupByField="advisor" filters={filters} setFilters={setFilters} className = 'max-w-full max-h-full'/>
                     </div>               
                 </CarouselItem>
                 <CarouselItem key={2} className = 'flex justify-center w-full'>   
                     <div className="h-full w-full  flex items-center justify-center">
-                        <BChart data={chartData} className=''/>
+                        <BChart data={data} groupByField="advisor" filters={filters} setFilters={setFilters} className = 'max-w-full max-h-full'/>
                     </div>    
                 </CarouselItem>
             </CarouselContent>

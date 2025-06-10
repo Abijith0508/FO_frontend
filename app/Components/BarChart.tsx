@@ -1,40 +1,62 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { filterUpdate, groupBy } from './filterFunction';
 
-type DataItem = {
-  name: string;
-  value: number;
-};
+const COLORS = [
+  "#E0B073", "#A31545", "#45A190",
+  "#D29E5D", "#8F123D", "#3D8D7F",
+  "#C48D48", "#C42B5F", "#5CB9A4",
+  "#FAE2BF", "#F1A5B8", "#A0E2D2",
+];
 
 type Props = {
-  data: DataItem[];
+  data: any;
+  filters: string[];
+  setFilters: any;
   className: string;
+  groupByField: any;
 };
 
-const BChart = ({ data, className }: Props) => {
-  // Extract categories and values for the bar chart
-  const categories = data.map(item => item.name);
-  const values = data.map(item => item.value);
+type BarPoint = {
+  name: string;
+  y: number;
+};
 
-  const options: Highcharts.Options = {
+const BChart = ({ data, groupByField, filters, setFilters, className }: Props) => {
+  const [chartData, setChartData] = useState<BarPoint[]>([]);
+
+  useEffect(() => {
+    const grouped = groupBy(data, groupByField);
+    const transformed = grouped.map(item => ({
+      name: String(item[groupByField]),
+      y: Number(item.sumOfClosingValue),
+    }));
+    setChartData(transformed);
+  }, [data, groupByField]);
+
+  const options: any = useMemo(() => ({
     chart: {
       type: 'bar',
       backgroundColor: 'transparent',
       height: 300,
+      animation: {
+        duration: 500,
+        easing: 'easeOutBounce',
+      },
     },
     title: {
       text: undefined,
     },
     xAxis: {
-      categories,
+      categories: chartData.map(point => point.name),
       title: {
         text: null,
       },
       labels: {
-        enabled : false,
+        enabled: false,
         style: {
           color: '#555',
           fontWeight: 'bold',
@@ -59,7 +81,7 @@ const BChart = ({ data, className }: Props) => {
     },
     tooltip: {
       pointFormat: '{point.y}',
-      backgroundColor: '#E0B073', // gold color
+      backgroundColor: '#E0B073',
       style: {
         color: '#ffffff86',
         fontWeight: 'extra-light',
@@ -73,43 +95,44 @@ const BChart = ({ data, className }: Props) => {
       bar: {
         cursor: 'pointer',
         borderWidth: 0,
+        color: '#E0B073',
         dataLabels: {
           enabled: false,
-        //   color: '#555',
-
-        //   style: {
-        //     fontWeight: 'normal',
-            
-        //   },
         },
         point: {
           events: {
-            click: function () {
-              alert(`Clicked bar: ${this.category}, ${this.y}`);
-              // Your custom logic here
+            click: function (this: Highcharts.Point) {
+              filterUpdate(setFilters, groupByField, this.name);
             },
           },
         },
       },
     },
-    series: [
-      {
-        type: 'bar',
-        data: values,
-        color: '#E0B073', // gold color for all bars
-      },
-    ],
+    series: [{
+      type: 'bar',
+      data: chartData,
+      colors: '#E0B073',
+      
+    }],
     legend: {
       enabled: false,
     },
     credits: {
       enabled: false,
     },
-  };
+  }), [chartData, groupByField, setFilters]);
 
   return (
-    <HighchartsReact highcharts={Highcharts} options={options} className={className} />
+    <HighchartsReact
+      highcharts={Highcharts}
+      options={options}
+      allowChartUpdate={true}
+      updateArgs={[true, true, true]} // redraw, oneToOne, animate
+      immutable={false}
+      className={className}
+    />
   );
 };
 
 export default BChart;
+

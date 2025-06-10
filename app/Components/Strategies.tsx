@@ -45,11 +45,13 @@ interface DataItem{
 type Props = { 
     className : string, 
     //have to change
-    data : any,
-    filters : string[]
+    data : DataItem[],
+    filters : string[], 
+    setFilters : any
 }
 
-const Strategies = ({className, data, filters} : Props) => {
+const Strategies = ({className, data, filters, setFilters} : Props) => {
+    
     return (
     <div className ={className} >
         <div className={`${grayText2}`}>Strategies</div>
@@ -67,12 +69,12 @@ const Strategies = ({className, data, filters} : Props) => {
                 {/* <CarouselItem> */}
                 <CarouselItem key={1} className = 'flex justify-center'>
                     <div className="h-full w-full flex items-center justify-center">
-                        <PChart data={data} groupByField="strategy" filters={filters} className = 'max-w-full max-h-full'/>
+                        <PChart data={data} groupByField="strategy" filters={filters} setFilters={setFilters} className = 'max-w-full max-h-full'/>
                     </div>               
                 </CarouselItem>
                 <CarouselItem key={2} className = 'flex justify-center w-full'>   
                     <div className="h-full w-full  flex items-center justify-center">
-                        <BChart data={chartData} className=''/>
+                        <BChart data={data} groupByField="strategy" filters={filters} setFilters={setFilters} className=''/>
                     </div>    
                 </CarouselItem>
             </CarouselContent>

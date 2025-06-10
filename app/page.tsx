@@ -1,7 +1,7 @@
 'use client'; 
 import Image from "next/image";
 import { useState , useEffect } from "react";
-
+import 'react-tooltip/dist/react-tooltip.css'
 import { Data } from "./Data";
 import "./globals.css"
 
@@ -14,7 +14,7 @@ import Strategies from "./Components/Strategies";
 import Advisorwise from "./Components/Advisorwise";
 import Entitywise from "./Components/Entitywise";
 
-import { filterFunction, groupBy } from "./Components/filterFunction";
+import { filterFunction } from "./Components/filterFunction";
 
 type Stock = {
   ticker: string;
@@ -29,7 +29,7 @@ export default function Home() {
   
   const [top10, setTop10] = useState<Stock[]>([]);
 
-  // const [ogData, setOgData] = useState(Data);
+  const [ogData, setOgData] = useState(Data);
   const [filteredData, setFilteredData] = useState(Data);
   const [filters, setFilters] = useState([])
 
@@ -63,12 +63,18 @@ export default function Home() {
     { ticker: "TRX", name: "Tronex Energy", sharesOutstanding: 2_500_000_000 }
   ];
 
-  let strategyGrouping;
+  
   
   useEffect(() => {
     setTop10(x);
-    
   }, []);
+    
+  useEffect(()=>{
+    const x : any = filterFunction(ogData, filters);
+    setFilteredData(x);
+  }, [filters]);
+
+  
     // console.log(strategyGrouping)
 
   return (
@@ -79,13 +85,13 @@ export default function Home() {
        grid-cols-12 gap-[15px]"
       >
         <SideBar/>
-        <Heading mainGp = {mainGp} subGp={subGp} thirdGp={thirdGp} setMainGp = {setMainGp} setSubGp = {setSubGp} setThirdGp = {setThirdGp}/>
+        <Heading filters = {filters} setFilters = {setFilters}/>
 
-        <Total data={filteredData} filters={filters} className={`col-start-1 lg:col-start-3 col-end-13 lg:col-end-10 row-start-2 row-span-2 ${glass} px-15`}/>
+        <Total data={filteredData} filters={filters} setFilters={setFilters} className={`col-start-1 lg:col-start-3 col-end-13 lg:col-end-10 row-start-2 row-span-2 ${glass} px-15`}/>
         <LeadingStocks top10={top10} className={`hidden lg:block col-start-10 col-end-13 row-start-2 row-end-7 ${glass} overflow-hidden`}/>
-        <Strategies data={filteredData} filters={filters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 lg:col-end-10  row-start-4 row-end-7 ${glass}`}/>
-        {/* <Advisorwise className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 sm: row-start-7 row-end-10 ${glass}`}/>
-        <Entitywise className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 row-start-10 row-end-13 ${glass}`}/> */}
+        <Strategies data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 lg:col-end-10  row-start-4 row-end-7 ${glass}`}/>
+        <Advisorwise data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 sm: row-start-7 row-end-10 ${glass}`}/>
+        <Entitywise data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 row-start-10 row-end-13 ${glass}`}/>
       </div>
       <div className='w-full h-[400] bg-primary mt-[15px]'></div>
     </div>

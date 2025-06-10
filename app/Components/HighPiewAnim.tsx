@@ -31,6 +31,7 @@ import { filterUpdate, groupBy } from './filterFunction';
 import { useEffect, useState } from 'react';
 import { useMemo } from 'react';
 
+
 type Props = {
   data: any;
   filters : string[];
@@ -39,21 +40,32 @@ type Props = {
   groupByField : any;
 };
 
+
+
 type PiePoint = {
   name: string;
   y: number;
   drilldown?: string;
 };
+type DrillType = {
+  id: string; // should match the 'drilldown' key from the main series
+  name: string; // name of the drilldown chart (appears in the tooltip/legend)
+  type?: 'pie' | 'column' | 'bar' | string; // optional, override chart type
+  data: Array<[string, number]> | Array<{ name: string; y: number }>;
+};
+
+
+
 
 const PieChart = ({ data, groupByField , filters, setFilters, className }: Props) => {
   
   const [chartData, setChartData] = useState<PiePoint[]>([]);
-  
+  const [drillData, setDrillData] = useState<DrillType[]>([]);
   useEffect(() => {
     const grouped = groupBy(data, groupByField);
     const transformed = grouped.map(item => ({
       name: String(item[groupByField]), // dynamic access
-      y: Number(item.sumOfClosingValue),
+      y: Number(item.sumOfClosingCosts),
     }));
     setChartData(transformed);
   }, [data]);
@@ -62,7 +74,7 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
     const grouping = groupBy(data, groupByField);
     const arr = grouping.map(item => ({
       name: String(item[groupByField]), // dynamic access
-      y: Number(item.sumOfClosingValue),
+      y: Number(item.sumOfClosingCosts),
       // drilldown: ...
     }));
     setChartData(arr);
@@ -126,23 +138,13 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
         },
       },
     ],
-    // legend: {
-    //   itemStyle: {
-    //     color: '#555',
-    //     fontWeight: 'bold',
-    //   },
-    //   itemHoverStyle: {
-    //     color: '#000',
-    //   },
-    // },
     legend: {
-      layout: 'horizontal',       // place items side by side
-      align: 'center',           // center horizontally
-      verticalAlign: 'bottom',   // position at bottom
-      width: undefined,          // allow full container width
-      itemDistance: 30,          // spacing between items
       itemStyle: {
-        whiteSpace: 'nowrap'     // prevent wrapping
+        color: '#555',
+        fontWeight: 'bold',
+      },
+      itemHoverStyle: {
+        color: '#000',
       },
     },
     credits: {
