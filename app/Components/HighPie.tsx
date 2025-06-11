@@ -2,27 +2,6 @@
 
 'use client';
 
-const COLORS = [
-  // === Base tones ===
-  "#E0B073", // gold base
-  "#A31545", // ruby base
-  "#45A190", // emerald base
-
-  // === Darker tones ===
-  "#D29E5D", // gold dark
-  "#8F123D", // ruby dark
-  "#3D8D7F", // emerald dark
-
-  // === Mid / Vivid tones ===
-  "#C48D48", // strong gold
-  "#C42B5F", // vivid ruby
-  "#5CB9A4", // bright emerald
-
-  // === Light / Pastel tones ===
-  "#FAE2BF", // pastel gold
-  "#F1A5B8", // pastel ruby
-  "#A0E2D2", // pastel emerald
-];
 
 import React from 'react';
 import Highcharts from 'highcharts';
@@ -30,6 +9,7 @@ import HighchartsReact from 'highcharts-react-official';
 import { filterUpdate, groupBy } from './filterFunction';
 import { useEffect, useState } from 'react';
 import { useMemo } from 'react';
+import { COLORS } from '../styling'
 
 type Props = {
   data: any;
@@ -118,8 +98,11 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
     series: [
       {
         type: 'pie',
-        data: chartData,
-        colors: COLORS,
+        data: chartData.map((point, index) => ({
+          ...point,
+          color: COLORS[index % COLORS.length], 
+          
+        })),
         animation: {
           duration: 1000,
           easing: 'easeOutCubic',
@@ -135,16 +118,16 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
     //     color: '#000',
     //   },
     // },
-    legend: {
-      layout: 'horizontal',       // place items side by side
-      align: 'center',           // center horizontally
-      verticalAlign: 'bottom',   // position at bottom
-      width: undefined,          // allow full container width
-      itemDistance: 30,          // spacing between items
-      itemStyle: {
-        whiteSpace: 'nowrap'     // prevent wrapping
-      },
-    },
+    // legend: {
+    //   layout: 'horizontal',       // place items side by side
+    //   align: 'center',           // center horizontally
+    //   verticalAlign: 'bottom',   // position at bottom
+    //   width: undefined,          // allow full container width
+    //   itemDistance: 30,          // spacing between items
+    //   itemStyle: {
+    //     whiteSpace: 'nowrap'     // prevent wrapping
+    //   },
+    // },
     credits: {
       enabled: false,
     },

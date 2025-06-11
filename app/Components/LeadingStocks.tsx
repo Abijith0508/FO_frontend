@@ -1,20 +1,25 @@
 import React from 'react'
 import { glass, grayText, grayText2} from '../styling'
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useState } from 'react';
 
 type Stock = {
   ticker: string;
   name: string;
   sharesOutstanding: number;
+  
 };
 
 type Props = {
-    top10: Stock[], 
-    className : string;
+    className : string,
+    data : any
 }
-const LeadingStocks = ({top10, className} : Props) => {
+
+const LeadingStocks = ({className, data} : Props) => {
+    const [top10, setTop10] = useState([]);
+
     return (
-    <div className={className}>
+    <div className={`${className} text-gray`}>
         <div className={`${grayText2} mb-5`}>Leading Stocks</div>
         <ScrollArea className='h-full w-full '>
             <div className="flex flex-col overflow:hidden gap-5 text-gray-300">

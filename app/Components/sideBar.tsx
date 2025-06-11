@@ -62,12 +62,28 @@ const menuItems: MenuItem[] = [
 ]
 
 function SideBar(){   
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+      const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024); // 1024px is usually considered the 'lg' screen size
+      };
+
+      // Set initial screen size
+      handleResize();
+
+      // Add resize listener
+      window.addEventListener('resize', handleResize);
+
+      // Cleanup on unmount
+      return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     // <ScrollArea className='h-full w-full p-5'>
         <Accordion type="single" collapsible 
             className={` scroll-auto fixed left-0 h-full 
                     w-[calc((100%/11.3*2))]
-                    
                     ${sideglass} shadow-md 
                     z-50
                     py-5 px-auto 

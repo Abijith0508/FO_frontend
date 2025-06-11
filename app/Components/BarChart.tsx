@@ -4,25 +4,26 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { filterUpdate, groupBy } from './filterFunction';
-
-const COLORS = [
-  "#E0B073", "#A31545", "#45A190",
-  "#D29E5D", "#8F123D", "#3D8D7F",
-  "#C48D48", "#C42B5F", "#5CB9A4",
-  "#FAE2BF", "#F1A5B8", "#A0E2D2",
-];
+import { grayText2, COLORS } from '../styling';
 
 type Props = {
   data: any;
   filters: string[];
   setFilters: any;
-  className: string;
+  className?: string;
   groupByField: any;
 };
 
 type BarPoint = {
   name: string;
   y: number;
+};
+
+const formatIndianNumber = (value : number) => {
+  if (value >= 1e7) return `${(value / 1e7).toFixed(0)} Cr`;
+  if (value >= 1e5) return `${(value / 1e5).toFixed(0)} L`;
+  if (value >= 1e3) return `${(value / 1e3).toFixed(0)} K`;
+  return value.toLocaleString('en-IN');
 };
 
 const BChart = ({ data, groupByField, filters, setFilters, className }: Props) => {
@@ -43,8 +44,8 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       backgroundColor: 'transparent',
       height: 300,
       animation: {
-        duration: 500,
-        easing: 'easeOutBounce',
+        duration: 1000, // Customize the total duration of the animation
+        easing: 'easeOutBounce', // Bounce effect for the bars
       },
     },
     title: {
@@ -56,10 +57,12 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
         text: null,
       },
       labels: {
-        enabled: false,
+        enabled: true,
+        
         style: {
-          color: '#555',
-          fontWeight: 'bold',
+          color: '#ffffff50',
+          fontWeight: 'light',
+          fontSize: '15px',
         },
       },
       gridLineColor: '#555',
@@ -71,6 +74,9 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
         align: 'high',
       },
       labels: {
+        formatter: function (this: Highcharts.AxisLabelsFormatterContextObject) {
+          return formatIndianNumber(Number(this.value));
+        },
         overflow: 'justify',
         style: {
           color: '#555',
@@ -95,9 +101,13 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       bar: {
         cursor: 'pointer',
         borderWidth: 0,
-        color: '#E0B073',
+        color: COLORS,
         dataLabels: {
           enabled: false,
+        },
+        animation: {
+          duration: 1000, // Custom animation for bars
+          easing: 'easeOutBounce',
         },
         point: {
           events: {
@@ -110,9 +120,10 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
     },
     series: [{
       type: 'bar',
-      data: chartData,
-      colors: '#E0B073',
-      
+      data: chartData.map((point, index) => ({
+        ...point,
+        color: COLORS[index % COLORS.length], // Assign each bar a color
+      })),
     }],
     legend: {
       enabled: false,
@@ -127,7 +138,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       highcharts={Highcharts}
       options={options}
       allowChartUpdate={true}
-      updateArgs={[true, true, true]} // redraw, oneToOne, animate
+      updateArgs={[true, true, true]}
       immutable={false}
       className={className}
     />
@@ -135,4 +146,44 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
 };
 
 export default BChart;
+
+
+type LegendItem ={
+  name: string;
+  color: string;
+}
+
+
+type LegendProps = {
+  data: any;
+  className?: string;
+  groupByField: any;
+};
+
+const Legend = ({ data, groupByField, className }: LegendProps) => {
+  const [legend, setLegend] = useState<LegendItem[]>([])
+  useEffect(() => {
+    const grouped = groupBy(data, groupByField);
+    const legendArray = grouped.map((item, idx) => ({
+      name: String(item[groupByField]),
+      color: COLORS[idx % COLORS.length],
+    }));
+    setLegend(legendArray);
+    console.log(legend)
+  }, [data, groupByField]);
+
+  
+  return (
+      <div className = {`flex flex-col h-full items-right text-left lg:block ${className}`}>
+        {legend.map((item, idx) => (
+          <div className="flex h-full items-center gap-2" key={idx}>
+            <div className={`h-[10] w-[10]`}
+            style={{ backgroundColor: item.color }}/>
+            <div className = {`${grayText2}`}>{item.name}</div>
+          </div>
+        ))}
+      </div>
+  )
+}
+export {Legend, BChart};
 

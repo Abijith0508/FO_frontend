@@ -10,9 +10,8 @@ import SideBar from "./Components/SideBar";
 import Heading from "./Components/Heading";
 import Total from "./Components/Total";
 import LeadingStocks from "./Components/LeadingStocks";
-import Strategies from "./Components/Strategies";
-import Advisorwise from "./Components/Advisorwise";
-import Entitywise from "./Components/Entitywise";
+import CarouselView from "./Components/CarouselView";
+import DataTable from "./Components/DataTable";
 
 import { filterFunction } from "./Components/filterFunction";
 
@@ -79,19 +78,40 @@ export default function Home() {
 
   return (
     <div className="text-white text-center bg-transparent p-0 m-0 ">
-      
+      <SideBar/>
+        
+      <div className="flex flex-col gap-5 justify-around w-[calc((100%_/_11.3_*_9))] pr-[11px] top-0 translate-x-[calc((100%_/_12_*_2.8))] py-5">
+        <Heading filters = {filters} setFilters = {setFilters} className = "px-20 py-5"/>
+        <Total data={filteredData} filters={filters} setFilters={setFilters} className={` ${glass} px-15`}/>
+        <DataTable data={filteredData} className={`
+          
+        `}/>
+        
+      </div>
       <div
-        className="w-full h-[1500px] px-[30px] bg-transparent text-white grid grid-rows-12
+        className="w-full h-[1900px] px-[30px] bg-transparent text-white grid grid-rows-12
        grid-cols-12 gap-[15px]"
       >
-        <SideBar/>
-        <Heading filters = {filters} setFilters = {setFilters}/>
+        
+        <LeadingStocks top10={top10}
+        data = {filteredData}
+        className={`
+          hidden lg:block 
+          col-start-10 col-end-13  row-start-1 row-end-4 
+          ${glass} overflow-hidden`
+        }/>
 
-        <Total data={filteredData} filters={filters} setFilters={setFilters} className={`col-start-1 lg:col-start-3 col-end-13 lg:col-end-10 row-start-2 row-span-2 ${glass} px-15`}/>
-        <LeadingStocks top10={top10} className={`hidden lg:block col-start-10 col-end-13 row-start-2 row-end-7 ${glass} overflow-hidden`}/>
-        <Strategies data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 lg:col-end-10  row-start-4 row-end-7 ${glass}`}/>
-        <Advisorwise data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 sm: row-start-7 row-end-10 ${glass}`}/>
-        <Entitywise data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col col-start-1 lg:col-start-3 col-end-13 row-start-10 row-end-13 ${glass}`}/>
+        <CarouselView title='Strategy' groupByField="strategy" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
+          col-start-1 lg:col-start-3 col-end-10 row-start-1 row-end-4 
+          ${glass}`}/>
+
+        <CarouselView title='Advisor-Wise' groupByField="advisor" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
+          col-start-1 lg:col-start-3 col-end-13 row-start-4 row-end-7 
+          ${glass}`}/>
+
+        <CarouselView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
+          col-start-1 lg:col-start-3 col-end-13 row-start-7 row-end-10 
+          ${glass}`}/>
       </div>
       <div className='w-full h-[400] bg-primary mt-[15px]'></div>
     </div>

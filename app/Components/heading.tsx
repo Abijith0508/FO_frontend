@@ -7,11 +7,12 @@ import { ChevronRight } from 'lucide-react';
 type Props = { 
   filters: string[]; 
   setFilters: any;
+  className: string
 };
 
-const Heading = ({ filters, setFilters }: Props) => {
+const Heading = ({ filters, setFilters, className }: Props) => {
   return (
-    <div className="px-[5px] flex items-center w-full col-start-3 col-end-12 row-start-1 row-end-2">
+    <div className={`px-[5px] flex justify-center items-right w-full ${className}`}>
       <Crumbs filters={filters} setFilters={setFilters} />
     </div>
   );

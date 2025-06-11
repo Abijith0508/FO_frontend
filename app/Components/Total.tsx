@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { glass, grayText } from '../styling';
+import { glass, grayText, grayText2 } from '../styling';
 import Image from 'next/image';
 import tickMark from '../img/tickMark.png';
 import { groupBy, filterUpdate } from './filterFunction';
 import { useSpring, animated } from '@react-spring/web';
-
+import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 interface DataItem {
   id: number;
   entity: string;
@@ -43,29 +43,46 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
   }, [hovered])
  
   const groupedByAssetType = groupBy(data, 'asset_type');
-
+  const groupAll = groupBy(data, null)
   const equityData = groupedByAssetType.find(item => item.asset_type === 'Equity');
   const debtData = groupedByAssetType.find(item => item.asset_type === 'Debt');
-
+  const totalData = groupAll[0];
+  
   const closingValueEquity = equityData ? Number(equityData.sumOfClosingValue) : 0;
   const closingValueDebt = debtData ? Number(debtData.sumOfClosingValue) : 0;
-  const total = closingValueEquity + closingValueDebt;
+  const total = totalData ? Number(totalData.sumOfClosingValue) : 0;
+  const totalClosingCost = totalData ? Number(totalData.sumOfClosingCosts) : 0;
+  const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain) : 0;
 
-  const selectedCost = hovered == 1 ? closingValueEquity : closingValueDebt;
-  const percentage = total ? (selectedCost / total) * 100 : 0;
+
+  
+  const eqtPercentage = total ? (closingValueEquity / total) * 100 : 0;
+  const dbtPercentage = total ? (closingValueDebt / total) * 100 : 0;
+
   
   const equityPct = total ? (closingValueEquity / total) * 100 : 0;
   const debtPct = total ? (closingValueDebt / total) * 100 : 0;
 
   
-  const { number: animatedValue } = useSpring({
-    number: selectedCost,
+  const { number: animatedEquity } = useSpring({
+    number: closingValueEquity,
     from: { number: 0 },
     config: { duration: 500 },
   });
 
-  const { number: animatedPct } = useSpring({
-    number: percentage,
+  const { number: animatedDebt } = useSpring({
+    number: closingValueDebt,
+    from: { number: 0 },
+    config: { duration: 600 },
+  });
+
+  const { number: animatedEquityPct } = useSpring({
+    number: eqtPercentage,
+    from: { number: 0 },
+    config: { duration: 500 },
+  });
+  const { number: animatedDebtPct } = useSpring({
+    number: dbtPercentage,
     from: { number: 0 },
     config: { duration: 500 },
   });
@@ -75,66 +92,106 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
     from: { number: 0 },
     config: { duration: 300 },
   });
-
+  const { number: animatedCC } = useSpring({
+    number: totalClosingCost,
+    from: { number: 0 },
+    config: { duration: 300 },
+  });
+  const { number: animatedUG } = useSpring({
+    number: totalUnrealisedGain,
+    from: { number: 0 },
+    config: { duration: 300 },
+  });
   
   const [tColor, setTColor] = useState('emerald')
+  const [ugColor, setUgColor] = useState('emerald')
 
+  useEffect(() => {
+    if(totalUnrealisedGain < 0)setUgColor('ruby')
+    else setUgColor('emerald')
+  }, [totalUnrealisedGain])
   
   return (
     <div className={className}>
-      <div className="flex justify-between w-full">
+      <div className="flex justify-around w-full">
         <div className = "flex flex-col items-center justify-center">
-          <div className={grayText}>Wallet</div>
-          <div>
-            <div className="text-[40px] font-bold">
-              ₹ <animated.span>
-                {animatedTotal.to(val => Math.round(val).toLocaleString('en-IN'))}
-              </animated.span>{' '}
-            </div>
-            <div className={`relative text-[18px] text-${tColor} transition-colors`}>
-              ₹ <animated.span>
-                {animatedValue.to(val => Math.round(val).toLocaleString('en-IN'))}
-              </animated.span>{' '}
-              (
-              <animated.span>
-                {animatedPct.to(val => val.toFixed(2))}
-              </animated.span>
-              %)
-            </div>
+          <div className={grayText}>Holding Value</div>
+          
+          <div className="text-[40px] font-bold">
+            ₹ <animated.span>
+              {animatedTotal.to(val => Math.round(val).toLocaleString('en-IN'))}
+            </animated.span>{' '}
           </div>
-          <div className="relative w-full min-w-[308] h-[28.5px] my-6 bg-ruby overflow-hidden rounded-[8px] flex text-white text-xs font-medium">
+          
+          <div className={`relative w-full min-w-[500] h-[40px] my-6 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
             {/* Equity Bar */}
             <div
-              className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-transform"
+              className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out"
               style={{ width: `${equityPct}%` }}
               onClick={() => {
                 setHovered(1)
                 filterUpdate(setFilters, 'asset_type', 'Equity')
               }}
             >
-              {equityPct > 10 && `Equity`}
+              {equityPct > 10 && 
+                <div className = {`${grayText2} `}>
+                  ₹ <animated.span>
+                    {animatedEquity.to(val => Math.round(val).toLocaleString('en-IN'))}
+                  </animated.span>{' '}
+                  (
+                  <animated.span>
+                    {animatedEquityPct.to(val => val.toFixed(0))}
+                  </animated.span>
+                  %)
+                </div>
+              }
             </div>
 
             {/* Debt Bar */}
             <div
-              className="h-full bg-ruby cursor-pointer flex items-center justify-center transition-transform"
+              className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out"
               style={{ width: `${debtPct}%` }}
               onClick={() => {
                 setHovered(0)
                 filterUpdate(setFilters, 'asset_type', 'Debt')
               }}
             >
-            {debtPct > 10 && `Debt`}
+            {debtPct > 10 && 
+              <div className = {`${grayText2} hover:text-white/80`}>
+                ₹ <animated.span>
+                    {animatedDebt.to(val => Math.round(val).toLocaleString('en-IN'))}
+                  </animated.span>
+                  {" "}
+                  (
+                  <animated.span>
+                    {animatedDebtPct.to(val => val.toFixed(0))}
+                  </animated.span>
+                  %)
+              </div>
+            }
           </div>
         </div>
         </div>
         
-        <div className = "flex flex-col items-center justify-center ">
-            <div>
-              ClosingCost
+        <div className = "flex flex-col items-center justify-around ">
+            <div className = "flex flex-col gap-1">
+              <div className = {`${grayText2} ` }>
+                Invested Amount
+              </div>
+              <div className = " text-[23px] text-emerald">
+                ₹ <animated.span>
+                  {animatedCC.to(val => Math.round(val).toLocaleString('en-IN'))}
+                </animated.span>{' '}
+              </div>
             </div> 
-            <div>
-              Unrealised Gain
+            <div className = "flex flex-col gap-1 items-center justify-around ">
+              <div className = "text-gray">Unrealised Gain/Loss</div>
+              <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>
+                ₹ <animated.span>
+                  {animatedUG.to(val => Math.round(val).toLocaleString('en-IN'))}
+                </animated.span>{' '}
+                {ugColor == 'emerald' ? <ArrowUpRight/> :<ArrowDownLeft/>}
+              </div>
             </div>
         </div>
 

@@ -21,14 +21,39 @@ interface DataItem {
 
 function groupBy(
   data: DataItem[],
-  criterion: keyof DataItem,
+  criterion: keyof DataItem | null
 ): {
   [key: string]: string | number;
 }[] {
-  const grouped: { [key: string]: { sumOfClosingCosts: number; sumOfUnrealizedGain: number, sumOfClosingValue: number } } = {};
+  if (criterion === null) {
+    // When criterion is null, return the sums of the entire dataset
+    const totalSums = data.reduce(
+      (acc, item) => {
+        acc.sumOfClosingCosts += parseFloat(item.closing_cost) || 0;
+        acc.sumOfUnrealizedGain += parseFloat(item.unrealized_gain) || 0;
+        acc.sumOfClosingValue += parseFloat(item.closing_value) || 0;
+        return acc;
+      },
+      {
+        sumOfClosingCosts: 0,
+        sumOfUnrealizedGain: 0,
+        sumOfClosingValue: 0,
+      }
+    );
+
+    return [
+      {
+        sumOfClosingValue: totalSums.sumOfClosingValue,
+        sumOfClosingCosts: totalSums.sumOfClosingCosts,
+        sumOfUnrealizedGain: totalSums.sumOfUnrealizedGain,
+      },
+    ];
+  }
+
+  const grouped: { [key: string]: { sumOfClosingCosts: number; sumOfUnrealizedGain: number; sumOfClosingValue: number } } = {};
 
   data.forEach((item) => {
-    const key = String(item[criterion]);  // 🔧 Fix: Ensure key is a stringc
+    const key = String(item[criterion]);  // Ensure key is a string
     
     const closingValue = parseFloat(item.closing_value) || 0;
     const closingCost = parseFloat(item.closing_cost) || 0;
@@ -45,7 +70,6 @@ function groupBy(
     grouped[key].sumOfClosingCosts += closingCost;
     grouped[key].sumOfUnrealizedGain += unrealizedGain;
     grouped[key].sumOfClosingValue += closingValue;
-
   });
 
   return Object.entries(grouped).map(([groupValue, values]) => ({
