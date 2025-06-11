@@ -169,7 +169,7 @@ const Legend = ({ data, groupByField, className }: LegendProps) => {
       color: COLORS[idx % COLORS.length],
     }));
     setLegend(legendArray);
-    console.log(legend)
+    // console.log(legend)
   }, [data, groupByField]);
 
   

@@ -89,25 +89,41 @@ export default function Home() {
         
       </div>
       <div
-        className="w-full h-[1900px] px-[30px] bg-transparent text-white grid grid-rows-12
+        className="w-full h-[1500px] px-[30px] bg-transparent text-white grid grid-rows-10
        grid-cols-12 gap-[15px]"
       >
         
-        <LeadingStocks top10={top10}
-        data = {filteredData}
+        <LeadingStocks
         className={`
           hidden lg:block 
           col-start-10 col-end-13  row-start-1 row-end-4 
           ${glass} overflow-hidden`
-        }/>
+        }
+        data = {filteredData}
+        region = "India"
+        />
 
         <CarouselView title='Strategy' groupByField="strategy" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
           col-start-1 lg:col-start-3 col-end-10 row-start-1 row-end-4 
           ${glass}`}/>
 
+        <LeadingStocks
+        className={`
+          hidden lg:block 
+          col-start-1 lg:col-start-3 col-end-6 
+          row-start-4 row-end-7 
+          ${glass} overflow-hidden`
+        }
+        data = {filteredData}
+        region = "US"
+        />
+
         <CarouselView title='Advisor-Wise' groupByField="advisor" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
-          col-start-1 lg:col-start-3 col-end-13 row-start-4 row-end-7 
+          
+          col-start-6 col-end-13   row-start-4 row-end-7 
           ${glass}`}/>
+
+            
 
         <CarouselView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
           col-start-1 lg:col-start-3 col-end-13 row-start-7 row-end-10 

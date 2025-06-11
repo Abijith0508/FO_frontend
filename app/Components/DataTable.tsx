@@ -157,12 +157,12 @@ function groupData(data: DataRow[]): GroupedRow[] {
     });
   });
  
-  console.log('Generated grouped rows:', grouped.map(row => ({
-    level: row.level,
-    label: row.label,
-    key: row.key,
-    type: row.type
-  })));
+  // console.log('Generated grouped rows:', grouped.map(row => ({
+  //   level: row.level,
+  //   label: row.label,
+  //   key: row.key,
+  //   type: row.type
+  // })));
  
   return grouped;
 }
@@ -371,13 +371,13 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
   }, [groupedRows]);
  
   // Debug log for grouped rows
-  useEffect(() => {
-    console.log('Grouped rows:', groupedRows.map(row => ({
-      level: row.level,
-      label: row.label,
-      key: row.key
-    })));
-  }, [groupedRows]);
+  // useEffect(() => {
+  //   console.log('Grouped rows:', groupedRows.map(row => ({
+  //     level: row.level,
+  //     label: row.label,
+  //     key: row.key
+  //   })));
+  // }, [groupedRows]);
  
   if (isLoading) {
     return (
