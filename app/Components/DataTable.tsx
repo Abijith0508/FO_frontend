@@ -47,32 +47,39 @@ type GroupedRow = {
 interface ExpandedState {
   [key: string]: boolean;
 }
- 
+
 // Function to group and aggregate data hierarchically
 function groupData(data: DataRow[]): GroupedRow[] {
   const grouped: GroupedRow[] = [];
- 
+
+  // Step 1: Compute grand totals for percentages
+  const grandTotals = data.reduce((acc, row) => {
+    acc.closing_cost += parseFloat(row.closing_cost || '0');
+    acc.closing_value += parseFloat(row.closing_value || '0');
+    acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
+    return acc;
+  }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
+
+  const computePercent = (value: number, total: number) =>
+    total === 0 ? 0 : parseFloat(((value / total) * 100).toFixed(2));
+
   // First, group by asset_type
   const assetTypeGroups = data.reduce((acc, row) => {
     if (!row.asset_type) return acc;
-    if (!acc[row.asset_type]) {
-      acc[row.asset_type] = [];
-    }
+    if (!acc[row.asset_type]) acc[row.asset_type] = [];
     acc[row.asset_type].push(row);
     return acc;
   }, {} as Record<string, DataRow[]>);
- 
+
   // Process each asset type
   Object.entries(assetTypeGroups).forEach(([asset_type, assetRows]) => {
-    // Calculate asset type totals
     const assetTotals = assetRows.reduce((acc, row) => {
       acc.closing_cost += parseFloat(row.closing_cost || '0');
       acc.closing_value += parseFloat(row.closing_value || '0');
       acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
       return acc;
     }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
- 
-    // Add asset type summary row
+
     grouped.push({
       type: 'group',
       level: 0,
@@ -85,32 +92,31 @@ function groupData(data: DataRow[]): GroupedRow[] {
         closing_value: assetTotals.closing_value.toFixed(2),
         unrealized_gain: assetTotals.unrealized_gain.toFixed(2),
         irr: '', gain_cq: null, irr_cq: null, asset_type, strategy: '', substrategy: ''
+      },
+      percentages: {
+        closing_cost: computePercent(assetTotals.closing_cost, grandTotals.closing_cost),
+        closing_value: computePercent(assetTotals.closing_value, grandTotals.closing_value),
+        unrealized_gain: computePercent(assetTotals.unrealized_gain, grandTotals.unrealized_gain)
       }
     });
- 
+
     // Group by strategy within asset type
     const strategyGroups = assetRows.reduce((acc, row) => {
       if (!row.strategy) return acc;
-      // Remove everything after hyphen in strategy name
       const strategy = row.strategy.split('-')[0];
-      if (!acc[strategy]) {
-        acc[strategy] = [];
-      }
+      if (!acc[strategy]) acc[strategy] = [];
       acc[strategy].push(row);
       return acc;
     }, {} as Record<string, DataRow[]>);
- 
-    // Process each strategy
+
     Object.entries(strategyGroups).forEach(([strategy, strategyRows]) => {
-      // Calculate strategy totals
       const strategyTotals = strategyRows.reduce((acc, row) => {
         acc.closing_cost += parseFloat(row.closing_cost || '0');
         acc.closing_value += parseFloat(row.closing_value || '0');
         acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
         return acc;
       }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
- 
-      // Add strategy summary row
+
       grouped.push({
         type: 'group',
         level: 1,
@@ -122,33 +128,31 @@ function groupData(data: DataRow[]): GroupedRow[] {
           closing_cost: strategyTotals.closing_cost.toFixed(2),
           closing_value: strategyTotals.closing_value.toFixed(2),
           unrealized_gain: strategyTotals.unrealized_gain.toFixed(2),
-          
           irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
+        },
+        percentages: {
+          closing_cost: computePercent(strategyTotals.closing_cost, grandTotals.closing_cost),
+          closing_value: computePercent(strategyTotals.closing_value, grandTotals.closing_value),
+          unrealized_gain: computePercent(strategyTotals.unrealized_gain, grandTotals.unrealized_gain)
         }
       });
- 
-      // Group by substrategy within strategy
+
+      // Group by substrategy
       const substrategyGroups = strategyRows.reduce((acc, row) => {
-        // Remove everything after hyphen in substrategy name
         const substrategy = row.substrategy ? row.substrategy.split('-')[0] : 'General';
-        if (!acc[substrategy]) {
-          acc[substrategy] = [];
-        }
+        if (!acc[substrategy]) acc[substrategy] = [];
         acc[substrategy].push(row);
         return acc;
       }, {} as Record<string, DataRow[]>);
- 
-      // Process each substrategy
+
       Object.entries(substrategyGroups).forEach(([substrategy, substrategyRows]) => {
-        // Calculate substrategy totals
         const substrategyTotals = substrategyRows.reduce((acc, row) => {
           acc.closing_cost += parseFloat(row.closing_cost || '0');
           acc.closing_value += parseFloat(row.closing_value || '0');
           acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
           return acc;
         }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
- 
-        // Add substrategy summary row
+
         grouped.push({
           type: 'group',
           level: 2,
@@ -161,22 +165,20 @@ function groupData(data: DataRow[]): GroupedRow[] {
             closing_value: substrategyTotals.closing_value.toFixed(2),
             unrealized_gain: substrategyTotals.unrealized_gain.toFixed(2),
             irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy
+          },
+          percentages: {
+            closing_cost: computePercent(substrategyTotals.closing_cost, grandTotals.closing_cost),
+            closing_value: computePercent(substrategyTotals.closing_value, grandTotals.closing_value),
+            unrealized_gain: computePercent(substrategyTotals.unrealized_gain, grandTotals.unrealized_gain)
           }
         });
       });
     });
   });
- 
-  console.log('Generated grouped rows:', grouped.map(row => ({
-    level: row.level,
-    label: row.label,
-    key: row.key,
-    type: row.type
-  })));
- 
+
   return grouped;
 }
- 
+
 // Column definitions for the table headers and how to extract cell data
 const columns = [
   {
@@ -198,17 +200,29 @@ const columns = [
   {
     accessorKey: 'closing_cost',
     header: 'Invested Amount ',
-    renderCell: (row: GroupedRow) => row.row?.closing_cost || '',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.closing_cost;
+      const pct = row.percentages?.closing_cost;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
   },
   {
     accessorKey: 'closing_value',
     header: 'Holding Value',
-    renderCell: (row: GroupedRow) => row.row?.closing_value || '',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.closing_value;
+      const pct = row.percentages?.closing_value;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
   },
   {
     accessorKey: 'unrealized_gain',
     header: 'Unrealised Gain',
-    renderCell: (row: GroupedRow) => row.row?.unrealized_gain || '',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.unrealized_gain;
+      const pct = row.percentages?.unrealized_gain;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
   },
  
 ];
