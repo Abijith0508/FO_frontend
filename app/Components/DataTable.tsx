@@ -157,12 +157,12 @@ function groupData(data: DataRow[]): GroupedRow[] {
     });
   });
  
-  // console.log('Generated grouped rows:', grouped.map(row => ({
-  //   level: row.level,
-  //   label: row.label,
-  //   key: row.key,
-  //   type: row.type
-  // })));
+  console.log('Generated grouped rows:', grouped.map(row => ({
+    level: row.level,
+    label: row.label,
+    key: row.key,
+    type: row.type
+  })));
  
   return grouped;
 }
@@ -368,6 +368,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
       else initialExpandedState[row.key] = true;
     });
     setExpandedState(initialExpandedState);
+    toggleExpanded('asset-Equity')
   }, [groupedRows]);
  
   // Debug log for grouped rows
@@ -397,7 +398,6 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
       </div>
     );
   }
-
   return (
     <div className={`w-full h-full rounded-lg overflow-y-auto ${className} z-50`}>
         <div className={`w-full rounded-lg border-white overflow-y-auto`}>
@@ -413,7 +413,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
             Financial Portfolio Overview
         </h1> */}
     
-        <ScrollArea className="max-h-[400]  w-full shadow-lg">
+        <ScrollArea className="h-[400]  w-full shadow-lg">
             <Table>
             <TableHeader>
                 <TableRow className = " rounded-t-lg">

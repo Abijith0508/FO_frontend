@@ -1,22 +1,25 @@
-import React from 'react'
-import { glass, grayText, grayText2, glassHead} from '../styling'
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { useState, useEffect } from 'react';
+'use client';
+import React, { useEffect, useState, useCallback } from "react";
+import Highcharts from "highcharts";
+// import HighchartsReact from "highcharts-react-official";
 
-type Stock = {
-  ticker: string;
-  name: string;
-  sharesOutstanding: number;
-  
-};
+import Exporting from 'highcharts/modules/exporting'
+
+import HighchartsReact from "highcharts-react-official";
+import "highcharts/highcharts-more";
+import "highcharts/modules/drilldown";
+import "highcharts/modules/exporting";
+import "highcharts/modules/funnel";
+
+
 
 type Props = {
-    className : string,
-    data : any,
-    region? :string
-}
+  className?: string;
+  data: any;
+  region?: string | null;
+};
 
-type StockData = {
+type StockData =  {
   id: number;
   entity: string;
   advisor: string;
@@ -35,57 +38,109 @@ type StockData = {
   irr_cq: string | null;
   asset_type: string;
   strategy: string;
+  
+  maingrpnm: string;
+  subgrpnm : string; 
+  thirdgrpnm : string;
 };
 
-function toTitleCase(str: string): string {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-
-function getTop10Stocks(data: StockData[], region?: string){
-//   alert('top10')
-  const stockName = region + ' Direct Equity'
-  return data
-    .filter(item => item.substrategy === stockName)
+function getTopStocksByGainPercent(data: StockData[], count = 5, region:string) {
+  // console.log(data)
+  const stock : string = region + " Direct Equity"
+  const result = data
+    .filter(item => item.substrategy === stock)
     .map(item => {
       const gain = parseFloat(item.unrealized_gain || '0');
-      const cost = parseFloat(item.closing_cost || '1'); // avoid division by 0
+      const cost = parseFloat(item.closing_cost || '1');
       const gainPercent = (gain / cost) * 100;
-    //   alert(gainPercent)
       return { ...item, gainPercent };
     })
     .sort((a, b) => b.gainPercent - a.gainPercent)
-    .slice(0, 15);
+    .slice(0, count);
+
+  console.log(result);
+
+  return data
+    .filter(item => item.substrategy === stock)
+    .map(item => {
+      const gain = parseFloat(item.unrealized_gain || '0');
+      const cost = parseFloat(item.closing_cost || '1');
+      const gainPercent = (gain / cost) * 100;
+      return { ...item, gainPercent };
+    })
+    .sort((a, b) => b.gainPercent - a.gainPercent)
+    .slice(0, count);
 }
 
-const LeadingStocks = ({className, data, region} : Props) => {
-    const [top10, setTop10] = useState<StockData[]>([]);
-    useEffect(()=>{
-        const arr = getTop10Stocks(data, region);
-        setTop10(arr);
-        // console.log(arr)
-    }, [data])
+const Top5FunnelChart = ({ data, className, region }: Props) => {
+  const [funnelData, setFunnelData] = useState<any[]>([]);
+  
+  
+  useEffect(() => {
+    const top5Stocks = getTopStocksByGainPercent(data, 5, String(region));
+    const transformed = top5Stocks.map(item => ({
+      name: item.name?.slice(0, -5) || item.name,
+      y: parseFloat(((parseFloat(item.unrealized_gain) / parseFloat(item.closing_cost)) * 100).toFixed(2))
+    }));
+    setFunnelData(transformed);
+  }, [data]);
 
-    return (
-    <div className={`${className} ${glassHead}`}>
-        <div className={`${grayText2} mb-5`}>Leading Stocks</div>
-        <ScrollArea className='h-full w-full '>
-            <div className={`flex flex-col overflow:hidden gap-5 text-gray-200`} >
-                {top10.map((data : StockData, index) => (
+  // if (!funnelLoaded || funnelData.length === 0) return null;
 
-                    <div key={index}>
-                        {region == 'India' ? data.name.slice(0,-5) : toTitleCase(data.name)}
-                    </div>
-                ))}
-            </div>
-        </ScrollArea>
-        
+  return (
+    <div className={`${className} w-full max-w-2xl mx-auto mb-8`}>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 animate-fade-in">
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={{
+            chart: {
+              type: 'funnel',
+              height: 400,
+              backgroundColor: 'transparent',
+            },
+            title: {
+              text: null,
+              align: 'left',
+              style: {
+                fontSize: '20px',
+                fontWeight: 'bold',
+                color: '#1f2937',
+              },
+            },
+            plotOptions: {
+              funnel: {
+                neckWidth: '30%',
+                neckHeight: '25%',
+                width: '80%',
+                dataLabels: {
+                  enabled: true,
+                  format: '<b>{point.name}</b><br/>{point.y:.2f}%',
+                  style: {
+                    fontWeight: 'bold',
+                    color: '#374151',
+                  },
+                },
+                center: ['50%', '50%'],
+              },
+            },
+            series: [{
+              name: 'Asset',
+              type: 'funnel',
+              data: funnelData,
+              colors: [
+                '#10b981',
+                '#3b82f6',
+                '#f59e0b',
+                '#ef4444',
+                '#8b5cf6',
+              ],
+            }],
+            credits: { enabled: false },
+          }}
+        />
+      </div>
     </div>
-    );
-}
+  );
+};
 
-export default LeadingStocks
+export default Top5FunnelChart;
