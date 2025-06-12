@@ -1,5 +1,5 @@
 export const sideglass = "bg-gradient-to-r from-white/10 to-black/0 backdrop-saturate-150 backdrop-blur-md border-none border-white/30 rounded-r-2xl";
-export const glass = "bg-gradient-to-r from-black/20 to-black/20 via-white/0 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-lg";
+export const glass = "bg-gradient-to-r from-black/20 to-black/20 via-white/0 backdrop-blur-lg border border-white/30 rounded-2xl shadow-lg";
 export const glassHead = "bg-gradient-to-r from-black/20 to-black/20 via-white/0 backdrop-blur-lg border border-white/30 rounded-2xl p-6";
 export const tableGlass =  "bg-gradient-to-r from-black/20 to-black/20 via-white/0 text-gray ";
 

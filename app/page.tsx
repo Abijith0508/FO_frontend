@@ -88,40 +88,41 @@ export default function Home() {
         
       <div className="flex flex-col gap-5 justify-around w-[calc((100%_/_11.3_*_9))] pr-[11px] top-0 translate-x-[calc((100%_/_12_*_2.8))] py-5">
         <Heading filters = {filters} setFilters = {setFilters} className = "px-20 py-5"/>
-        <Total data={filteredData} filters={filters} setFilters={setFilters} className={` ${glass} px-15`}/>
+        <Total data={filteredData} filters={filters} setFilters={setFilters} className={` ${glass} py-6 px-15`}/>
         <DataTable data={filteredData} className={`
           
         `}/>
         
       </div>
+
       <div
-        className="w-full h-[1900px] px-[30px] bg-transparent text-white grid grid-rows-10
+        className="w-full h-[1900px] px-[30px] bg-transparent text-white grid grid-rows-14
        grid-cols-12 gap-[15px]"
       >
         
         <CarouselView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
           
           col-start-1 lg:col-start-3 col-end-13 row-start-1 row-end-4
-          ${glass}`}/>
+          ${glass} py-6`}/>
 
         <CarouselView title='Strategy' groupByField="strategy" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
           col-start-1 lg:col-start-3 col-end-13   row-start-4 row-end-7 
-          ${glass}`}/>
+          ${glass} py-6`}/>
 
         <CarouselView title='Advisor-Wise' groupByField="advisor" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
           col-start-1 lg:col-start-3 col-end-13 row-start-7 row-end-10
-          ${glass}`}/>
+          ${glass} py-6`}/>
 
-          <div className="col-start-1 lg:col-start-3 col-end-13 row-start-10 row-end-14 flex  gap-5 justify-around w-[calc((100%_/_11.3_*_9))] pr-[11px] top-0 translate-x-[calc((100%_/_12_*_2.8))] py-5">
-            <LeadingStocks 
-                data = {filteredData}
-                region = "India"
-            />
-            <LeadingStocks 
-                data = {filteredData}
-                region = "US"
-            />
-          </div>
+        <div className="col-start-1  col-end-13 row-start-10 row-end-14 flex  gap-5 justify-between w-[calc((100%_/_11.3_*_9))] pr-[11px] top-0 translate-x-[calc((100%_/_12_*_2.8))] py-5">
+          <LeadingStocks 
+              data = {filteredData}
+              region = "India"
+          />
+          <LeadingStocks 
+              data = {filteredData}
+              region = "US"
+          />
+        </div>
       </div>
       
       

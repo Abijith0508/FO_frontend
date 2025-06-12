@@ -5,7 +5,7 @@ import { Divide } from 'lucide-react';
 
 
 
-interface DataRow {
+interface DataRow  {
   id: number;
   entity: string;
   advisor: string;
@@ -24,16 +24,25 @@ interface DataRow {
   irr_cq: string | null;
   asset_type: string;
   strategy: string;
+  
+  maingrpnm?: string;
+  subgrpnm?: string; 
+  thirdgrpnm? : string;
 }
  
 type GroupedRow = {
-  type: 'group' | 'data'; // 'group' for summary rows, 'data' for individual asset rows
-  level: number; // 0: Asset Type, 1: Strategy, 2: Substrategy
+  type: 'group' | 'data';
+  level: number;
   label: string;
-  row?: DataRow; // Contains data for 'data' type rows and summary data for 'group' type rows
   key: string;
+  row?: DataRow;
+  percentages?: {
+    closing_cost?: number;
+    closing_value?: number;
+    unrealized_gain?: number;
+  };
 };
- 
+
 // Add new interface for expanded state
 interface ExpandedState {
   [key: string]: boolean;
@@ -113,6 +122,7 @@ function groupData(data: DataRow[]): GroupedRow[] {
           closing_cost: strategyTotals.closing_cost.toFixed(2),
           closing_value: strategyTotals.closing_value.toFixed(2),
           unrealized_gain: strategyTotals.unrealized_gain.toFixed(2),
+          
           irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
         }
       });
@@ -187,12 +197,12 @@ const columns = [
   },
   {
     accessorKey: 'closing_cost',
-    header: 'Closing Cost',
+    header: 'Invested Amount ',
     renderCell: (row: GroupedRow) => row.row?.closing_cost || '',
   },
   {
     accessorKey: 'closing_value',
-    header: 'Closing Value',
+    header: 'Holding Value',
     renderCell: (row: GroupedRow) => row.row?.closing_value || '',
   },
   {
@@ -368,7 +378,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
       else initialExpandedState[row.key] = true;
     });
     setExpandedState(initialExpandedState);
-    toggleExpanded('asset-Equity')
+    // toggleExpanded('asset-Equity')
   }, [groupedRows]);
  
   // Debug log for grouped rows
@@ -399,21 +409,10 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
     );
   }
   return (
-    <div className={`w-full h-full rounded-lg overflow-y-auto ${className} z-50`}>
-        <div className={`w-full rounded-lg border-white overflow-y-auto`}>
-        {/* <style>
-            {`
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-            body {
-                font-family: 'Inter', sans-serif;
-            }
-            `}
-        </style> */}
-        {/* <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Financial Portfolio Overview
-        </h1> */}
-    
-        <ScrollArea className="h-[400]  w-full shadow-lg">
+    <div className={`w-full h-full rounded-2xl overflow-y-auto ${className} z-50`}>
+        <div className={`w-full border-white overflow-y-auto`}>
+          
+        <ScrollArea className=" w-full shadow-lg">
             <Table>
             <TableHeader>
                 <TableRow className = " rounded-t-lg">
@@ -468,10 +467,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
                 })}
             </TableBody>
             </Table>
-            <ScrollBar
-                orientation="vertical"
-                className="bg-transparent hover:bg-gray-600 w-3 rounded-full"
-            />
+            
         </ScrollArea>
         </div>
     

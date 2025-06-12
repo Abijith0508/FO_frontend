@@ -173,7 +173,7 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
         </div>
         </div>
         
-        <div className = "flex flex-col items-center justify-around ">
+        <div className = "flex flex-col items-center justify-around p-6 ">
             <div className = "flex flex-col gap-1">
               <div className = {`${grayText2} ` }>
                 Invested Amount

@@ -10,6 +10,7 @@ import "highcharts/highcharts-more";
 import "highcharts/modules/drilldown";
 import "highcharts/modules/exporting";
 import "highcharts/modules/funnel";
+import { COLORS, glass, grayText2 } from "../styling";
 
 
 
@@ -88,8 +89,10 @@ const Top5FunnelChart = ({ data, className, region }: Props) => {
   // if (!funnelLoaded || funnelData.length === 0) return null;
 
   return (
-    <div className={`${className} w-full max-w-2xl mx-auto mb-8`}>
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 animate-fade-in">
+    <div className={`${className} w-full ${glass}`}>
+      
+      <div className={`${grayText2}`}>{`Leading ${region} Stocks`}</div>
+      <div className="bg-transparent rounded-2xl p-6 animate-fade-in">
         <HighchartsReact
           highcharts={Highcharts}
           options={{
@@ -100,25 +103,44 @@ const Top5FunnelChart = ({ data, className, region }: Props) => {
             },
             title: {
               text: null,
-              align: 'left',
+              align: 'center',
               style: {
                 fontSize: '20px',
-                fontWeight: 'bold',
-                color: '#1f2937',
+                fontWeight: 'light',
+                color: '#ffffff86',
               },
+            },
+            tooltip: {
+              pointFormat: '{point.y}',
+              backgroundColor: '#171717',
+              style: {
+                color: '#ffffff86',
+                fontWeight: 'extra-light',
+                fontSize: '18px',
+              },
+              borderRadius: 8,
+              borderWidth: 0,
+              shadow: true,
+            },
+            exporting: {
+              enabled: false // hide default export button
             },
             plotOptions: {
               funnel: {
                 neckWidth: '30%',
                 neckHeight: '25%',
                 width: '80%',
+                borderWidth: 0,
                 dataLabels: {
                   enabled: true,
-                  format: '<b>{point.name}</b><br/>{point.y:.2f}%',
+                  format: '{point.name}<br/>{point.y:.2f}%',
                   style: {
-                    fontWeight: 'bold',
-                    color: '#374151',
+                    fontWeight: '2px',
+                    color: '#ffffff86',
+                    textOutline: 'none'  
                   },
+                  
+
                 },
                 center: ['50%', '50%'],
               },
@@ -127,13 +149,7 @@ const Top5FunnelChart = ({ data, className, region }: Props) => {
               name: 'Asset',
               type: 'funnel',
               data: funnelData,
-              colors: [
-                '#10b981',
-                '#3b82f6',
-                '#f59e0b',
-                '#ef4444',
-                '#8b5cf6',
-              ],
+              colors: COLORS,
             }],
             credits: { enabled: false },
           }}

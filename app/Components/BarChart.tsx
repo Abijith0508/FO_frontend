@@ -87,7 +87,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
     },
     tooltip: {
       pointFormat: '{point.y}',
-      backgroundColor: '#E0B073',
+      backgroundColor: '#171717',
       style: {
         color: '#ffffff86',
         fontWeight: 'extra-light',
@@ -96,6 +96,9 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       borderRadius: 8,
       borderWidth: 0,
       shadow: true,
+    },
+    exporting: {
+      enabled: false // hide default export button
     },
     plotOptions: {
       bar: {

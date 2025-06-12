@@ -67,7 +67,7 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
     tooltip: {
       pointFormat:
         '{point.y} ({point.percentage:.1f}%)',
-      backgroundColor: '#E0B073', // your gold color
+      backgroundColor: '#171717', // your gold color
       style: {
         color: '#ffffff86',
         fontWeight: 'extra-light',
@@ -76,6 +76,9 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
       borderRadius: 8,
       borderWidth: 0,
       shadow: true,
+    },
+    exporting: {
+      enabled: false // hide default export button
     },
     plotOptions: {
       pie: {
