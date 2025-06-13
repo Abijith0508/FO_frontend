@@ -12,7 +12,6 @@ type Props = {
   setFilters: any;
   className?: string;
   groupByField: any;
-  drill?: boolean | false;
 };
 
 type BarPoint = {
@@ -27,7 +26,7 @@ const formatIndianNumber = (value : number) => {
   return value.toLocaleString('en-IN');
 };
 
-const BChart = ({ data, groupByField, filters, setFilters, className, drill }: Props) => {
+const BChart = ({ data, groupByField, filters, setFilters, className }: Props) => {
   const [chartData, setChartData] = useState<BarPoint[]>([]);
 
   useEffect(() => {
@@ -60,8 +59,8 @@ const BChart = ({ data, groupByField, filters, setFilters, className, drill }: P
       labels: {
         enabled: true,
         style: {
-          color: '#ffffffcc',
-          fontWeight: 'light',
+          color: '#ffffffcc', // white/90
+          fontWeight: '300',
           fontSize: '15px',
         },
       },
@@ -79,7 +78,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className, drill }: P
         },
         overflow: 'justify',
         style: {
-          color: '#555',
+          color: '#ffffffcc',
           fontWeight: 'bold',
         },
       },
@@ -89,7 +88,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className, drill }: P
       pointFormat: '{point.y}',
       backgroundColor: '#171717',
       style: {
-        color: '#ffffff86',
+        color: '#ffffffcc',
         fontWeight: 'extra-light',
         fontSize: '18px',
       },
@@ -106,7 +105,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className, drill }: P
         borderWidth: 0,
         color: COLORS,
         dataLabels: {
-          enabled: false,
+          enabled: true,
         },
         animation: {
           duration: 1000, // Custom animation for bars
@@ -128,10 +127,6 @@ const BChart = ({ data, groupByField, filters, setFilters, className, drill }: P
         color: COLORS[index % COLORS.length], // Assign each bar a color
       })),
     }],
-    drilldown: {
-      enabled: false,
-      series: []
-    },
     legend: {
       enabled: false,
     },
@@ -151,6 +146,8 @@ const BChart = ({ data, groupByField, filters, setFilters, className, drill }: P
     />
   );
 };
+
+export default BChart;
 
 
 type LegendItem ={
@@ -191,4 +188,3 @@ const Legend = ({ data, groupByField, className }: LegendProps) => {
   )
 }
 export {Legend, BChart};
-

@@ -41,13 +41,13 @@ function Crumbs({ filters, setFilters }: BreadCrumbProps) {
               <ChevronRight size={28} className="stroke-white/40" />
               <BreadcrumbItem
                 data-tooltip-id="BC-tooltip"
-                data-tooltip-content={value}
+                data-tooltip-content={group}
                 data-tooltip-place="top"
                 data-tooltip-float
                 onClick={() => setFilters((prev: string[]) => prev.slice(0, idx+1))}
                 className={`${breadCrumbs} text-xl`}
               >
-                {convert(group)}
+                {convert(value)}
               </BreadcrumbItem>
             </div>
           );

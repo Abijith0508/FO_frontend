@@ -42,7 +42,8 @@ function groupBy(
     );
 
     return [
-      {
+      { 
+        
         sumOfClosingValue: totalSums.sumOfClosingValue,
         sumOfClosingCosts: totalSums.sumOfClosingCosts,
         sumOfUnrealizedGain: totalSums.sumOfUnrealizedGain,

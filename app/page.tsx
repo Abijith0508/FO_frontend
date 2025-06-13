@@ -24,6 +24,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 // import "highcharts/modules/exporting";
 // import "highcharts/modules/funnel";
 import { filterFunction } from "./Components/filterFunction";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Stock = {
   ticker: string;
@@ -40,7 +41,7 @@ export default function Home() {
 
   const [ogData, setOgData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<string[]>([]);
   
   useEffect(() => {
     fetch("http://13.202.119.24/irr/holdings")
@@ -55,6 +56,7 @@ export default function Home() {
   useEffect(()=>{
     const x : any = filterFunction(ogData, filters);
     setFilteredData(x);
+    console.log(filters)
   }, [filters]);
 
   
@@ -77,24 +79,36 @@ export default function Home() {
         className="w-full h-[2000px] px-[30px] bg-transparent text-white grid grid-rows-12
        grid-cols-12 gap-[15px]"
       >
-        
         <CarouselView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
           
           col-start-1 lg:col-start-3 col-end-13 row-start-1 row-end-4
           ${glass} py-6`}/>
 
-        <CarouselView title='Strategy' groupByField="strategy" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
-          col-start-1 lg:col-start-3 col-end-13   row-start-4 row-end-7 
-          ${glass} py-6`}/>
+        <CarouselView 
+          title={filters.some(filter => filter.startsWith('strategy')) ? 'Sub-Strategy' : 'Strategy-wise'}
+          groupByField={filters.some(filter => filter.startsWith('strategy')) ? 'substrategy' : 'strategy'}
+          data={filteredData} 
+          filters={filters} 
+          setFilters={setFilters} 
+          className={`flex flex-col 
+            col-start-1 lg:col-start-3 col-end-13 row-start-4 row-end-7 
+            ${glass} py-6`}
+        />
 
-        <CarouselView title='Advisor-Wise' groupByField="advisor" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
+        <CarouselView 
+          title='Advisor-Wise' 
+          groupByField="advisor" 
+          data={filteredData} 
+          filters={filters} 
+          setFilters={setFilters} 
+          className={`flex flex-col 
           col-start-1 lg:col-start-3 col-end-13 row-start-7 row-end-10
           ${glass} py-6`}/>
 
         {/* <ScrollArea className="w-[100%] col-start-1 lg:col-start-3  col-end-13 row-start-10 row-end-14 flex gap-5 justify-between">
           <div className="flex gap-5 justify-between"> */}
 
-        <Top5FunnelChart 
+        {/* <Top5FunnelChart 
             data = {filteredData}
             region = "India"
             className="col-start-1 lg:col-start-3  col-end-8 row-start-10 row-end-13"
@@ -103,7 +117,7 @@ export default function Home() {
             data = {filteredData}
             region = "US"
             className="col-start-1 lg:col-start-8  col-end-13 row-start-10 row-end-13"
-        />
+        /> */}
 
           </div>
           {/* <ScrollBar orientation="horizontal" />
