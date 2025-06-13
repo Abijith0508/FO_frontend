@@ -1,15 +1,16 @@
 'use client';
 import React, { useEffect, useState, useCallback } from "react";
 import Highcharts from "highcharts";
-// import HighchartsReact from "highcharts-react-official";
 
 import Exporting from 'highcharts/modules/exporting'
 
 import HighchartsReact from "highcharts-react-official";
-import "highcharts/highcharts-more";
-import "highcharts/modules/drilldown";
-import "highcharts/modules/exporting";
+
+// import "highcharts/highcharts-more";
+// import "highcharts/modules/drilldown";
+// import "highcharts/modules/exporting";
 import "highcharts/modules/funnel";
+
 import { COLORS, glass, grayText2 } from "../styling";
 
 
@@ -89,10 +90,10 @@ const Top5FunnelChart = ({ data, className, region }: Props) => {
   // if (!funnelLoaded || funnelData.length === 0) return null;
 
   return (
-    <div className={`${className} w-full ${glass}`}>
+    <div className={`${className} ${glass} flex flex-col items-center justify-between py-6 overflow-hidden`}>
       
       <div className={`${grayText2}`}>{`Leading ${region} Stocks`}</div>
-      <div className="bg-transparent rounded-2xl p-6 animate-fade-in">
+      <div className="bg-transparent rounded-2xl nimate-fade-in">
         <HighchartsReact
           highcharts={Highcharts}
           options={{
@@ -129,14 +130,14 @@ const Top5FunnelChart = ({ data, className, region }: Props) => {
               funnel: {
                 neckWidth: '30%',
                 neckHeight: '25%',
-                width: '80%',
+                width: '70%',
                 borderWidth: 0,
                 dataLabels: {
                   enabled: true,
                   format: '{point.name}<br/>{point.y:.2f}%',
                   style: {
                     fontWeight: '2px',
-                    color: '#ffffff86',
+                    color: '#ffffffcc',
                     textOutline: 'none'  
                   },
                   

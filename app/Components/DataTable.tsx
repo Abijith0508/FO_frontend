@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { grayText, grayText2, tableGlass } from '../styling';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Divide } from 'lucide-react';
 
 
 
-interface DataRow  {
+interface DataItem  {
   id: number;
   entity: string;
   advisor: string;
@@ -35,7 +34,7 @@ type GroupedRow = {
   level: number;
   label: string;
   key: string;
-  row?: DataRow;
+  row?: DataItem;
   percentages?: {
     closing_cost?: number;
     closing_value?: number;
@@ -49,7 +48,7 @@ interface ExpandedState {
 }
 
 // Function to group and aggregate data hierarchically
-function groupData(data: DataRow[]): GroupedRow[] {
+function groupData(data: DataItem[]): GroupedRow[] {
   const grouped: GroupedRow[] = [];
 
   // Step 1: Compute grand totals for percentages
@@ -69,7 +68,7 @@ function groupData(data: DataRow[]): GroupedRow[] {
     if (!acc[row.asset_type]) acc[row.asset_type] = [];
     acc[row.asset_type].push(row);
     return acc;
-  }, {} as Record<string, DataRow[]>);
+  }, {} as Record<string, DataItem[]>);
 
   // Process each asset type
   Object.entries(assetTypeGroups).forEach(([asset_type, assetRows]) => {
@@ -88,9 +87,9 @@ function groupData(data: DataRow[]): GroupedRow[] {
       row: {
         id: -3, entity: '', advisor: '', isin: '', folio_no: '', name: '', quantity: '',
         avg_cost: '', market_price: '',
-        closing_cost: assetTotals.closing_cost.toFixed(2),
-        closing_value: assetTotals.closing_value.toFixed(2),
-        unrealized_gain: assetTotals.unrealized_gain.toFixed(2),
+        closing_cost: assetTotals.closing_cost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        closing_value: assetTotals.closing_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        unrealized_gain: assetTotals.unrealized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         irr: '', gain_cq: null, irr_cq: null, asset_type, strategy: '', substrategy: ''
       },
       percentages: {
@@ -107,7 +106,7 @@ function groupData(data: DataRow[]): GroupedRow[] {
       if (!acc[strategy]) acc[strategy] = [];
       acc[strategy].push(row);
       return acc;
-    }, {} as Record<string, DataRow[]>);
+    }, {} as Record<string, DataItem[]>);
 
     Object.entries(strategyGroups).forEach(([strategy, strategyRows]) => {
       const strategyTotals = strategyRows.reduce((acc, row) => {
@@ -125,9 +124,9 @@ function groupData(data: DataRow[]): GroupedRow[] {
         row: {
           id: -2, entity: '', advisor: '', isin: '', folio_no: '', name: '', quantity: '',
           avg_cost: '', market_price: '',
-          closing_cost: strategyTotals.closing_cost.toFixed(2),
-          closing_value: strategyTotals.closing_value.toFixed(2),
-          unrealized_gain: strategyTotals.unrealized_gain.toFixed(2),
+          closing_cost: strategyTotals.closing_cost.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          closing_value: strategyTotals.closing_value.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          unrealized_gain: strategyTotals.unrealized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
         },
         percentages: {
@@ -143,7 +142,7 @@ function groupData(data: DataRow[]): GroupedRow[] {
         if (!acc[substrategy]) acc[substrategy] = [];
         acc[substrategy].push(row);
         return acc;
-      }, {} as Record<string, DataRow[]>);
+      }, {} as Record<string, DataItem[]>);
 
       Object.entries(substrategyGroups).forEach(([substrategy, substrategyRows]) => {
         const substrategyTotals = substrategyRows.reduce((acc, row) => {
@@ -161,8 +160,8 @@ function groupData(data: DataRow[]): GroupedRow[] {
           row: {
             id: -1, entity: '', advisor: '', isin: '', folio_no: '', name: '', quantity: '',
             avg_cost: '', market_price: '',
-            closing_cost: substrategyTotals.closing_cost.toFixed(2),
-            closing_value: substrategyTotals.closing_value.toFixed(2),
+            closing_cost: substrategyTotals.closing_cost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+            closing_value: substrategyTotals.closing_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
             unrealized_gain: substrategyTotals.unrealized_gain.toFixed(2),
             irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy
           },
@@ -255,7 +254,7 @@ const TableCell = ({ children, className }: { children: React.ReactNode, classNa
 // Add new interface for props
 interface GroupedDataTableProps {
   className?: string;
-  data: DataRow[];
+  data: DataItem[];
 }
  
 const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) => {
@@ -489,5 +488,96 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
   );
 };
  
-export default GroupedDataTable;
+// components/ui/data-table.tsx
+
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Table as Table1,
+  TableBody as TableBody1,
+  TableCell as TableCell1,
+  TableHead as TableHead1,
+  TableHeader as TableHeader1,
+  TableRow as TableRow1,
+} from '@/components/ui/table';
+import { groupBy } from './filterFunction';
+
+interface DataTableProps{
+  ogdata: DataItem[];
+  groupByField: any;
+}
+
+type GroupedDataItem = {
+  [key: string]: string | number;
+  sumOfClosingCosts: number;
+  sumOfClosingValue: number;
+  sumOfUnrealizedGain: number;
+};
+
+function SubTable({ogdata, groupByField}: DataTableProps) {
+  const data = groupBy(ogdata, groupByField) as GroupedDataItem[];
+  
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  return (
+    <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <table className="w-full border-collapse text-gray">
+        <thead>
+          <tr className="bg-white/5 backdrop-blur-md">
+            <th className="px-6 py-3 text-left text-sm font-medium ">Name</th>
+            <th className="px-6 py-3 text-left text-sm font-medium ">Invested Amount</th>
+            <th className="px-6 py-3 text-left text-sm font-medium ">Holding Value</th>
+            <th className="px-6 py-3 text-left text-sm font-medium ">Unrealized Gain</th>
+            <th className="px-6 py-3 text-left text-sm font-medium ">Gain %</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-white/10">
+          {data.map((item, index) => {
+            const closingCosts = Number(item.sumOfClosingCosts);
+            const closingValue = Number(item.sumOfClosingValue);
+            const unrealizedGain = Number(item.sumOfUnrealizedGain);
+            const gainPercentage = closingCosts !== 0 
+              ? (unrealizedGain / closingCosts) * 100 
+              : 0;
+
+            return (
+              <tr 
+                key={index}
+                className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
+              >
+                <td className="px-6 py-4 text-sm text-left text-white/80">
+                  {String(item[groupByField])}
+                </td>
+                <td className="px-6 py-4 text-sm text-left text-white/80">
+                  {formatCurrency(closingValue)}
+                </td>
+                <td className="px-6 py-4 text-sm text-left text-white/80">
+                  {formatCurrency(closingCosts)}
+                </td>
+                <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                  {formatCurrency(unrealizedGain)}
+                </td>
+                <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                  {gainPercentage.toFixed(2)}%
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export {GroupedDataTable, SubTable};
  

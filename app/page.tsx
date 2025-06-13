@@ -11,14 +11,18 @@ import Heading from "./Components/Heading";
 import Total from "./Components/Total";
 import LeadingStocks from "./Components/LeadingStocks";
 import CarouselView from "./Components/CarouselView";
-import DataTable from "./Components/DataTable";
+import {GroupedDataTable as DataTable} from "./Components/DataTable";
+import Top5FunnelChart from "./Components/LeadingStocks";
 
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
-import "highcharts/highcharts-more";
-import "highcharts/modules/drilldown";
-import "highcharts/modules/exporting";
-import "highcharts/modules/funnel";
+
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
+// import Highcharts from "highcharts";
+// import HighchartsReact from "highcharts-react-official";
+// import "highcharts/highcharts-more";
+// import "highcharts/modules/drilldown";
+// import "highcharts/modules/exporting";
+// import "highcharts/modules/funnel";
 import { filterFunction } from "./Components/filterFunction";
 
 type Stock = {
@@ -34,46 +38,20 @@ export default function Home() {
   
   const [top10, setTop10] = useState<Stock[]>([]);
 
-  const [ogData, setOgData] = useState(Data);
-  const [filteredData, setFilteredData] = useState(Data);
-  const [filters, setFilters] = useState([])
-
-  const x: Stock[] = [
-    { ticker: "AQT", name: "AquaTech Corp", sharesOutstanding: 4_500_000_000 },
-    { ticker: "ZNT", name: "Zenith Technologies", sharesOutstanding: 3_800_000_000 },
-    { ticker: "FRX", name: "FerroX Industries", sharesOutstanding: 3_200_000_000 },
-    { ticker: "MNV", name: "Minerva Health", sharesOutstanding: 2_900_000_000 },
-    { ticker: "TRX", name: "Tronex Energy", sharesOutstanding: 2_500_000_000 },
-    { ticker: "BLQ", name: "BlueQuantum Ltd", sharesOutstanding: 2_100_000_000 },
-    { ticker: "NSC", name: "Novascan Inc", sharesOutstanding: 1_750_000_000 },
-    { ticker: "KPT", name: "Krypton Partners", sharesOutstanding: 1_400_000_000 },
-    { ticker: "HLC", name: "Helicon Labs", sharesOutstanding: 1_000_000_000 },
-    { ticker: "VRD", name: "Veridex Holdings", sharesOutstanding: 800_000_000 },
-    { ticker: "ZNT", name: "Zenith Technologies", sharesOutstanding: 3_800_000_000 },
-    { ticker: "FRX", name: "FerroX Industries", sharesOutstanding: 3_200_000_000 },
-    { ticker: "MNV", name: "Minerva Health", sharesOutstanding: 2_900_000_000 },
-    { ticker: "TRX", name: "Tronex Energy", sharesOutstanding: 2_500_000_000 },
-    { ticker: "ZNT", name: "Zenith Technologies", sharesOutstanding: 3_800_000_000 },
-    { ticker: "FRX", name: "FerroX Industries", sharesOutstanding: 3_200_000_000 },
-    { ticker: "MNV", name: "Minerva Health", sharesOutstanding: 2_900_000_000 },
-    { ticker: "TRX", name: "Tronex Energy", sharesOutstanding: 2_500_000_000 },
-    { ticker: "BLQ", name: "BlueQuantum Ltd", sharesOutstanding: 2_100_000_000 },
-    { ticker: "NSC", name: "Novascan Inc", sharesOutstanding: 1_750_000_000 },
-    { ticker: "KPT", name: "Krypton Partners", sharesOutstanding: 1_400_000_000 },
-    { ticker: "HLC", name: "Helicon Labs", sharesOutstanding: 1_000_000_000 },
-    { ticker: "VRD", name: "Veridex Holdings", sharesOutstanding: 800_000_000 },
-    { ticker: "ZNT", name: "Zenith Technologies", sharesOutstanding: 3_800_000_000 },
-    { ticker: "FRX", name: "FerroX Industries", sharesOutstanding: 3_200_000_000 },
-    { ticker: "MNV", name: "Minerva Health", sharesOutstanding: 2_900_000_000 },
-    { ticker: "TRX", name: "Tronex Energy", sharesOutstanding: 2_500_000_000 }
-  ];
-
-  
+  const [ogData, setOgData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [filters, setFilters] = useState([]);
   
   useEffect(() => {
-    setTop10(x);
+    fetch("http://13.202.119.24/irr/holdings")
+      .then((res) => res.json())
+      .then((response) => {
+        setOgData(response.holdings);
+        setFilteredData(response.holdings);
+      })
+      .catch((err) => console.error("Error fetching holdings:", err));
   }, []);
-    
+
   useEffect(()=>{
     const x : any = filterFunction(ogData, filters);
     setFilteredData(x);
@@ -96,7 +74,7 @@ export default function Home() {
       </div>
 
       <div
-        className="w-full h-[1900px] px-[30px] bg-transparent text-white grid grid-rows-14
+        className="w-full h-[2000px] px-[30px] bg-transparent text-white grid grid-rows-12
        grid-cols-12 gap-[15px]"
       >
         
@@ -113,17 +91,25 @@ export default function Home() {
           col-start-1 lg:col-start-3 col-end-13 row-start-7 row-end-10
           ${glass} py-6`}/>
 
-        <div className="col-start-1  col-end-13 row-start-10 row-end-14 flex  gap-5 justify-between w-[calc((100%_/_11.3_*_9))] pr-[11px] top-0 translate-x-[calc((100%_/_12_*_2.8))] py-5">
-          <LeadingStocks 
-              data = {filteredData}
-              region = "India"
-          />
-          <LeadingStocks 
-              data = {filteredData}
-              region = "US"
-          />
-        </div>
-      </div>
+        {/* <ScrollArea className="w-[100%] col-start-1 lg:col-start-3  col-end-13 row-start-10 row-end-14 flex gap-5 justify-between">
+          <div className="flex gap-5 justify-between"> */}
+
+        <Top5FunnelChart 
+            data = {filteredData}
+            region = "India"
+            className="col-start-1 lg:col-start-3  col-end-8 row-start-10 row-end-13"
+        />
+        <Top5FunnelChart 
+            data = {filteredData}
+            region = "US"
+            className="col-start-1 lg:col-start-8  col-end-13 row-start-10 row-end-13"
+        />
+
+          </div>
+          {/* <ScrollBar orientation="horizontal" />
+        </ScrollArea> */}
+
+      {/* </div> */}
       
       
       

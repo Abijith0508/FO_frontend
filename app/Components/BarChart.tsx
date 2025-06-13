@@ -12,6 +12,7 @@ type Props = {
   setFilters: any;
   className?: string;
   groupByField: any;
+  drill?: boolean | false;
 };
 
 type BarPoint = {
@@ -26,7 +27,7 @@ const formatIndianNumber = (value : number) => {
   return value.toLocaleString('en-IN');
 };
 
-const BChart = ({ data, groupByField, filters, setFilters, className }: Props) => {
+const BChart = ({ data, groupByField, filters, setFilters, className, drill }: Props) => {
   const [chartData, setChartData] = useState<BarPoint[]>([]);
 
   useEffect(() => {
@@ -58,9 +59,8 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       },
       labels: {
         enabled: true,
-        
         style: {
-          color: '#ffffff50',
+          color: '#ffffffcc',
           fontWeight: 'light',
           fontSize: '15px',
         },
@@ -128,6 +128,10 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
         color: COLORS[index % COLORS.length], // Assign each bar a color
       })),
     }],
+    drilldown: {
+      enabled: false,
+      series: []
+    },
     legend: {
       enabled: false,
     },
@@ -147,8 +151,6 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
     />
   );
 };
-
-export default BChart;
 
 
 type LegendItem ={

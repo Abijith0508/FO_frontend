@@ -123,54 +123,68 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
             </animated.span>{' '}
           </div>
           
-          <div className={`relative w-full min-w-[500] h-[40px] my-6 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
-            {/* Equity Bar */}
-            <div
-              className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out"
-              style={{ width: `${equityPct}%` }}
-              onClick={() => {
-                setHovered(1)
-                filterUpdate(setFilters, 'asset_type', 'Equity')
-              }}
-            >
-              {equityPct > 10 && 
-                <div className = {`${grayText2} `}>
-                  ₹ <animated.span>
-                    {animatedEquity.to(val => Math.round(val).toLocaleString('en-IN'))}
-                  </animated.span>{' '}
-                  (
-                  <animated.span>
-                    {animatedEquityPct.to(val => val.toFixed(0))}
-                  </animated.span>
-                  %)
-                </div>
-              }
-            </div>
-
-            {/* Debt Bar */}
-            <div
-              className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out"
-              style={{ width: `${debtPct}%` }}
-              onClick={() => {
-                setHovered(0)
-                filterUpdate(setFilters, 'asset_type', 'Debt')
-              }}
-            >
-            {debtPct > 10 && 
-              <div className = {`${grayText2} hover:text-white/80`}>
-                ₹ <animated.span>
-                    {animatedDebt.to(val => Math.round(val).toLocaleString('en-IN'))}
-                  </animated.span>
-                  {" "}
-                  (
-                  <animated.span>
-                    {animatedDebtPct.to(val => val.toFixed(0))}
-                  </animated.span>
-                  %)
+          <div className="flex flex-col items-center justify-center ">
+            <div className={`relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
+              {/* Equity Bar */}
+              <div
+                className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out"
+                style={{ width: `${equityPct}%` }}
+                onClick={() => {
+                  setHovered(1)
+                  filterUpdate(setFilters, 'asset_type', 'Equity')
+                }}
+              >
+                {equityPct > 10 && 
+                  <div className = {`${grayText2} `}>
+                    ₹ <animated.span>
+                      {animatedEquity.to(val => Math.round(val).toLocaleString('en-IN'))}
+                    </animated.span>{' '}
+                    (
+                    <animated.span>
+                      {animatedEquityPct.to(val => val.toFixed(0))}
+                    </animated.span>
+                    %)
+                  </div>
+                }
               </div>
-            }
+
+              {/* Debt Bar */}
+              <div
+                className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out"
+                style={{ width: `${debtPct}%` }}
+                onClick={() => {
+                  setHovered(0)
+                  filterUpdate(setFilters, 'asset_type', 'Debt')
+                }}
+              >
+                {debtPct > 10 && 
+                  <div className = {`${grayText2} hover:text-white/80`}>
+                    ₹ <animated.span>
+                        {animatedDebt.to(val => Math.round(val).toLocaleString('en-IN'))}
+                      </animated.span>
+                      {" "}
+                      (
+                      <animated.span>
+                        {animatedDebtPct.to(val => val.toFixed(0))}
+                      </animated.span>
+                      %)
+                  </div>
+                }
+              </div>
+            </div>
+          
+            <div className={`flex justify-around w-full ${grayText2} `}>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-emerald"/>
+                <div>Equity</div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-ruby"/>
+                <div>Debt</div>
+              </div>
+            </div>
           </div>
-        </div>
         </div>
         
         <div className = "flex flex-col items-center justify-around p-6 ">

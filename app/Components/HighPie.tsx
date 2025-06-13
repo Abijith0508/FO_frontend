@@ -1,7 +1,4 @@
-
-
 'use client';
-
 
 import React from 'react';
 import Highcharts from 'highcharts';
@@ -69,7 +66,7 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
         '{point.y} ({point.percentage:.1f}%)',
       backgroundColor: '#171717', // your gold color
       style: {
-        color: '#ffffff86',
+        color: '#ffffffcc',
         fontWeight: 'extra-light',
         fontSize: '18px',
       },

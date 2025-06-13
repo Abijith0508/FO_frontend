@@ -12,7 +12,7 @@ import Autoplay from "embla-carousel-autoplay"
 import PChart from "./HighPie";
 import {Legend, BChart} from "./BarChart";
 import { useEffect, useState } from "react";
-
+import { SubTable } from "./DataTable";
 
 interface DataItem{
   id: number;
@@ -98,8 +98,11 @@ const CarouselView = ({title, groupByField, className, data, filters, setFilters
                         </div>
                     </div>               
                 </CarouselItem>
+                <CarouselItem key={3} className = 'flex justify-center'>
+                    <SubTable ogdata={data} groupByField={groupByField} />             
+                </CarouselItem>
                 {!isLargeScreen && 
-                <CarouselItem key={3} 
+                <CarouselItem key={4} 
                 className = 'flex justify-center w-full '
                 // style={{
                 //     display: isLargeScreen ? 'block' : 'none', // Show only on large screens

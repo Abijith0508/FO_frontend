@@ -12,8 +12,8 @@
   --secondary: #E0B073;
   --secondary-foreground: oklch(0.15 0 0); /* dark enough for contrast */
 
-  --gray: #ffffff86;
-  --muted: #ffffff2f;
+  --gray: #ffffff9f;
+  --muted: #ffffff9f;
   --muted-foreground: oklch(0.5 0 0); /* medium gray */
 
   --ruby: #A31545;
