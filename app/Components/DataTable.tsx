@@ -422,7 +422,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
     );
   }
   return (
-    <div className={`w-full h-full rounded-2xl overflow-y-auto ${className} z-50`}>
+    <div className={`w-full h-full rounded-2xl overflow-y-auto ${className}`}>
         <div className={`w-full border-white overflow-y-auto`}>
           
         <ScrollArea className=" w-full shadow-lg">
@@ -489,22 +489,9 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
 };
  
 // components/ui/data-table.tsx
-
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  Table as Table1,
-  TableBody as TableBody1,
-  TableCell as TableCell1,
-  TableHead as TableHead1,
-  TableHeader as TableHeader1,
-  TableRow as TableRow1,
-} from '@/components/ui/table';
-import { groupBy } from './filterFunction';
+import { Download } from 'lucide-react';
+import { download } from '../Utilities/download';
+import { groupBy } from '../Utilities/filterFunction';
 
 interface DataTableProps{
   ogdata: DataItem[];
@@ -531,7 +518,8 @@ function SubTable({ogdata, groupByField}: DataTableProps) {
 
   return (
     <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
-      <table className="w-full border-collapse text-gray">
+      <Download className="fixed right-10 top-10 stroke-white/50 hover:stroke-white/80" onClick={() => download(groupByField)}/>
+      <table id={groupByField} className="w-full border-collapse text-gray">
         <thead>
           <tr className="bg-white/5 backdrop-blur-md">
             <th className="px-6 py-3 text-left text-sm font-medium ">Name</th>

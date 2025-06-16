@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { glass, grayText, grayText2 } from '../styling';
 import Image from 'next/image';
 import tickMark from '../img/tickMark.png';
-import { groupBy, filterUpdate } from './filterFunction';
+import { groupBy, filterUpdate } from '../Utilities/filterFunction';
 import { useSpring, animated } from '@react-spring/web';
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 interface DataItem {
@@ -56,9 +56,7 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
 
 
   
-  const eqtPercentage = total ? (closingValueEquity / total) * 100 : 0;
-  const dbtPercentage = total ? (closingValueDebt / total) * 100 : 0;
-
+  
   
   const equityPct = total ? (closingValueEquity / total) * 100 : 0;
   const debtPct = total ? (closingValueDebt / total) * 100 : 0;
@@ -77,12 +75,12 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
   });
 
   const { number: animatedEquityPct } = useSpring({
-    number: eqtPercentage,
+    number: equityPct,
     from: { number: 0 },
     config: { duration: 500 },
   });
   const { number: animatedDebtPct } = useSpring({
-    number: dbtPercentage,
+    number: debtPct,
     from: { number: 0 },
     config: { duration: 500 },
   });
@@ -134,7 +132,7 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
                   filterUpdate(setFilters, 'asset_type', 'Equity')
                 }}
               >
-                {equityPct > 10 && 
+                {equityPct > 30 && 
                   <div className = {`${grayText2} `}>
                     ₹ <animated.span>
                       {animatedEquity.to(val => Math.round(val).toLocaleString('en-IN'))}
@@ -157,7 +155,7 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
                   filterUpdate(setFilters, 'asset_type', 'Debt')
                 }}
               >
-                {debtPct > 10 && 
+                {debtPct > 30 && 
                   <div className = {`${grayText2} hover:text-white/80`}>
                     ₹ <animated.span>
                         {animatedDebt.to(val => Math.round(val).toLocaleString('en-IN'))}
@@ -177,11 +175,17 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-emerald"/>
                 <div>Equity</div>
+                {(equityPct <= 30 && equityPct!=0) && 
+                  <div>₹ {closingValueEquity.toLocaleString("en-IN")}</div>
+                }
               </div>
               
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-ruby"/>
                 <div>Debt</div>
+                {(debtPct <= 30 && debtPct!=0) && 
+                  <div>₹ {closingValueDebt.toLocaleString("en-IN")}</div>
+                }
               </div>
             </div>
           </div>

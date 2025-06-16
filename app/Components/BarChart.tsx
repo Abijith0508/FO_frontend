@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { filterUpdate, groupBy } from './filterFunction';
+import { filterUpdate, groupBy } from '../Utilities/filterFunction';
 import { grayText2, COLORS } from '../styling';
 
 type Props = {
@@ -57,9 +57,10 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
         text: null,
       },
       labels: {
+        
         enabled: true,
         style: {
-          color: '#ffffffcc', // white/90
+          color: '#ffffff99', // white/90
           fontWeight: '300',
           fontSize: '15px',
         },
@@ -78,14 +79,15 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
         },
         overflow: 'justify',
         style: {
-          color: '#ffffffcc',
+          color: '#ffffff55',
           fontWeight: 'bold',
         },
       },
       gridLineColor: '#555',
     },
     tooltip: {
-      pointFormat: '{point.y}',
+      enabled : false,
+      // pointFormat: '{formatIndianNumber(point.y)}',
       backgroundColor: '#171717',
       style: {
         color: '#ffffffcc',
@@ -99,27 +101,41 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
     exporting: {
       enabled: false // hide default export button
     },
-    plotOptions: {
-      bar: {
-        cursor: 'pointer',
-        borderWidth: 0,
-        color: COLORS,
-        dataLabels: {
-          enabled: true,
-        },
-        animation: {
-          duration: 1000, // Custom animation for bars
-          easing: 'easeOutBounce',
-        },
-        point: {
-          events: {
-            click: function (this: Highcharts.Point) {
-              filterUpdate(setFilters, groupByField, this.name);
+    
+      plotOptions: {
+        bar: {
+          cursor: 'pointer',
+          pointPadding: 0.1,  // smaller means thicker bars
+          groupPadding: 0.0, 
+          borderWidth: 0,
+          color: COLORS,
+          dataLabels: {
+            enabled: true,
+            formatter: function (this: Highcharts.Point) {
+              // Format the label as an Indian number string (using the provided locale)
+              return Number(this.y).toLocaleString('en-IN');
+            },
+            style: {
+              color: '#ffffff88',
+              fontWeight: '300',
+              fontSize: '15px',
+              textOutline: 'none', // removes the default white outline around dataLabels for cleaner look
+            },
+            verticalAlign : 'center'
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutBounce',
+          },
+          point: {
+            events: {
+              click: function (this: Highcharts.Point) {
+                filterUpdate(setFilters, groupByField, this.name);
+              },
             },
           },
         },
       },
-    },
     series: [{
       type: 'bar',
       data: chartData.map((point, index) => ({
@@ -142,7 +158,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       allowChartUpdate={true}
       updateArgs={[true, true, true]}
       immutable={false}
-      className={className}
+      className={`w-full h-full ${className}`}
     />
   );
 };

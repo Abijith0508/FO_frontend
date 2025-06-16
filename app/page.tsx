@@ -9,21 +9,14 @@ import { glass, sideglass } from "./styling";
 import SideBar from "./Components/SideBar";
 import Heading from "./Components/Heading";
 import Total from "./Components/Total";
-import LeadingStocks from "./Components/LeadingStocks";
-import CarouselView from "./Components/CarouselView";
+import TabView from "./Components/TabView";
 import {GroupedDataTable as DataTable} from "./Components/DataTable";
 import Top5FunnelChart from "./Components/LeadingStocks";
 
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-// import Highcharts from "highcharts";
-// import HighchartsReact from "highcharts-react-official";
-// import "highcharts/highcharts-more";
-// import "highcharts/modules/drilldown";
-// import "highcharts/modules/exporting";
-// import "highcharts/modules/funnel";
-import { filterFunction } from "./Components/filterFunction";
+import { Menu, X } from "lucide-react";
+import { filterFunction } from "./Utilities/filterFunction";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Stock = {
@@ -33,16 +26,12 @@ type Stock = {
 };
 
 export default function Home() {
-  const [mainGp, setMainGp] = useState('Home', );
-  const [subGp, setSubGp] = useState('Entity');
-  const [thirdGp, setThirdGp] = useState('Strategy');
-  
-  const [top10, setTop10] = useState<Stock[]>([]);
-
+  const [isOpen, setIsOpen] = useState(false);
   const [ogData, setOgData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [filters, setFilters] = useState<string[]>([]);
-  
+  const Icon = isOpen ? X : Menu;
+
   useEffect(() => {
     fetch("http://13.202.119.24/irr/holdings")
       .then((res) => res.json())
@@ -63,71 +52,59 @@ export default function Home() {
     // console.log(strategyGrouping)
 
   return (
-    <div className="text-white text-center bg-transparent p-0 m-0 ">
-      <SideBar/>
-        
-      <div className="flex flex-col gap-5 justify-around w-[calc((100%_/_11.3_*_9))] pr-[11px] top-0 translate-x-[calc((100%_/_12_*_2.8))] py-5">
-        <Heading filters = {filters} setFilters = {setFilters} className = "px-20 py-5"/>
-        <Total data={filteredData} filters={filters} setFilters={setFilters} className={` ${glass} py-6 px-15`}/>
-        <DataTable data={filteredData} className={`
+    <div className="text-white text-center bg-transparent p-0 m-0">
+      <Icon 
+        className = "fixed top-12 right-10 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200"
+        onClick={() => setIsOpen(!isOpen)}
+      />
+      <SideBar isOpen = {isOpen}/>
+      <div className = 'px-10'>
+        <div className="flex flex-col gap-5 justify-around py-5">
+          <Heading filters = {filters} setFilters = {setFilters} className = "px-20 py-5"/>
+          <Total data={filteredData} filters={filters} setFilters={setFilters} className={` ${glass} py-6 px-15`}/>
+          <DataTable data={filteredData} className={`
+            
+          `}/>
           
-        `}/>
+        </div>
+        {isOpen && <div className={`w-full h-[1000px] backdrop:blur-2xl fixed top-0 z-30 bg-gradient-to-r from-black/20 to-black/20 via-white/0 backdrop-blur-lg transition duration-500`}/>}
+        <div
+          className="w-full h-[1200px] bg-transparent text-white grid grid-rows-7
+        grid-cols-12 gap-[15px]"
+        >
+          <TabView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
+            
+            col-start-1 col-end-7 row-start-1 row-end-4
+            ${glass} py-6 flex place-content-center`}/>
+
+          <TabView 
+            title={filters.some(filter => filter.startsWith('strategy')) ? 'Sub-Strategy' : 'Strategy-wise'}
+            groupByField={filters.some(filter => filter.startsWith('strategy')) ? 'substrategy' : 'strategy'}
+            data={filteredData} 
+            filters={filters} 
+            setFilters={setFilters} 
+            className={`flex flex-col 
+              col-start-7 col-end-13 row-start-1 row-end-4 
+              ${glass} py-6`}
+          />
+
+          <TabView 
+            title='Advisor-Wise' 
+            groupByField="advisor" 
+            data={filteredData} 
+            filters={filters} 
+            setFilters={setFilters} 
+            className={`flex flex-col 
+            col-start-1 col-end-13 row-start-4 row-end-7
+            ${glass} py-6`}/>
+
+
+        </div>
         
+        
+        <div className='w-full h-[400] bg-primary mt-[15px]'></div>
       </div>
-
-      <div
-        className="w-full h-[2000px] px-[30px] bg-transparent text-white grid grid-rows-12
-       grid-cols-12 gap-[15px]"
-      >
-        <CarouselView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
-          
-          col-start-1 lg:col-start-3 col-end-13 row-start-1 row-end-4
-          ${glass} py-6`}/>
-
-        <CarouselView 
-          title={filters.some(filter => filter.startsWith('strategy')) ? 'Sub-Strategy' : 'Strategy-wise'}
-          groupByField={filters.some(filter => filter.startsWith('strategy')) ? 'substrategy' : 'strategy'}
-          data={filteredData} 
-          filters={filters} 
-          setFilters={setFilters} 
-          className={`flex flex-col 
-            col-start-1 lg:col-start-3 col-end-13 row-start-4 row-end-7 
-            ${glass} py-6`}
-        />
-
-        <CarouselView 
-          title='Advisor-Wise' 
-          groupByField="advisor" 
-          data={filteredData} 
-          filters={filters} 
-          setFilters={setFilters} 
-          className={`flex flex-col 
-          col-start-1 lg:col-start-3 col-end-13 row-start-7 row-end-10
-          ${glass} py-6`}/>
-
-        {/* <ScrollArea className="w-[100%] col-start-1 lg:col-start-3  col-end-13 row-start-10 row-end-14 flex gap-5 justify-between">
-          <div className="flex gap-5 justify-between"> */}
-
-        {/* <Top5FunnelChart 
-            data = {filteredData}
-            region = "India"
-            className="col-start-1 lg:col-start-3  col-end-8 row-start-10 row-end-13"
-        />
-        <Top5FunnelChart 
-            data = {filteredData}
-            region = "US"
-            className="col-start-1 lg:col-start-8  col-end-13 row-start-10 row-end-13"
-        /> */}
-
-          </div>
-          {/* <ScrollBar orientation="horizontal" />
-        </ScrollArea> */}
-
-      {/* </div> */}
-      
-      
-      
-      <div className='w-full h-[400] bg-primary mt-[15px]'></div>
+        
     </div>
   );
 }

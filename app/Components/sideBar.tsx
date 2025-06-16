@@ -1,6 +1,7 @@
 'use client'; 
 import Link from "next/link";
 import { sideglass, sideTitle, responsive } from "../styling";
+import { Menu } from "lucide-react";
 // import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Accordion,
@@ -11,7 +12,6 @@ import {
 
 import { useState } from "react";
 import { useRef, useEffect } from "react";
-import { glass } from "../styling";
 
 type MenuItem = {
   title: string
@@ -61,7 +61,11 @@ const menuItems: MenuItem[] = [
   { title: 'Account', href: '/account', icon: 'none'},
 ]
 
-function SideBar(){   
+type Props = {
+  isOpen : boolean
+}
+
+function SideBar({isOpen} : Props){   
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
@@ -80,49 +84,55 @@ function SideBar(){
   }, []);
 
   return (
-    // <ScrollArea className='h-full w-full p-5'>
-        <Accordion type="single" collapsible 
-            className={` scroll-auto fixed left-0 h-full 
-                    w-[calc((100%/11.3*2))]
-                    ${sideglass} shadow-md 
-                    z-50
-                    py-5 px-auto 
-                    justify-around top-1/2 transform-all -translate-y-1/2 
-                    flex flex-col
-                    pl-[10%]
-                    lg:pl-[3%] pr-5
-                    `}
-        >
-        {menuItems.map((item, index) => (
-            item.children ? (
-                <AccordionItem key={index} value={`item-${index}`} className="flex flex-col gap-[1%] border-white/20">
-                    <AccordionTrigger className = {`text-start p-0 m-0 ${sideTitle}`}>{item.title}</AccordionTrigger>
-                    <AccordionContent className="flex flex-col h-full text-gray-500  items-start text-lg hover:text-white gap-5">
-                        {item.children.map((child, idx) => (
-                        <Link
-                            key={idx}
-                            href={child.href}
-                            className= {`${sideTitle} text-gray-400 hover:text-gray-300`}
-                        >
-                            {child.title}
-                        </Link>
-                        ))}
-                    </AccordionContent>
-                </AccordionItem>
-            ) : (
-                <Link
-                key={index}
-                href={item.href ?? "#"}
-                className= {`${sideTitle}`}
-                // onClick = {handleClick}
-                >
-                    {item.title}
-                </Link>
-            )
-            ))}
+    <Accordion type="single" collapsible 
+        className={` scroll-auto h-screen fixed top-0 
+                w-[20%]
+                min-w-[calc((100%/11.3*2))]
+                ${sideglass} shadow-md 
+                z-40
+                py-5 pt-15
+                justify-around 
+                flex flex-col
+                pl-[10%]
+                lg:pl-[3%] pr-5
+                transition-transform
+                `}
 
-        </Accordion>
-    // </ScrollArea>
+        style = {{
+          transition: 'transform 0.3s ease-in-out',
+          transform: isOpen ? 'translateX(0)' : 'translateX(-200%)',
+        }
+        }
+    >
+    {menuItems.map((item, index) => (
+        item.children ? (
+            <AccordionItem key={index} value={`item-${index}`} className="flex flex-col gap-[1%] border-white/20">
+                <AccordionTrigger className = {`text-start p-0 m-0 ${sideTitle}`}>{item.title}</AccordionTrigger>
+                <AccordionContent className="flex flex-col h-full text-gray-500  items-start text-lg hover:text-white gap-5 duration-200">
+                    {item.children.map((child, idx) => (
+                    <Link
+                        key={idx}
+                        href={child.href}
+                        className= {`${sideTitle} text-gray-400 hover:text-gray-300`}
+                    >
+                        {child.title}
+                    </Link>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+        ) : (
+            <Link
+            key={index}
+            href={item.href ?? "#"}
+            className= {`${sideTitle}`}
+            // onClick = {handleClick}
+            >
+                {item.title}
+            </Link>
+        )
+        ))}
+
+    </Accordion>
   );
 }
 

@@ -27,7 +27,7 @@ const COLORS = [
 import React from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { filterUpdate, groupBy } from './filterFunction';
+import { filterUpdate, groupBy } from '../Utilities/filterFunction';
 import { useEffect, useState } from 'react';
 import { useMemo } from 'react';
 
