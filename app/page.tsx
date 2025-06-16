@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { useState , useEffect } from "react";
 import 'react-tooltip/dist/react-tooltip.css'
-import { Data } from "./Data";
 import "./globals.css"
 
 import { glass, sideglass } from "./styling";
@@ -56,7 +55,7 @@ export default function Home() {
     <div 
       className="text-white text-center bg-transparent p-0 m-0">
       <Icon 
-        className = "fixed top-12 right-10 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200"
+        className = "fixed top-12 right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200"
         onClick={() => setIsOpen(!isOpen)}
       />
       <SideBar isOpen = {isOpen}/>
@@ -70,7 +69,7 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </div>
-        {isOpen && <div className={`w-full h-[1000px] backdrop:blur-2xl fixed top-0 z-30 bg-gradient-to-r from-black/20 to-black/20 via-white/0 backdrop-blur-lg transition duration-500`}/>}
+        {isOpen && <div className={`w-full h-[1200px] backdrop:blur-2xl fixed top-0 z-30 bg-gradient-to-r from-black/50 to-black/50 via-black/20 backdrop-blur-lg transition duration-500`}/>}
         <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="w-full h-[1200px] bg-transparent text-white grid grid-rows-7
         grid-cols-12 gap-[15px]"

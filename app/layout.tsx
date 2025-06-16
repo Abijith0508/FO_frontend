@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Roboto, Lexend_Deca, Geist } from "next/font/google";
+import { Geist } from "next/font/google";
 import 'react-tooltip/dist/react-tooltip.css'
 
 const font = Geist({
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={font.className} >
+    <html lang="en" className={`${font.className} bg-primary`} >
       <body className =  "bg-[url('./img/mountains2.jpg')] " >
         {children}
       </body>
