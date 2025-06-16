@@ -56,9 +56,9 @@ export default function Home() {
   return (
     <div 
       className="text-white text-center bg-transparent p-0 m-0">
-      <Tooltip id="BCTooltip" float place="top" className='z-20'/>
+      <Tooltip id="BCTooltip" float place="top" className='z-40'/>
       <Icon 
-        className = "fixed top-12 right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none"
+        className = "fixed top-12 right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
         data-tooltip-id="BCTooltip"
         data-tooltip-content={isOpen ? "Close Menu" : "Open Menu"}
@@ -70,7 +70,7 @@ export default function Home() {
         data-tooltip-content="Download Overview Table"
         data-tooltip-place="top"
         data-tooltip-float
-        className="fixed top-24 right-12 h-8 w-8  stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200 border border-none" onClick={() => download('Total')}
+        className="fixed top-24 right-12 h-8 w-8  stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200 border border-none focus:outline-none"  onClick={() => download('Total')}
       />
       <SideBar isOpen = {isOpen}/>
       <div className = 'px-10'>
