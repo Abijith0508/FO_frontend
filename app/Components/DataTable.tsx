@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { grayText, grayText2, tableGlass } from '../styling';
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { grayText2, tableGlass } from '../styling';
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 

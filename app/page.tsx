@@ -18,6 +18,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Menu, X } from "lucide-react";
 import { filterFunction } from "./Utilities/filterFunction";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion , AnimatePresence} from 'framer-motion';
 
 type Stock = {
   ticker: string;
@@ -52,7 +53,8 @@ export default function Home() {
     // console.log(strategyGrouping)
 
   return (
-    <div className="text-white text-center bg-transparent p-0 m-0">
+    <div 
+      className="text-white text-center bg-transparent p-0 m-0">
       <Icon 
         className = "fixed top-12 right-10 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200"
         onClick={() => setIsOpen(!isOpen)}
@@ -62,13 +64,14 @@ export default function Home() {
         <div className="flex flex-col gap-5 justify-around py-5">
           <Heading filters = {filters} setFilters = {setFilters} className = "px-20 py-5"/>
           <Total data={filteredData} filters={filters} setFilters={setFilters} className={` ${glass} py-6 px-15`}/>
-          <DataTable data={filteredData} className={`
-            
-          `}/>
-          
+          <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+            <motion.div layout>
+              <DataTable data={filteredData}/>
+            </motion.div>
+          </motion.div>
         </div>
         {isOpen && <div className={`w-full h-[1000px] backdrop:blur-2xl fixed top-0 z-30 bg-gradient-to-r from-black/20 to-black/20 via-white/0 backdrop-blur-lg transition duration-500`}/>}
-        <div
+        <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="w-full h-[1200px] bg-transparent text-white grid grid-rows-7
         grid-cols-12 gap-[15px]"
         >
@@ -99,7 +102,7 @@ export default function Home() {
             ${glass} py-6`}/>
 
 
-        </div>
+        </motion.div>
         
         
         <div className='w-full h-[400] bg-primary mt-[15px]'></div>
