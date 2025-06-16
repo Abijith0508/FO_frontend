@@ -228,7 +228,7 @@ const columns = [
  
 // Inline Shadcn UI Table components (simplified for direct use without imports)
 const Table = ({ children }: { children: React.ReactNode }) => (
-  <table className="min-w-full rounded-lg overflow-y-scroll scroll-smooth bg-transparent">
+  <table id="Total" className="min-w-full rounded-lg overflow-y-scroll scroll-smooth bg-transparent">
     {children}
   </table>
 );
@@ -518,51 +518,53 @@ function SubTable({ogdata, groupByField}: DataTableProps) {
 
   return (
     <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
-      <Download className="fixed right-10 top-10 stroke-white/50 hover:stroke-white/80" onClick={() => download(groupByField)}/>
-      <table id={groupByField} className="w-full border-collapse text-gray">
-        <thead>
-          <tr className="bg-white/5 backdrop-blur-md">
-            <th className="px-6 py-3 text-left text-sm font-medium ">Name</th>
-            <th className="px-6 py-3 text-left text-sm font-medium ">Invested Amount</th>
-            <th className="px-6 py-3 text-left text-sm font-medium ">Holding Value</th>
-            <th className="px-6 py-3 text-left text-sm font-medium ">Unrealized Gain</th>
-            <th className="px-6 py-3 text-left text-sm font-medium ">Gain %</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/10">
-          {data.map((item, index) => {
-            const closingCosts = Number(item.sumOfClosingCosts);
-            const closingValue = Number(item.sumOfClosingValue);
-            const unrealizedGain = Number(item.sumOfUnrealizedGain);
-            const gainPercentage = closingCosts !== 0 
-              ? (unrealizedGain / closingCosts) * 100 
-              : 0;
+      <Download 
+      className="fixed right-10 top-10 stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200" 
+      onClick={() => download(groupByField)}/>
+        <table id={groupByField} className="w-full border-collapse text-gray">
+          <thead>
+            <tr className="bg-white/5 backdrop-blur-md">
+              <th className="px-6 py-3 text-left text-sm font-medium ">Name</th>
+              <th className="px-6 py-3 text-left text-sm font-medium ">Invested Amount</th>
+              <th className="px-6 py-3 text-left text-sm font-medium ">Holding Value</th>
+              <th className="px-6 py-3 text-left text-sm font-medium ">Unrealized Gain</th>
+              <th className="px-6 py-3 text-left text-sm font-medium ">Gain %</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/10">
+            {data.map((item, index) => {
+              const closingCosts = Number(item.sumOfClosingCosts);
+              const closingValue = Number(item.sumOfClosingValue);
+              const unrealizedGain = Number(item.sumOfUnrealizedGain);
+              const gainPercentage = closingCosts !== 0 
+                ? (unrealizedGain / closingCosts) * 100 
+                : 0;
 
-            return (
-              <tr 
-                key={index}
-                className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
-              >
-                <td className="px-6 py-4 text-sm text-left text-white/80">
-                  {String(item[groupByField])}
-                </td>
-                <td className="px-6 py-4 text-sm text-left text-white/80">
-                  {formatCurrency(closingValue)}
-                </td>
-                <td className="px-6 py-4 text-sm text-left text-white/80">
-                  {formatCurrency(closingCosts)}
-                </td>
-                <td className={`px-6 py-4 text-sm text-left font-medium`}>
-                  {formatCurrency(unrealizedGain)}
-                </td>
-                <td className={`px-6 py-4 text-sm text-left font-medium`}>
-                  {gainPercentage.toFixed(2)}%
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              return (
+                <tr 
+                  key={index}
+                  className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
+                >
+                  <td className="px-6 py-4 text-sm text-left text-white/80">
+                    {String(item[groupByField])}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-left text-white/80">
+                    {formatCurrency(closingValue)}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-left text-white/80">
+                    {formatCurrency(closingCosts)}
+                  </td>
+                  <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    {formatCurrency(unrealizedGain)}
+                  </td>
+                  <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    {gainPercentage.toFixed(2)}%
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
     </div>
   );
 }

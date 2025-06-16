@@ -3,7 +3,8 @@ import Image from "next/image";
 import { useState , useEffect } from "react";
 import 'react-tooltip/dist/react-tooltip.css'
 import "./globals.css"
-
+import { Download } from "lucide-react";
+import { download } from "./Utilities/download";
 import { glass, sideglass } from "./styling";
 import SideBar from "./Components/SideBar";
 import Heading from "./Components/Heading";
@@ -11,6 +12,7 @@ import Total from "./Components/Total";
 import TabView from "./Components/TabView";
 import {GroupedDataTable as DataTable} from "./Components/DataTable";
 import Top5FunnelChart from "./Components/LeadingStocks";
+import { Tooltip } from 'react-tooltip';
 
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -54,9 +56,21 @@ export default function Home() {
   return (
     <div 
       className="text-white text-center bg-transparent p-0 m-0">
+      <Tooltip id="BCTooltip" float place="top" className='z-20'/>
       <Icon 
-        className = "fixed top-12 right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200"
+        className = "fixed top-12 right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none"
         onClick={() => setIsOpen(!isOpen)}
+        data-tooltip-id="BCTooltip"
+        data-tooltip-content={isOpen ? "Close Menu" : "Open Menu"}
+        data-tooltip-place="top"
+        data-tooltip-float
+      />
+      <Download
+        data-tooltip-id="BCTooltip"
+        data-tooltip-content="Download Overview Table"
+        data-tooltip-place="top"
+        data-tooltip-float
+        className="fixed top-24 right-12 h-8 w-8  stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200 border border-none" onClick={() => download('Total')}
       />
       <SideBar isOpen = {isOpen}/>
       <div className = 'px-10'>

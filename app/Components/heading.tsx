@@ -26,7 +26,7 @@ type BreadCrumbProps = {
 function Crumbs({ filters, setFilters }: BreadCrumbProps) {
   return (
     <>
-      <Tooltip id="BC-tooltip" float place="top" />
+      <Tooltip id="BC-tooltip" float place="top"  className='z-10'/>
       <Breadcrumb className="cursor-pointer px-[2%] flex items-center justify-left gap-1 text-xl w-full">
         <BreadcrumbItem className="items-baseline" >
           <BreadcrumbLink onClick={() => setFilters([])} className={`${breadCrumbs} text-3xl`}>
