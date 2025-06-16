@@ -7,27 +7,7 @@ import PChart from "./HighPie";
 import {Legend, BChart} from "./BarChart";
 import { useEffect, useState } from "react";
 import { SubTable } from "./DataTable";
-
-interface DataItem{
-  id: number;
-  entity: string;
-  advisor: string;
-  substrategy: string;
-  isin: string;
-  folio_no: string;
-  name: string;
-  quantity: string;
-  avg_cost: string;
-  market_price: string;
-  closing_cost: string;
-  closing_value: string;
-  unrealized_gain: string;
-  irr: string;
-  gain_cq: string | null;
-  irr_cq: string | null;
-  asset_type: string;
-  strategy: string;
-}
+import DataItem from "../Utilities/DataItem";
 
 type Props = { 
     title : string, 
@@ -128,7 +108,9 @@ const TabView = ({title, groupByField, className, data, filters, setFilters} : P
                 </TabsContent>
                 }
                 <TabsContent value="Table" key={3} className = 'flex justify-center'>
-                    <SubTable ogdata={data} groupByField={groupByField} />             
+                    <ScrollArea className="h-full w-full">
+                        <SubTable ogdata={data} groupByField={groupByField} /> 
+                    </ScrollArea>
                 </TabsContent>
 
             </Tabs>

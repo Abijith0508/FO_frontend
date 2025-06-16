@@ -171,7 +171,6 @@ type LegendItem ={
   color: string;
 }
 
-
 type LegendProps = {
   data: any;
   className?: string;

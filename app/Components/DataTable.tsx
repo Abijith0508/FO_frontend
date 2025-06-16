@@ -1,33 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { grayText2, tableGlass } from '../styling';
-import { ScrollArea } from "@/components/ui/scroll-area"
-
-
-
-interface DataItem  {
-  id: number;
-  entity: string;
-  advisor: string;
-  substrategy: string;
-  isin: string;
-  folio_no: string;
-  name: string;
-  quantity: string;
-  avg_cost: string;
-  market_price: string;
-  closing_cost: string;
-  closing_value: string;
-  unrealized_gain: string;
-  irr: string;
-  gain_cq: string | null;
-  irr_cq: string | null;
-  asset_type: string;
-  strategy: string;
-  
-  maingrpnm?: string;
-  subgrpnm?: string; 
-  thirdgrpnm? : string;
-}
+import { ScrollArea , ScrollBar} from "@/components/ui/scroll-area"
+import DataItem from "../Utilities/DataItem"
  
 type GroupedRow = {
   type: 'group' | 'data';
@@ -39,6 +13,10 @@ type GroupedRow = {
     closing_cost?: number;
     closing_value?: number;
     unrealized_gain?: number;
+    opening_cost?: number; 
+    realized_gain?:number;
+    opening_value? : number; 
+    total_gain?: number
   };
 };
 
@@ -51,13 +29,24 @@ interface ExpandedState {
 function groupData(data: DataItem[]): GroupedRow[] {
   const grouped: GroupedRow[] = [];
 
-  // Step 1: Compute grand totals for percentages
   const grandTotals = data.reduce((acc, row) => {
     acc.closing_cost += parseFloat(row.closing_cost || '0');
     acc.closing_value += parseFloat(row.closing_value || '0');
     acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
+    acc.opening_cost += parseFloat(row.opening_cost || '0');
+    acc.opening_value += parseFloat(row.opening_value || '0');
+    acc.realized_gain += parseFloat(row.realized_gain || '0');
+    acc.total_gain = acc.unrealized_gain + acc.realized_gain;
     return acc;
-  }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
+  }, { 
+    closing_cost: 0, 
+    closing_value: 0, 
+    unrealized_gain: 0,
+    opening_cost: 0,
+    opening_value: 0,
+    realized_gain: 0,
+    total_gain: 0
+  });
 
   const computePercent = (value: number, total: number) =>
     total === 0 ? 0 : parseFloat(((value / total) * 100).toFixed(2));
@@ -76,8 +65,20 @@ function groupData(data: DataItem[]): GroupedRow[] {
       acc.closing_cost += parseFloat(row.closing_cost || '0');
       acc.closing_value += parseFloat(row.closing_value || '0');
       acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
+      acc.opening_cost += parseFloat(row.opening_cost || '0');
+      acc.opening_value += parseFloat(row.opening_value || '0');
+      acc.realized_gain += parseFloat(row.realized_gain || '0');
+      acc.total_gain = acc.unrealized_gain + acc.realized_gain;
       return acc;
-    }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
+    }, { 
+      closing_cost: 0, 
+      closing_value: 0, 
+      unrealized_gain: 0,
+      opening_cost: 0,
+      opening_value: 0,
+      realized_gain: 0,
+      total_gain: 0
+    });
 
     grouped.push({
       type: 'group',
@@ -90,12 +91,20 @@ function groupData(data: DataItem[]): GroupedRow[] {
         closing_cost: assetTotals.closing_cost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         closing_value: assetTotals.closing_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         unrealized_gain: assetTotals.unrealized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        opening_cost: assetTotals.opening_cost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        opening_value: assetTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        realized_gain: assetTotals.realized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        total_gain: assetTotals.total_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         irr: '', gain_cq: null, irr_cq: null, asset_type, strategy: '', substrategy: ''
       },
       percentages: {
         closing_cost: computePercent(assetTotals.closing_cost, grandTotals.closing_cost),
         closing_value: computePercent(assetTotals.closing_value, grandTotals.closing_value),
-        unrealized_gain: computePercent(assetTotals.unrealized_gain, grandTotals.unrealized_gain)
+        unrealized_gain: computePercent(assetTotals.unrealized_gain, grandTotals.unrealized_gain),
+        opening_cost: computePercent(assetTotals.opening_cost, grandTotals.opening_cost),
+        opening_value: computePercent(assetTotals.opening_value, grandTotals.opening_value),
+        realized_gain: computePercent(assetTotals.realized_gain, grandTotals.realized_gain),
+        total_gain: computePercent(assetTotals.total_gain, grandTotals.total_gain)
       }
     });
 
@@ -113,8 +122,20 @@ function groupData(data: DataItem[]): GroupedRow[] {
         acc.closing_cost += parseFloat(row.closing_cost || '0');
         acc.closing_value += parseFloat(row.closing_value || '0');
         acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
+        acc.opening_cost += parseFloat(row.opening_cost || '0');
+        acc.opening_value += parseFloat(row.opening_value || '0');
+        acc.realized_gain += parseFloat(row.realized_gain || '0');
+        acc.total_gain = acc.unrealized_gain + acc.realized_gain;
         return acc;
-      }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
+      }, { 
+        closing_cost: 0, 
+        closing_value: 0, 
+        unrealized_gain: 0,
+        opening_cost: 0,
+        opening_value: 0,
+        realized_gain: 0,
+        total_gain: 0
+      });
 
       grouped.push({
         type: 'group',
@@ -127,12 +148,20 @@ function groupData(data: DataItem[]): GroupedRow[] {
           closing_cost: strategyTotals.closing_cost.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           closing_value: strategyTotals.closing_value.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           unrealized_gain: strategyTotals.unrealized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          opening_cost: strategyTotals.opening_cost.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          opening_value: strategyTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          realized_gain: strategyTotals.realized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          total_gain: strategyTotals.total_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
         },
         percentages: {
           closing_cost: computePercent(strategyTotals.closing_cost, grandTotals.closing_cost),
           closing_value: computePercent(strategyTotals.closing_value, grandTotals.closing_value),
-          unrealized_gain: computePercent(strategyTotals.unrealized_gain, grandTotals.unrealized_gain)
+          unrealized_gain: computePercent(strategyTotals.unrealized_gain, grandTotals.unrealized_gain),
+          opening_cost: computePercent(strategyTotals.opening_cost, grandTotals.opening_cost),
+          opening_value: computePercent(strategyTotals.opening_value, grandTotals.opening_value),
+          realized_gain: computePercent(strategyTotals.realized_gain, grandTotals.realized_gain),
+          total_gain: computePercent(strategyTotals.total_gain, grandTotals.total_gain)
         }
       });
 
@@ -149,8 +178,20 @@ function groupData(data: DataItem[]): GroupedRow[] {
           acc.closing_cost += parseFloat(row.closing_cost || '0');
           acc.closing_value += parseFloat(row.closing_value || '0');
           acc.unrealized_gain += parseFloat(row.unrealized_gain || '0');
+          acc.opening_cost += parseFloat(row.opening_cost || '0');
+          acc.opening_value += parseFloat(row.opening_value || '0');
+          acc.realized_gain += parseFloat(row.realized_gain || '0');
+          acc.total_gain = acc.unrealized_gain + acc.realized_gain;
           return acc;
-        }, { closing_cost: 0, closing_value: 0, unrealized_gain: 0 });
+        }, { 
+          closing_cost: 0, 
+          closing_value: 0, 
+          unrealized_gain: 0,
+          opening_cost: 0,
+          opening_value: 0,
+          realized_gain: 0,
+          total_gain: 0
+        });
 
         grouped.push({
           type: 'group',
@@ -163,12 +204,20 @@ function groupData(data: DataItem[]): GroupedRow[] {
             closing_cost: substrategyTotals.closing_cost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
             closing_value: substrategyTotals.closing_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
             unrealized_gain: substrategyTotals.unrealized_gain.toFixed(2),
+            opening_cost: substrategyTotals.opening_cost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+            opening_value: substrategyTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+            realized_gain: substrategyTotals.realized_gain.toFixed(2),
+            total_gain: substrategyTotals.total_gain.toFixed(2),
             irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy
           },
           percentages: {
             closing_cost: computePercent(substrategyTotals.closing_cost, grandTotals.closing_cost),
             closing_value: computePercent(substrategyTotals.closing_value, grandTotals.closing_value),
-            unrealized_gain: computePercent(substrategyTotals.unrealized_gain, grandTotals.unrealized_gain)
+            unrealized_gain: computePercent(substrategyTotals.unrealized_gain, grandTotals.unrealized_gain),
+            opening_cost: computePercent(substrategyTotals.opening_cost, grandTotals.opening_cost),
+            opening_value: computePercent(substrategyTotals.opening_value, grandTotals.opening_value),
+            realized_gain: computePercent(substrategyTotals.realized_gain, grandTotals.realized_gain),
+            total_gain: computePercent(substrategyTotals.total_gain, grandTotals.total_gain)
           }
         });
       });
@@ -179,7 +228,7 @@ function groupData(data: DataItem[]): GroupedRow[] {
 }
 
 // Column definitions for the table headers and how to extract cell data
-const columns = [
+const performanceColumns = [
   {
     accessorKey: 'label',
     header: 'Hierarchy',
@@ -188,7 +237,89 @@ const columns = [
       <span
         style={{ 
             paddingLeft: `${(row.level + 1) * 20}px`,
-            minWidth : `600px`
+            
+        }}
+        className={row.level < 3 ? "font-bold" : ""} // Make summary labels bold
+      >
+        {row.label}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'opening_cost',
+    header: 'Opening Cost',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.opening_cost;
+      const pct = row.percentages?.opening_cost;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'closing_cost',
+    header: 'Invested Amount ',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.closing_cost;
+      const pct = row.percentages?.closing_cost;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'opening_value',
+    header: 'Opening Value',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.opening_value;
+      const pct = row.percentages?.opening_value;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'closing_value',
+    header: 'Holding Value',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.closing_value;
+      const pct = row.percentages?.closing_value;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'unrealized_gain',
+    header: 'Unrealised Gain',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.unrealized_gain;
+      const pct = row.percentages?.unrealized_gain;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'realized_gain',
+    header: 'Realised Gain',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.realized_gain;
+      const pct = row.percentages?.realized_gain;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'total_gain',
+    header: 'Total Gain',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.total_gain;
+      const pct = row.percentages?.total_gain;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+];
+
+const holdingsColumns = [
+  {
+    accessorKey: 'label',
+    header: 'Hierarchy',
+    // Custom cell rendering to apply padding based on level
+    renderCell: (row: GroupedRow) => (
+      <span
+        style={{ 
+            paddingLeft: `${(row.level + 1) * 20}px`,
+            
         }}
         className={row.level < 3 ? "font-bold" : ""} // Make summary labels bold
       >
@@ -223,9 +354,8 @@ const columns = [
       return pct ? `${val} (${pct.toFixed(2)}%)` : val;
     }
   },
- 
 ];
- 
+
 // Inline Shadcn UI Table components (simplified for direct use without imports)
 const Table = ({ children }: { children: React.ReactNode }) => (
   <table id="Total" className="min-w-full rounded-lg overflow-y-scroll scroll-smooth bg-transparent">
@@ -255,14 +385,18 @@ const TableCell = ({ children, className }: { children: React.ReactNode, classNa
 interface GroupedDataTableProps {
   className?: string;
   data: DataItem[];
+  mode: string;
 }
  
-const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) => {
+const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mode }) => {
   const [groupedRows, setGroupedRows] = useState<GroupedRow[]>([]);
   const [expandedState, setExpandedState] = useState<ExpandedState>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
- 
+
+  // Select columns based on mode
+  const columns = mode === "Performance" ? performanceColumns : holdingsColumns;
+
   // Process data when it changes
   useEffect(() => {
     try {
@@ -354,19 +488,6 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
             // transform: isExpanded ? 'rotate(30deg)' : 'rotate(0deg)',
             transition: 'transform 0.3s ease-in-out',
         }}
-        // onMouseEnter={e => {
-        //   if (!isExpanded) 
-        //     e.currentTarget.style.transform = 'rotate(90deg)';
-        //   else 
-        //     e.currentTarget.style.transform = 'rotate(0deg)';
-
-        // }}
-
-        // onMouseLeave={e => {
-        // //   if (!isExpanded) 
-        //     e.currentTarget.style.transform = 'rotate(0deg)';
-        // //   else e.currentTarget.style.transform = 'rotate(-90deg)';
-        // }}
       >
         {isExpanded ? (
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -391,17 +512,8 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
       else initialExpandedState[row.key] = true;
     });
     setExpandedState(initialExpandedState);
-    // toggleExpanded('asset-Equity')
   }, [groupedRows]);
  
-  // Debug log for grouped rows
-  // useEffect(() => {
-  //   console.log('Grouped rows:', groupedRows.map(row => ({
-  //     level: row.level,
-  //     label: row.label,
-  //     key: row.key
-  //   })));
-  // }, [groupedRows]);
  
   if (isLoading) {
     return (
@@ -426,61 +538,64 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data }) 
         <div className={`w-full border-white overflow-y-auto`}>
           
         <ScrollArea className=" w-full shadow-lg">
-            <Table>
-            <TableHeader>
-                <TableRow className = " rounded-t-lg">
-                {columns.map((column, index) => (
-                    <TableHead key={index}>{column.header}</TableHead>
-                ))}
-                </TableRow>
-            </TableHeader>
-
-            <TableBody>
-                {groupedRows.map((row, index) => {
-                if (!isRowVisible(row, index)) return null;
-                
-                return (
-                    <TableRow
-                    key={row.key}
-                    className={`
-                        ${row.level === 0 ? 'bg-white/10 hover:bg-white/20' :
-                        row.level === 1 ? 'bg-white/5 hover:bg-white/20' :
-                        row.level === 2 ? 'bg-white/0 hover:bg-white/20' :
-                        'bg-gray-50 hover:bg-gray-100'}
-                        transition-colors duration-500 backdrop-blur-md shadow-none ${grayText2}
-                        ${tableGlass}
-                    `}
-                    >
-                    <TableCell>
-                        <div className="flex items-center text-left"
-                            // onClick={(e) => {
-                            // e.stopPropagation();
-                            // toggleExpanded(row.key);
-                            // }}
-                        >
-                        <RenderExpandIcon row={row}/>
-                        <span
-                            style={{ 
-                                paddingLeft: `${row.level * row.level * 20}px` ,
-                                minWidth: `250px`
-                            }}
-                        >
-                            {row.label}
-                        </span>
-                        </div>
-                    </TableCell>
-
-                    {columns.slice(1).map((column, colIndex) => (
-                        <TableCell key={colIndex}>
-                        {column.renderCell(row)}
-                        </TableCell>
+            <ScrollArea className="w-full">
+              <Table>
+                <TableHeader>
+                    <TableRow className = "rounded-t-lg">
+                    {columns.map((column, index) => (
+                        <TableHead key={index}>{column.header}</TableHead>
                     ))}
                     </TableRow>
-                );
-                })}
-            </TableBody>
-            </Table>
+                </TableHeader>
+
+                <TableBody>
+                    {groupedRows.map((row, index) => {
+                    if (!isRowVisible(row, index)) return null;
+                    
+                    return (
+                        <TableRow
+                        key={row.key}
+                        className={`
+                            ${row.level === 0 ? 'bg-white/10 hover:bg-white/20' :
+                            row.level === 1 ? 'bg-white/5 hover:bg-white/20' :
+                            row.level === 2 ? 'bg-white/0 hover:bg-white/20' :
+                            'bg-gray-50 hover:bg-gray-100'}
+                            transition-colors duration-500 backdrop-blur-md shadow-none ${grayText2}
+                            ${tableGlass}
+                        `}
+                        >
+                        <TableCell>
+                            <div className="flex items-center text-left"
+                                // onClick={(e) => {
+                                // e.stopPropagation();
+                                // toggleExpanded(row.key);
+                                // }}
+                            >
+                            <RenderExpandIcon row={row}/>
+                            <span
+                                style={{ 
+                                    paddingLeft: `${row.level * row.level * 20}px` ,
+                                    minWidth: `250px`
+                                }}
+                            >
+                                {row.label}
+                            </span>
+                            </div>
+                        </TableCell>
+
+                        {columns.slice(1).map((column, colIndex) => (
+                            <TableCell key={colIndex}>
+                            {column.renderCell(row)}
+                            </TableCell>
+                        ))}
+                        </TableRow>
+                    );
+                    })}
+                </TableBody>
+              </Table>
+            </ScrollArea>
             
+            <ScrollBar orientation="horizontal" className="bg-white/50"/>
         </ScrollArea>
         </div>
     

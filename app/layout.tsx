@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${font.className} bg-primary`} >
-      <body className =  "bg-[url('./img/mountains2.jpg')] " >
+      <body className =  "min-h-screen bg-[url('./img/mountains2.jpg')] " >
         {children}
       </body>
     </html>

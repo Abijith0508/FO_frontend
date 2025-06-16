@@ -5,35 +5,19 @@ import tickMark from '../img/tickMark.png';
 import { groupBy, filterUpdate } from '../Utilities/filterFunction';
 import { useSpring, animated } from '@react-spring/web';
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
-interface DataItem {
-  id: number;
-  entity: string;
-  advisor: string;
-  substrategy: string;
-  isin: string;
-  folio_no: string;
-  name: string;
-  quantity: string;
-  avg_cost: string;
-  market_price: string;
-  closing_cost: string;
-  closing_value: string;
-  unrealized_gain: string;
-  irr: string;
-  gain_cq: string | null;
-  irr_cq: string | null;
-  asset_type: string;
-  strategy: string;
-}
+import DataItem from '../Utilities/DataItem';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from '@/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
 
 type Props = {
   data: DataItem[];
   className: string;
-  filters : string[];
-  setFilters : any
+  setFilters : any;
+  mode : string;
+  setMode: any;
 };
 
-const Total = ({ data, className ,filters, setFilters }: Props) => {
+const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
   const [hovered, setHovered] = useState<0 | 1>(1);
   useEffect(()=>{
     
@@ -53,10 +37,6 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
   const total = totalData ? Number(totalData.sumOfClosingValue) : 0;
   const totalClosingCost = totalData ? Number(totalData.sumOfClosingCosts) : 0;
   const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain) : 0;
-
-
-  
-  
   
   const equityPct = total ? (closingValueEquity / total) * 100 : 0;
   const debtPct = total ? (closingValueDebt / total) * 100 : 0;
@@ -103,6 +83,7 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
   
   const [tColor, setTColor] = useState('emerald')
   const [ugColor, setUgColor] = useState('emerald')
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     if(totalUnrealisedGain < 0)setUgColor('ruby')
@@ -111,9 +92,31 @@ const Total = ({ data, className ,filters, setFilters }: Props) => {
   
   return (
     <div className={className}>
-      <div className="flex justify-around w-full">
+      <div className="flex justify-around w-full ">
         <div className = "flex flex-col items-center justify-center">
-          <div className={grayText}>Holding Value</div>
+          <div className={`${grayText} flex gap-1 `}>
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+              <DropdownMenuTrigger asChild>
+                <div
+                  className="cursor-pointer flex items-center"
+                >
+                  {mode}
+                  <ChevronDown
+                    className={`transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
+                  />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-black/80 border border-none outline-none text-white/80" align="start">
+                <DropdownMenuItem onClick={() => setMode("Holdings Value")} className=" text-lg">
+                  Holdings Value
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Performance")} className=" text-lg">
+                  Performance
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+          </div>
           
           <div className="text-[40px] font-bold">
             ₹ <animated.span>
