@@ -19,6 +19,7 @@ type Props = {
 type PiePoint = {
   name: string;
   y: number;
+  xirr?: number;
   drilldown?: string;
 };
 
@@ -31,6 +32,7 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
     const transformed = grouped.map(item => ({
       name: String(item[groupByField]), // dynamic access
       y: Number(item.sumOfClosingValue),
+      xirr: Number(item.xirr || 0),
     }));
     setChartData(transformed);
   }, [data]);
@@ -40,6 +42,7 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
     const arr = grouping.map(item => ({
       name: String(item[groupByField]), // dynamic access
       y: Number(item.sumOfClosingValue),
+      xirr: Number(item.xirr || 0),
       // drilldown: ...
     }));
     setChartData(arr);
@@ -62,8 +65,15 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
       text: undefined,
     },
     tooltip: {
-      pointFormat:
-        '{point.y} ({point.percentage:.1f}%)',
+      formatter: function(this: any) {
+        const point = this.point;
+        const value = point.y.toLocaleString('en-IN');
+        const percentage = point.percentage.toFixed(1);
+        const xirr = point.xirr || 0;
+        return `<b>${point.name}</b><br/>
+                Value: ₹${value} (${percentage}%)<br/>
+                XIRR: ${xirr.toFixed(2)}%`;
+      },
       backgroundColor: '#171717', // your gold color
       style: {
         color: '#ffffffcc',

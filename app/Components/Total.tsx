@@ -41,7 +41,10 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
   
   const equityPct = total ? (closingValueEquity / total) * 100 : 0;
   const debtPct = total ? (closingValueDebt / total) * 100 : 0;
-
+  const equityXirr = equityData ? Number(equityData.xirr) : 0;
+  const debtXirr = debtData ? Number(debtData.xirr) : 0;
+  const totalXirr = totalData ? Number(totalData.xirr) : 0;
+  
   const { number: animatedEquity } = useSpring({
     number: closingValueEquity,
     from: { number: 0 },
@@ -231,6 +234,15 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
                 </animated.span>{' '}
               </div>
             </div> 
+            <div className = "flex flex-col items-center justify-around ">
+              <div className = "text-gray">Unrealised Gain/Loss</div>
+              <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>
+                ₹ <animated.span>
+                  {animatedUG.to(val => Math.round(val).toLocaleString('en-IN'))}
+                </animated.span>{' '}
+                {ugColor == 'emerald' ? <ArrowUpRight/> :<ArrowDownLeft/>}
+              </div>
+            </div>
             <div className = "flex flex-col items-center justify-around ">
               <div className = "text-gray">Unrealised Gain/Loss</div>
               <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>

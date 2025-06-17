@@ -17,6 +17,7 @@ type Props = {
 type BarPoint = {
   name: string;
   y: number;
+  xirr?: number;
 };
 
 const formatIndianNumber = (value : number) => {
@@ -34,6 +35,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
     const transformed = grouped.map(item => ({
       name: String(item[groupByField]),
       y: Number(item.sumOfClosingValue),
+      xirr: Number(item.xirr || 0),
     }));
     setChartData(transformed);
   }, [data, groupByField]);
@@ -87,7 +89,14 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
     },
     tooltip: {
       enabled : true,
-      pointFormat: '{(point.y)}',
+      formatter: function(this: any) {
+        const point = this.point;
+        const value = formatIndianNumber(point.y);
+        const xirr = point.xirr || 0;
+        return `<b>${point.name}</b><br/>
+                Value: ₹${value}<br/>
+                XIRR: ${xirr.toFixed(2)}%`;
+      },
       backgroundColor: '#171717',
       style: {
         color: '#ffffffcc',
