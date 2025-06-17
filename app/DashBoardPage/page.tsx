@@ -25,6 +25,7 @@ async function getDashboardData() {
     
     const holdingslink = "http://13.202.119.24/irr/holdingsnew/";
     const performancelink = "http://13.202.119.24/irr/perfnew/";
+    const expenselink = "http://13.202.119.24/irr/expenses/";
     
     console.log('Fetching dashboard data (fresh)...');
     
@@ -163,7 +164,7 @@ async function DashboardContent() {
     }
 }
 
-export default function DummyDashboard() {
+export default function DashBoard() {
     return (
         <Suspense fallback={<LoadingComponent />}>
             <DashboardContent />

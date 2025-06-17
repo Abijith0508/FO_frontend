@@ -2,7 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { grayText2, tableGlass } from '../styling';
 import { ScrollArea , ScrollBar} from "@/components/ui/scroll-area"
 import DataItem from "../Utilities/dataItem"
- 
+import { xirr } from '../Utilities/xirr';
+import { groupBy as filterGroupBy } from '../Utilities/filterFunction';
+import { Download, EllipsisVerticalIcon } from 'lucide-react';
+import { download } from '../Utilities/download';
+
+type Cashflow = {
+  amount: number;
+  date: Date;
+};
+
 type GroupedRow = {
   type: 'group' | 'data';
   level: number;
@@ -95,7 +104,7 @@ function groupData(data: DataItem[]): GroupedRow[] {
         opening_value: assetTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         realized_gain: assetTotals.realized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         total_gain: assetTotals.total_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
-        irr: '', gain_cq: null, irr_cq: null, asset_type, strategy: '', substrategy: ''
+        irr: '0.00', gain_cq: null, irr_cq: null, asset_type, strategy: '', substrategy: ''
       },
       percentages: {
         closing_cost: computePercent(assetTotals.closing_cost, grandTotals.closing_cost),
@@ -152,7 +161,7 @@ function groupData(data: DataItem[]): GroupedRow[] {
           opening_value: strategyTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           realized_gain: strategyTotals.realized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           total_gain: strategyTotals.total_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
-          irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
+          irr: '0.00', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
         },
         percentages: {
           closing_cost: computePercent(strategyTotals.closing_cost, grandTotals.closing_cost),
@@ -208,7 +217,7 @@ function groupData(data: DataItem[]): GroupedRow[] {
             opening_value: substrategyTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
             realized_gain: substrategyTotals.realized_gain.toFixed(2),
             total_gain: substrategyTotals.total_gain.toFixed(2),
-            irr: '', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy
+            irr: '0.00', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy
           },
           percentages: {
             closing_cost: computePercent(substrategyTotals.closing_cost, grandTotals.closing_cost),
@@ -308,6 +317,14 @@ const performanceColumns = [
       return pct ? `${val} (${pct.toFixed(2)}%)` : val;
     }
   },
+  {
+    accessorKey: 'irr',
+    header: 'XIRR',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.irr;
+      return val ? `${val}%` : '0.00%';
+    }
+  },
 ];
 
 const holdingsColumns = [
@@ -354,19 +371,37 @@ const holdingsColumns = [
       return pct ? `${val} (${pct.toFixed(2)}%)` : val;
     }
   },
+  {
+    accessorKey: 'irr',
+    header: 'XIRR',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.irr;
+      return val ? `${val}%` : '0.00%';
+    }
+  },
 ];
 
 // Inline Shadcn UI Table components (simplified for direct use without imports)
 const Table = ({ children }: { children: React.ReactNode }) => (
-  <table id="Total" className="min-w-full rounded-lg overflow-y-scroll scroll-smooth bg-transparent">
-    {children}
-  </table>
+  <div className = "relative">
+    <EllipsisVerticalIcon
+        data-tooltip-id="BCTooltip"
+        data-tooltip-content="Download Overview Table"
+        data-tooltip-place="top"
+        data-tooltip-float
+        className="absolute top-3 left-3 h-5 w-5  stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200 border border-none focus:outline-none"  
+        onClick={() => download('Total')}
+      />
+    <table id="Total" className="min-w-full rounded-lg overflow-y-scroll scroll-smooth bg-transparent backdrop-blur-md ">
+      {children}
+    </table>
+  </div>
 );
 const TableHeader = ({ children }: { children: React.ReactNode }) => (
-  <thead className="bg-emerald text-white">{children}</thead>
+  <thead className={`bg-white/5 text-white/50 text-sm`}>{children}</thead>
 );
 const TableBody = ({ children }: { children: React.ReactNode }) => (
-  <tbody className=" divide-white/10 bg-transparent">{children}</tbody>
+  <tbody className=" divide-y divide-white/10">{children}</tbody>
 );
 const TableRow = ({ children, className }: { children: React.ReactNode, className?: string }) => (
   <tr className={`${className} ${grayText2}`}>{children}</tr>
@@ -402,6 +437,35 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
     try {
       setIsLoading(true);
       const processedData = groupData(data);
+      
+      // Get XIRR values using the same method as charts and SubTable
+      const assetTypeXIRR = filterGroupBy(data, 'asset_type');
+      const strategyXIRR = filterGroupBy(data, 'strategy');
+      const substrategyXIRR = filterGroupBy(data, 'substrategy');
+      
+      // Update XIRR values in the processed data
+      processedData.forEach(row => {
+        if (row.level === 0) {
+          // Asset type level
+          const xirrData = assetTypeXIRR.find(item => item.asset_type === row.label);
+          if (xirrData && row.row) {
+            row.row.irr = Number(xirrData.xirr || 0).toFixed(2);
+          }
+        } else if (row.level === 1) {
+          // Strategy level
+          const xirrData = strategyXIRR.find(item => item.strategy === row.label);
+          if (xirrData && row.row) {
+            row.row.irr = Number(xirrData.xirr || 0).toFixed(2);
+          }
+        } else if (row.level === 2) {
+          // Substrategy level
+          const xirrData = substrategyXIRR.find(item => item.substrategy === row.label);
+          if (xirrData && row.row) {
+            row.row.irr = Number(xirrData.xirr || 0).toFixed(2);
+          }
+        }
+      });
+      
       setGroupedRows(processedData);
       setError(null);
     } catch (err) {
@@ -560,7 +624,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
                             row.level === 1 ? 'bg-white/5 hover:bg-white/20' :
                             row.level === 2 ? 'bg-white/0 hover:bg-white/20' :
                             'bg-gray-50 hover:bg-gray-100'}
-                            transition-colors duration-500 backdrop-blur-md shadow-none ${grayText2}
+                            transition-colors duration-500 shadow-none ${grayText2}
                             ${tableGlass}
                         `}
                         >
@@ -595,7 +659,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
               </Table>
             </ScrollArea>
             
-            <ScrollBar orientation="horizontal" className="bg-white/50"/>
+            <ScrollBar orientation="horizontal" className="bg-black/50 first:bg-gray-500"/>
         </ScrollArea>
         </div>
     
@@ -604,8 +668,6 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
 };
  
 // components/ui/data-table.tsx
-import { Download } from 'lucide-react';
-import { download } from '../Utilities/download';
 import { groupBy } from '../Utilities/filterFunction';
 
 interface DataTableProps{
@@ -647,7 +709,8 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
         "Unrealized Gain",
         "Realized Gain",
         "Total Gain",
-        "Gain %"
+        "Gain %",
+        "XIRR"
       ];
     } else {
       return [
@@ -655,7 +718,8 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
         "Invested Amount",
         "Holding Value",
         "Unrealized Gain",
-        "Gain %"
+        "Gain %",
+        "XIRR"
       ];
     }
   };
@@ -664,8 +728,12 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
 
   return (
     <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
-      <Download 
-      className="fixed right-10 top-10 stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200" 
+      <EllipsisVerticalIcon 
+        data-tooltip-id="BCTooltip"
+        data-tooltip-content="Download Table"
+        data-tooltip-place="top"
+        data-tooltip-float
+      className="fixed left-10 top-10 stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200" 
       onClick={() => download(groupByField)}/>
         <table id={groupByField} className="w-full border-collapse text-gray">
           <thead>
@@ -723,6 +791,9 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
                     <td className={`px-6 py-4 text-sm text-left font-medium`}>
                       {gainPercentage.toFixed(2)}%
                     </td>
+                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                      {Number(item.xirr || 0).toFixed(2)}%
+                    </td>
                   </tr>
                 );
               } else {
@@ -745,6 +816,9 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
                     </td>
                     <td className={`px-6 py-4 text-sm text-left font-medium`}>
                       {gainPercentage.toFixed(2)}%
+                    </td>
+                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                      {Number(item.xirr || 0).toFixed(2)}%
                     </td>
                   </tr>
                 );
