@@ -626,7 +626,7 @@ type GroupedDataItem = {
 
 function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
   const data = groupBy(ogdata, groupByField) as GroupedDataItem[];
-  console.log(data)
+  // console.log(data)
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',

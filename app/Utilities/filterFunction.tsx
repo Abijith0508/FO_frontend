@@ -167,7 +167,7 @@ function groupBy(
       sumOfOpeningValue: values.sumOfOpeningValue,
       xirr: groupXIRR,
     };
-    console.log(obj)
+    // console.log(obj)
     return obj;
   });
 }

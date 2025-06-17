@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { glass, grayText, grayText2 } from '../styling';
-import Image from 'next/image';
-import tickMark from '../img/tickMark.png';
+import { grayText, grayText2 } from '../styling';
+
 import { groupBy, filterUpdate } from '../Utilities/filterFunction';
 import { useSpring, animated } from '@react-spring/web';
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import DataItem from '../Utilities/dataItem';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
+
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css'
 
 type Props = {
   data: DataItem[];
@@ -18,7 +20,7 @@ type Props = {
 };
 
 const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
-  console.log(data)
+  // console.log(data)
   const [hovered, setHovered] = useState<0 | 1>(1);
   useEffect(()=>{
     if(hovered) setTColor('emerald')
@@ -29,7 +31,7 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
   const equityData = groupedByAssetType.find(item => item.asset_type === 'Equity');
   const debtData = groupedByAssetType.find(item => item.asset_type === 'Debt');
   const totalData = groupAll[0];
-  console.log(totalData)
+  // console.log(totalData)
   
   const closingValueEquity = equityData ? Number(equityData.sumOfClosingValue) : 0;
   const closingValueDebt = debtData ? Number(debtData.sumOfClosingValue) : 0;
@@ -94,6 +96,12 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
     from: { number: 0 },
     config: { duration: 300 },
   });
+  const { number: animatiedXIRR } = useSpring({
+    number: totalXirr,
+    from: { number: 0 },
+    config: { duration: 300 },
+  });
+  
   
   const [tColor, setTColor] = useState('emerald')
   const [ugColor, setUgColor] = useState('emerald')
@@ -108,8 +116,7 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
   }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
-    <div className={className}>
-      <div className="flex justify-around w-full ">
+      <div className={`flex justify-around w-full h-[300px] ${className}`} >
         <div className = "flex flex-col items-center justify-center">
           <div className={`${grayText} flex gap-1 `}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -144,6 +151,7 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
           <div className="flex flex-col items-center justify-center ">
             <div className={`relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
               {/* Equity Bar */}
+              <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
               <div
                 className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out"
                 style={{ width: `${equityPct}%` }}
@@ -151,6 +159,10 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
                   setHovered(1)
                   filterUpdate(setFilters, 'asset_type', 'Equity')
                 }}
+                data-tooltip-id="BCTooltip1"
+                data-tooltip-content={"XIRR: " +equityXirr.toFixed(2) + "%"}
+                data-tooltip-place="top"
+                data-tooltip-float
               >
                 {equityPct > 30 && 
                   <div className = {`${grayText2} `}>
@@ -174,6 +186,10 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
                   setHovered(0)
                   filterUpdate(setFilters, 'asset_type', 'Debt')
                 }}
+                data-tooltip-id="BCTooltip1"
+                data-tooltip-content= {"XIRR: " + debtXirr.toFixed(2) + "%"}
+                data-tooltip-place="top"
+                data-tooltip-float
               >
                 {debtPct > 30 && 
                   <div className = {`${grayText2} hover:text-white/80`}>
@@ -211,7 +227,7 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
           </div>
         </div>
         
-        <div className = "flex flex-col items-center justify-around p-6 gap-3">
+        <div className = "flex flex-col flex-wrap items-center justify-around p-0 gap-5 ">
             {mode === "Performance" && (
               <div className = "flex flex-col">
                 <div className = {`${grayText2} ` }>
@@ -244,11 +260,11 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
               </div>
             </div>
             <div className = "flex flex-col items-center justify-around ">
-              <div className = "text-gray">Unrealised Gain/Loss</div>
+              <div className = "text-gray">XIRR</div>
               <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>
-                ₹ <animated.span>
-                  {animatedUG.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
+                <animated.span>
+                  {animatiedXIRR.to(val => val.toFixed(2))}
+                </animated.span>{' '}%
                 {ugColor == 'emerald' ? <ArrowUpRight/> :<ArrowDownLeft/>}
               </div>
             </div>
@@ -266,10 +282,6 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
         </div>
 
       </div>
-
-      {/* Optional tick image */}
-      {/* <Image src={tickMark} alt="tick" /> */}
-    </div>
   );
 };
 
