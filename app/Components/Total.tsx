@@ -5,7 +5,7 @@ import tickMark from '../img/tickMark.png';
 import { groupBy, filterUpdate } from '../Utilities/filterFunction';
 import { useSpring, animated } from '@react-spring/web';
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
-import DataItem from '../Utilities/DataItem';
+import DataItem from '../Utilities/dataItem';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
 
@@ -18,34 +18,35 @@ type Props = {
 };
 
 const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
+  console.log(data)
   const [hovered, setHovered] = useState<0 | 1>(1);
   useEffect(()=>{
-    
     if(hovered) setTColor('emerald')
     else setTColor('ruby')
-
   }, [hovered])
- 
   const groupedByAssetType = groupBy(data, 'asset_type');
   const groupAll = groupBy(data, null)
   const equityData = groupedByAssetType.find(item => item.asset_type === 'Equity');
   const debtData = groupedByAssetType.find(item => item.asset_type === 'Debt');
   const totalData = groupAll[0];
+  console.log(totalData)
   
   const closingValueEquity = equityData ? Number(equityData.sumOfClosingValue) : 0;
   const closingValueDebt = debtData ? Number(debtData.sumOfClosingValue) : 0;
   const total = totalData ? Number(totalData.sumOfClosingValue) : 0;
   const totalClosingCost = totalData ? Number(totalData.sumOfClosingCosts) : 0;
   const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain) : 0;
+  const totalOpeningCost = totalData ? Number(totalData.sumOfOpeningCost) : 0;
+  const totalRealizedGain = totalData ? Number(totalData.sumOfRealizedGain) : 0;
   
   const equityPct = total ? (closingValueEquity / total) * 100 : 0;
   const debtPct = total ? (closingValueDebt / total) * 100 : 0;
 
-  
   const { number: animatedEquity } = useSpring({
     number: closingValueEquity,
     from: { number: 0 },
     config: { duration: 500 },
+
   });
 
   const { number: animatedDebt } = useSpring({
@@ -75,20 +76,33 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
     from: { number: 0 },
     config: { duration: 300 },
   });
+  const { number: animatedOC } = useSpring({
+    number: totalOpeningCost,
+    from: { number: 0 },
+    config: { duration: 300 },
+  });
   const { number: animatedUG } = useSpring({
     number: totalUnrealisedGain,
+    from: { number: 0 },
+    config: { duration: 300 },
+  });
+  const { number: animatedRG } = useSpring({
+    number: totalRealizedGain,
     from: { number: 0 },
     config: { duration: 300 },
   });
   
   const [tColor, setTColor] = useState('emerald')
   const [ugColor, setUgColor] = useState('emerald')
+  const [rgColor, setRgColor] = useState('emerald')
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    if(totalUnrealisedGain < 0)setUgColor('ruby')
+    if(totalUnrealisedGain < 0) setUgColor('ruby')
     else setUgColor('emerald')
-  }, [totalUnrealisedGain])
+    if(totalRealizedGain < 0) setRgColor('ruby')
+    else setRgColor('emerald')
+  }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
     <div className={className}>
@@ -194,8 +208,20 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
           </div>
         </div>
         
-        <div className = "flex flex-col items-center justify-around p-6 ">
-            <div className = "flex flex-col gap-1">
+        <div className = "flex flex-col items-center justify-around p-6 gap-3">
+            {mode === "Performance" && (
+              <div className = "flex flex-col">
+                <div className = {`${grayText2} ` }>
+                  Opening Cost
+                </div>
+                <div className = " text-[23px] text-emerald">
+                  ₹ <animated.span>
+                    {animatedOC.to(val => Math.round(val).toLocaleString('en-IN'))}
+                  </animated.span>{' '}
+                </div>
+              </div> 
+            )}
+            <div className = "flex flex-col">
               <div className = {`${grayText2} ` }>
                 Invested Amount
               </div>
@@ -205,7 +231,7 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
                 </animated.span>{' '}
               </div>
             </div> 
-            <div className = "flex flex-col gap-1 items-center justify-around ">
+            <div className = "flex flex-col items-center justify-around ">
               <div className = "text-gray">Unrealised Gain/Loss</div>
               <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>
                 ₹ <animated.span>
@@ -214,6 +240,17 @@ const Total = ({ data, className, setFilters, mode, setMode }: Props) => {
                 {ugColor == 'emerald' ? <ArrowUpRight/> :<ArrowDownLeft/>}
               </div>
             </div>
+            {mode === "Performance" && (
+              <div className = "flex flex-col items-center justify-around ">
+                <div className = "text-gray">Realised Gain/Loss</div>
+                <div className =  {`flex items-center text-[23px] text-${rgColor} transition`}>
+                  ₹ <animated.span>
+                    {animatedRG.to(val => Math.round(val).toLocaleString('en-IN'))}
+                  </animated.span>{' '}
+                  {rgColor == 'emerald' ? <ArrowUpRight/> :<ArrowDownLeft/>}
+                </div>
+              </div>
+            )}
         </div>
 
       </div>

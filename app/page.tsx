@@ -47,7 +47,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const link = (mode=="Performance")? "http://10.0.0.199:8096/irr/perfnew/" : "http://13.202.119.24/irr/holdings";
+    const link = (mode=="Performance")? "http://13.202.119.24/irr/perfnew/" : "http://13.202.119.24/irr/holdings";
     fetch(link)
       .then((res) => res.json())
       .then((response) => {
@@ -110,13 +110,14 @@ export default function Home() {
           </div>
           {isOpen && <div className={`w-full h-[960px] backdrop:blur-2xl fixed top-0 z-30 bg-gradient-to-r from-black/50 to-black/50 via-black/20 backdrop-blur-lg transition duration-500`}/>}
           <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="w-full h-[960px] bg-transparent text-white grid grid-rows-6
-          grid-cols-12 gap-[15px]"
+            className="w-full bg-transparent text-white justify-around gap-5 
+            flex flex-wrap"
           >
-            <TabView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} className={`flex flex-col 
-              
-              col-start-1 col-end-7 row-start-1 row-end-4
-              ${glass} py-6 flex place-content-center`}/>
+            <TabView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} 
+              className={`
+                
+              ${glass}  `}
+              mode={mode}/>
 
             <TabView 
               title={filters.some(filter => filter.startsWith('strategy')) ? 'Sub-Strategy' : 'Strategy-wise'}
@@ -124,9 +125,9 @@ export default function Home() {
               data={filteredData} 
               filters={filters} 
               setFilters={setFilters} 
-              className={`flex flex-col 
-                col-start-7 col-end-13 row-start-1 row-end-4 
-                ${glass} py-6`}
+              className={`
+                `}
+              mode={mode}
             />
 
             <TabView 
@@ -135,9 +136,9 @@ export default function Home() {
               data={filteredData} 
               filters={filters} 
               setFilters={setFilters} 
-              className={`flex flex-col 
-              col-start-1 col-end-13 row-start-4 row-end-7
-              ${glass} py-6`}/>
+              className={` `}
+              mode={mode}
+              />
 
 
           </motion.div>

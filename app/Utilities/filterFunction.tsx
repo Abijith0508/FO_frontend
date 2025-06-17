@@ -17,10 +17,13 @@ interface DataItem {
   irr_cq: string | null;
   asset_type: string;
   strategy: string;
+  opening_cost: string;
+  realized_gain: string;
+  opening_value: string;
 }
 
 function groupBy(
-  data: DataItem[],
+  data: any[],
   criterion: keyof DataItem | null
 ): {
   [key: string]: string | number;
@@ -32,26 +35,43 @@ function groupBy(
         acc.sumOfClosingCosts += parseFloat(item.closing_cost) || 0;
         acc.sumOfUnrealizedGain += parseFloat(item.unrealized_gain) || 0;
         acc.sumOfClosingValue += parseFloat(item.closing_value) || 0;
+        acc.sumOfOpeningCost += parseFloat(item.opening_cost) || 0;
+        acc.sumOfRealizedGain += parseFloat(item.realized_gain) || 0;
+        acc.sumOfOpeningValue += parseFloat(item.opening_value) || 0;
         return acc;
       },
       {
         sumOfClosingCosts: 0,
         sumOfUnrealizedGain: 0,
         sumOfClosingValue: 0,
+        sumOfOpeningCost: 0,
+        sumOfRealizedGain: 0,
+        sumOfOpeningValue: 0,
       }
     );
 
     return [
       { 
-        
         sumOfClosingValue: totalSums.sumOfClosingValue,
         sumOfClosingCosts: totalSums.sumOfClosingCosts,
         sumOfUnrealizedGain: totalSums.sumOfUnrealizedGain,
+        sumOfOpeningCost: totalSums.sumOfOpeningCost,
+        sumOfRealizedGain: totalSums.sumOfRealizedGain,
+        sumOfOpeningValue: totalSums.sumOfOpeningValue,
       },
     ];
   }
 
-  const grouped: { [key: string]: { sumOfClosingCosts: number; sumOfUnrealizedGain: number; sumOfClosingValue: number } } = {};
+  const grouped: { 
+    [key: string]: { 
+      sumOfClosingCosts: number; 
+      sumOfUnrealizedGain: number; 
+      sumOfClosingValue: number;
+      sumOfOpeningCost: number;
+      sumOfRealizedGain: number;
+      sumOfOpeningValue: number;
+    } 
+  } = {};
 
   data.forEach((item) => {
     const key = String(item[criterion]);  // Ensure key is a string
@@ -59,18 +79,27 @@ function groupBy(
     const closingValue = parseFloat(item.closing_value) || 0;
     const closingCost = parseFloat(item.closing_cost) || 0;
     const unrealizedGain = parseFloat(item.unrealized_gain) || 0;
+    const openingCost = parseFloat(item.opening_cost) || 0;
+    const realizedGain = parseFloat(item.realized_gain) || 0;
+    const openingValue = parseFloat(item.opening_value) || 0;
 
     if (!grouped[key]) {
       grouped[key] = {
         sumOfClosingCosts: 0,
         sumOfUnrealizedGain: 0,
-        sumOfClosingValue: 0
+        sumOfClosingValue: 0,
+        sumOfOpeningCost: 0,
+        sumOfRealizedGain: 0,
+        sumOfOpeningValue: 0
       };
     }
 
     grouped[key].sumOfClosingCosts += closingCost;
     grouped[key].sumOfUnrealizedGain += unrealizedGain;
     grouped[key].sumOfClosingValue += closingValue;
+    grouped[key].sumOfOpeningCost += openingCost;
+    grouped[key].sumOfRealizedGain += realizedGain;
+    grouped[key].sumOfOpeningValue += openingValue;
   });
 
   return Object.entries(grouped).map(([groupValue, values]) => ({
@@ -78,6 +107,9 @@ function groupBy(
     sumOfClosingValue: values.sumOfClosingValue,
     sumOfClosingCosts: values.sumOfClosingCosts,
     sumOfUnrealizedGain: values.sumOfUnrealizedGain,
+    sumOfOpeningCost: values.sumOfOpeningCost,
+    sumOfRealizedGain: values.sumOfRealizedGain,
+    sumOfOpeningValue: values.sumOfOpeningValue,
   }));
 }
 

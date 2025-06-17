@@ -7,7 +7,7 @@ import PChart from "./HighPie";
 import {Legend, BChart} from "./BarChart";
 import { useEffect, useState } from "react";
 import { SubTable } from "./DataTable";
-import DataItem from "../Utilities/DataItem";
+import DataItem from "../Utilities/dataItem";
 
 type Props = { 
     title : string, 
@@ -16,10 +16,11 @@ type Props = {
     //have to change
     data : DataItem[],
     filters : string[], 
-    setFilters : any
+    setFilters : any,
+    mode?: string
 }
 
-const TabView = ({title, groupByField, className, data, filters, setFilters} : Props) => {
+const TabView = ({title, groupByField, className, data, filters, setFilters, mode} : Props) => {
     const [isLargeScreen, setIsLargeScreen] = useState(false);
 
     useEffect(() => {
@@ -41,9 +42,12 @@ const TabView = ({title, groupByField, className, data, filters, setFilters} : P
 
 
     return (
-    <div className ={`${className} flex flex-col justify-between gap-2 overflow-hidden`} >
+    <div className ={`
+        ${className} ${glass} py-6 flex grow-1 
+        flex-col justify-between gap-2 overflow-hidden
+    `} >
         <div className={`${grayText2}`}>{title}</div>
-        <ScrollArea className="w-full h-full">
+        <ScrollArea className="w-full h-[400px]">
             <Tabs onValueChange={setSelectedTab}
              defaultValue = {(title == "Strategy-wise" || title == "Sub-Strategy" ) ? "Pie" : "Bar"} 
              className="w-full h-full flex flex-col items-center justify-between gap-5 "
@@ -109,7 +113,7 @@ const TabView = ({title, groupByField, className, data, filters, setFilters} : P
                 }
                 <TabsContent value="Table" key={3} className = 'flex justify-center'>
                     <ScrollArea className="h-full w-full">
-                        <SubTable ogdata={data} groupByField={groupByField} /> 
+                        <SubTable ogdata={data} groupByField={groupByField} mode={mode}/> 
                     </ScrollArea>
                 </TabsContent>
 

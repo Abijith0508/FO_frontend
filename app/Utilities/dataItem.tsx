@@ -22,7 +22,7 @@ export default interface DataItem  {
   subgrpnm?: string; 
   thirdgrpnm? : string;
   
-  cashflow? : any[];
+  cashflow? : Number[];
   dates? : any[];
   opening_cost? : string;
   // closing_cost? : string;
