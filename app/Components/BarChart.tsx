@@ -86,8 +86,8 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       gridLineColor: '#555',
     },
     tooltip: {
-      enabled : false,
-      // pointFormat: '{formatIndianNumber(point.y)}',
+      enabled : true,
+      pointFormat: '{(point.y)}',
       backgroundColor: '#171717',
       style: {
         color: '#ffffffcc',

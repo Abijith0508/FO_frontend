@@ -36,29 +36,23 @@ export default function Home() {
   const [mode , setMode] = useState("Holding Value");
 
   useEffect(() => {
-    fetch("http://13.202.119.24/irr/holdings")
+    fetch("http://13.202.119.24/irr/holdingsnew/")
       .then((res) => res.json())
       .then((response) => {
-        setOgData(response.holdings);
-        setFilteredData(response.holdings);
+        setOgData(response.data);
+        setFilteredData(response.data);
       })
       .catch((err) => console.error("Error fetching holdings:", err));
       setTimeout(() => setIsLoading(false), 2000);
   }, []);
 
   useEffect(() => {
-    const link = (mode=="Performance")? "http://13.202.119.24/irr/perfnew/" : "http://13.202.119.24/irr/holdings";
+    const link = (mode=="Performance")? "http://13.202.119.24/irr/perfnew/" : "http://13.202.119.24/irr/holdingsnew/";
     fetch(link)
       .then((res) => res.json())
       .then((response) => {
-        if((mode=="Performance")){
           setOgData(response.data);
           setFilteredData(response.data);
-        }
-        else{
-          setOgData(response.holdings);
-          setFilteredData(response.holdings);
-        }
       })
       .catch((err) => console.error("Error fetching holdings:", err));
   }, [mode]);

@@ -1,3 +1,5 @@
+import { xirr, Cashflow } from './xirr';
+
 interface DataItem {
   id: number;
   entity: string;
@@ -20,6 +22,8 @@ interface DataItem {
   opening_cost: string;
   realized_gain: string;
   opening_value: string;
+  cashflows: string[];
+  dates: string[];
 }
 
 function groupBy(
@@ -50,6 +54,28 @@ function groupBy(
       }
     );
 
+    // Calculate XIRR for all data combined
+    let combinedXIRR = 0;
+    try {
+      const allCashflows: Cashflow[] = [];
+      data.forEach(item => {
+        if (item.cashflows && item.dates) {
+          item.cashflows.forEach((cashflow: string, index: number) => {
+            allCashflows.push({
+              amount: parseFloat(cashflow),
+              date: new Date(item.dates[index])
+            });
+          });
+        }
+      });
+      if (allCashflows.length > 1) {
+        combinedXIRR = xirr(allCashflows) * 100; // Convert to percentage
+      }
+    } catch (error) {
+      console.warn('Error calculating combined XIRR:', error);
+      combinedXIRR = 0;
+    }
+
     return [
       { 
         sumOfClosingValue: totalSums.sumOfClosingValue,
@@ -58,6 +84,7 @@ function groupBy(
         sumOfOpeningCost: totalSums.sumOfOpeningCost,
         sumOfRealizedGain: totalSums.sumOfRealizedGain,
         sumOfOpeningValue: totalSums.sumOfOpeningValue,
+        xirr: combinedXIRR,
       },
     ];
   }
@@ -70,6 +97,8 @@ function groupBy(
       sumOfOpeningCost: number;
       sumOfRealizedGain: number;
       sumOfOpeningValue: number;
+      cashflows: string[];
+      dates: string[];
     } 
   } = {};
 
@@ -90,7 +119,9 @@ function groupBy(
         sumOfClosingValue: 0,
         sumOfOpeningCost: 0,
         sumOfRealizedGain: 0,
-        sumOfOpeningValue: 0
+        sumOfOpeningValue: 0,
+        cashflows: [],
+        dates: []
       };
     }
 
@@ -100,17 +131,45 @@ function groupBy(
     grouped[key].sumOfOpeningCost += openingCost;
     grouped[key].sumOfRealizedGain += realizedGain;
     grouped[key].sumOfOpeningValue += openingValue;
+
+    // Append cashflows and dates
+    if (item.cashflows && item.dates) {
+      grouped[key].cashflows.push(...item.cashflows);
+      grouped[key].dates.push(...item.dates);
+    }
   });
 
-  return Object.entries(grouped).map(([groupValue, values]) => ({
-    [criterion]: groupValue,
-    sumOfClosingValue: values.sumOfClosingValue,
-    sumOfClosingCosts: values.sumOfClosingCosts,
-    sumOfUnrealizedGain: values.sumOfUnrealizedGain,
-    sumOfOpeningCost: values.sumOfOpeningCost,
-    sumOfRealizedGain: values.sumOfRealizedGain,
-    sumOfOpeningValue: values.sumOfOpeningValue,
-  }));
+  return Object.entries(grouped).map(([groupValue, values]) => {
+    // Calculate XIRR for this group
+    let groupXIRR = 0;
+    try {
+      const cashflows: Cashflow[] = [];
+      values.cashflows.forEach((cashflow, index) => {
+        cashflows.push({
+          amount: parseFloat(cashflow),
+          date: new Date(values.dates[index])
+        });
+      });
+      if (cashflows.length > 1) {
+        groupXIRR = xirr(cashflows) * 100; // Convert to percentage
+      }
+    } catch (error) {
+      console.warn(`Error calculating XIRR for group ${groupValue}:`, error);
+      groupXIRR = 0;
+    }
+    const obj ={
+      [criterion]: groupValue,
+      sumOfClosingValue: values.sumOfClosingValue,
+      sumOfClosingCosts: values.sumOfClosingCosts,
+      sumOfUnrealizedGain: values.sumOfUnrealizedGain,
+      sumOfOpeningCost: values.sumOfOpeningCost,
+      sumOfRealizedGain: values.sumOfRealizedGain,
+      sumOfOpeningValue: values.sumOfOpeningValue,
+      xirr: groupXIRR,
+    };
+    console.log(obj)
+    return obj;
+  });
 }
 
 const filterUpdate = (
