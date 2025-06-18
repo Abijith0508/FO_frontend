@@ -9,7 +9,7 @@ type Stock = {
 };
 
 // Module-level cache to prevent multiple fetches
-let cachedData: { holdData: any; perfData: any } | null = null;
+let cachedData: { holdData: any; perfData: any, expData: any } | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -31,12 +31,16 @@ async function getDashboardData() {
     
     try {
         // Fetch both endpoints in parallel
-        const [holdingsResponse, performanceResponse] = await Promise.all([
+        const [holdingsResponse, performanceResponse, expenseResponse] = await Promise.all([
             fetch(holdingslink, {
                 headers: { 'Content-Type': 'application/json' },
                 cache: 'force-cache'
             }),
             fetch(performancelink, {
+                headers: { 'Content-Type': 'application/json' },
+                cache: 'force-cache'
+            }),
+            fetch(expenselink, {
                 headers: { 'Content-Type': 'application/json' },
                 cache: 'force-cache'
             })
@@ -49,14 +53,18 @@ async function getDashboardData() {
         if (!performanceResponse.ok) {
             throw new Error(`Performance fetch failed: ${performanceResponse.status}`);
         }
-        
-        const [holdData, perfData] = await Promise.all([
+        if (!expenseResponse.ok) {
+            throw new Error(`Performance fetch failed: ${expenseResponse.status}`);
+        }
+
+        const [holdData, perfData, expData] = await Promise.all([
             holdingsResponse.json(),
-            performanceResponse.json()
+            performanceResponse.json(),
+            expenseResponse.json()
         ]);
         
         // Cache the results
-        cachedData = { holdData, perfData };
+        cachedData = { holdData, perfData, expData };
         cacheTimestamp = now;
         
         console.log('Dashboard data fetched and cached successfully');
@@ -83,19 +91,20 @@ async function DashboardContent() {
     try {
         console.log('Starting to fetch dashboard data...');
         
-        const { holdData, perfData } = await getDashboardData();
+        const { holdData, perfData, expData } = await getDashboardData();
         
-        console.log('Fetched data:', { holdData, perfData });
+        console.log('Fetched data:', { holdData, perfData, expData });
         
         // Check if data exists and has the expected structure
         const hasHoldingsData = holdData && holdData.data && Array.isArray(holdData.data) && holdData.data.length > 0;
         const hasPerformanceData = perfData && perfData.data && Array.isArray(perfData.data) && perfData.data.length > 0;
-        
-        console.log('Data checks:', { hasHoldingsData, hasPerformanceData });
+        const hasExpenseData = expData && expData.data && Array.isArray(expData.data) && expData.data.length > 0;
+         
+        console.log('Data checks:', { hasHoldingsData, hasPerformanceData, hasExpenseData });
         
         if(hasHoldingsData && hasPerformanceData){
             return (        
-                <DashBoardComp holdingData={holdData.data} performanceData={perfData.data}/>
+                <DashBoardComp holdingData={holdData.data} performanceData={perfData.data} expenseData={expData.data}/>
             );
         }
         else{

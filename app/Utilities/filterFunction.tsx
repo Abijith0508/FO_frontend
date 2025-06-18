@@ -24,6 +24,9 @@ interface DataItem {
   opening_value: string;
   cashflows: string[];
   dates: string[];
+  other_expenses: string;
+  stamp_duty: string;
+  stt_paid: string;
 }
 
 function groupBy(
@@ -42,6 +45,9 @@ function groupBy(
         acc.sumOfOpeningCost += parseFloat(item.opening_cost) || 0;
         acc.sumOfRealizedGain += parseFloat(item.realized_gain) || 0;
         acc.sumOfOpeningValue += parseFloat(item.opening_value) || 0;
+        acc.sumOfOtherExpenses += parseFloat(item.other_expenses) || 0;
+        acc.sumOfStampDuty += parseFloat(item.stamp_duty) || 0;
+        acc.sumOfSttPaid += parseFloat(item.stt_paid) || 0;
         return acc;
       },
       {
@@ -51,6 +57,9 @@ function groupBy(
         sumOfOpeningCost: 0,
         sumOfRealizedGain: 0,
         sumOfOpeningValue: 0,
+        sumOfOtherExpenses: 0,
+        sumOfStampDuty: 0,
+        sumOfSttPaid: 0,
       }
     );
 
@@ -84,6 +93,9 @@ function groupBy(
         sumOfOpeningCost: totalSums.sumOfOpeningCost,
         sumOfRealizedGain: totalSums.sumOfRealizedGain,
         sumOfOpeningValue: totalSums.sumOfOpeningValue,
+        sumOfOtherExpenses: totalSums.sumOfOtherExpenses,
+        sumOfStampDuty: totalSums.sumOfStampDuty,
+        sumOfSttPaid: totalSums.sumOfSttPaid,
         xirr: combinedXIRR,
       },
     ];
@@ -97,6 +109,9 @@ function groupBy(
       sumOfOpeningCost: number;
       sumOfRealizedGain: number;
       sumOfOpeningValue: number;
+      sumOfOtherExpenses: number;
+      sumOfStampDuty: number;
+      sumOfSttPaid: number;
       cashflows: string[];
       dates: string[];
     } 
@@ -111,6 +126,9 @@ function groupBy(
     const openingCost = parseFloat(item.opening_cost) || 0;
     const realizedGain = parseFloat(item.realized_gain) || 0;
     const openingValue = parseFloat(item.opening_value) || 0;
+    const otherExpenses = parseFloat(item.other_expenses) || 0;
+    const stampDuty = parseFloat(item.stamp_duty) || 0;
+    const sttPaid = parseFloat(item.stt_paid) || 0;
 
     if (!grouped[key]) {
       grouped[key] = {
@@ -120,6 +138,9 @@ function groupBy(
         sumOfOpeningCost: 0,
         sumOfRealizedGain: 0,
         sumOfOpeningValue: 0,
+        sumOfOtherExpenses: 0,
+        sumOfStampDuty: 0,
+        sumOfSttPaid: 0,
         cashflows: [],
         dates: []
       };
@@ -131,6 +152,9 @@ function groupBy(
     grouped[key].sumOfOpeningCost += openingCost;
     grouped[key].sumOfRealizedGain += realizedGain;
     grouped[key].sumOfOpeningValue += openingValue;
+    grouped[key].sumOfOtherExpenses += otherExpenses;
+    grouped[key].sumOfStampDuty += stampDuty;
+    grouped[key].sumOfSttPaid += sttPaid;
 
     // Append cashflows and dates
     if (item.cashflows && item.dates) {
@@ -165,6 +189,9 @@ function groupBy(
       sumOfOpeningCost: values.sumOfOpeningCost,
       sumOfRealizedGain: values.sumOfRealizedGain,
       sumOfOpeningValue: values.sumOfOpeningValue,
+      sumOfOtherExpenses: values.sumOfOtherExpenses,
+      sumOfStampDuty: values.sumOfStampDuty,
+      sumOfSttPaid: values.sumOfSttPaid,
       xirr: groupXIRR,
     };
     // console.log(obj)

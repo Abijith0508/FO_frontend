@@ -23,11 +23,12 @@ type Stock = {
 };
 
 type Props = {
-    holdingData : any[], 
-    performanceData: any[]
+  holdingData : any[], 
+  performanceData: any[],
+  expenseData: any[]
 }
 
-export default function DashBoardComp({holdingData, performanceData} : Props) {
+export default function DashBoardComp({holdingData, performanceData, expenseData} : Props) {
   const [ogData, setOgData] = useState<any[]>(holdingData);
   const [filteredData, setFilteredData] = useState<any[]>(holdingData);
   const [filters, setFilters] = useState<string[]>([]);
@@ -40,6 +41,10 @@ export default function DashBoardComp({holdingData, performanceData} : Props) {
     if(mode == 'Performance') {
         setOgData(performanceData)
         setFilteredData(performanceData)
+    }
+    else if(mode == 'Expenses'){
+        setOgData(expenseData)
+        setFilteredData(expenseData)
     }
     else {
         setOgData(holdingData)
@@ -54,7 +59,8 @@ export default function DashBoardComp({holdingData, performanceData} : Props) {
 
 
   return (
-    <div>
+    mode=='expense'? <ExpenseDashBoard ogData={ogData} filteredData={filteredData}/> :
+    (<div>
       <div 
         className="text-white text-center bg-transparent p-0 m-0">
         <Tooltip id="BCTooltip" float place="top" className='z-50'/>
@@ -118,8 +124,10 @@ export default function DashBoardComp({holdingData, performanceData} : Props) {
           
       </div>
       <footer className='w-full h-[400] bg-primary mt-[15px]'></footer>
-    </div>
-      
+    </div>)   
   );
 }
 
+function ExpenseDashBoard({ogData,filteredData}) {
+  
+}

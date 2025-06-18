@@ -38,7 +38,6 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
         return () => window.removeEventListener('resize', handleResize);
     }, []);
     const [selectedTab, setSelectedTab] = useState("Bar");
-    const [mountedTab, setMountedTab] = useState("Bar");
 
 
     return (
