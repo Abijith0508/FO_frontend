@@ -11,6 +11,18 @@ import { Input } from '@/components/ui/input';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css'
 
+// Utility function to format numbers consistently
+const formatNumber = (value: number): string => {
+  if (isNaN(value) || !isFinite(value)) return '0';
+  return Math.round(value).toLocaleString('en-IN');
+};
+
+// Utility function to format percentages consistently
+const formatPercentage = (value: number): string => {
+  if (isNaN(value) || !isFinite(value)) return '0.00';
+  return value.toFixed(2);
+};
+
 type Props = {
   data: DataItem[];
   className: string;
@@ -36,26 +48,26 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
   const totalData = groupAll[0];
   // console.log(totalData)
   
-  const closingValueEquity = equityData ? Number(equityData.sumOfClosingValue) : 0;
-  const closingValueDebt = debtData ? Number(debtData.sumOfClosingValue) : 0;
-  const total = totalData ? Number(totalData.sumOfClosingValue) : 0;
-  const totalClosingCost = totalData ? Number(totalData.sumOfClosingCosts) : 0;
-  const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain) : 0;
-  const totalOpeningCost = totalData ? Number(totalData.sumOfOpeningCost) : 0;
-  const totalRealizedGain = totalData ? Number(totalData.sumOfRealizedGain) : 0;
-  const totalOtherExpenses = totalData ? Number(totalData.sumOfOtherExpenses) : 0;
-  const totalSttPaid = totalData ? Number(totalData.sumOfSttPaid) : 0;
-  const totalStampDuty = totalData ? Number(totalData.sumOfStampDuty) : 0;
-  const totalExpenses = totalOtherExpenses + totalSttPaid + totalStampDuty
-  const equityExpenses = equityData ? Number(equityData.sumOfSttPaid) + Number(equityData.sumOfStampDuty) + Number(equityData.sumOfOtherExpenses) : 0;
-  const debtExpenses = debtData ? Number(debtData.sumOfSttPaid) + Number(debtData.sumOfStampDuty) + Number(debtData.sumOfOtherExpenses) : 0;
+  const closingValueEquity = equityData ? Number(equityData.sumOfClosingValue || 0) : 0;
+  const closingValueDebt = debtData ? Number(debtData.sumOfClosingValue || 0) : 0;
+  const total = totalData ? Number(totalData.sumOfClosingValue || 0) : 0;
+  const totalClosingCost = totalData ? Number(totalData.sumOfClosingCosts || 0) : 0;
+  const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain || 0) : 0;
+  const totalOpeningCost = totalData ? Number(totalData.sumOfOpeningCost || 0) : 0;
+  const totalRealizedGain = totalData ? Number(totalData.sumOfRealizedGain || 0) : 0;
+  const totalOtherExpenses = totalData ? Number(totalData.sumOfOtherExpenses || 0) : 0;
+  const totalSttPaid = totalData ? Number(totalData.sumOfSttPaid || 0) : 0;
+  const totalStampDuty = totalData ? Number(totalData.sumOfStampDuty || 0) : 0;
+  const totalExpenses = totalOtherExpenses + totalSttPaid + totalStampDuty;
+  const equityExpenses = equityData ? Number(equityData.sumOfSttPaid || 0) + Number(equityData.sumOfStampDuty || 0) + Number(equityData.sumOfOtherExpenses || 0) : 0;
+  const debtExpenses = debtData ? Number(debtData.sumOfSttPaid || 0) + Number(debtData.sumOfStampDuty || 0) + Number(debtData.sumOfOtherExpenses || 0) : 0;
 
 
   const equityPct = mode != "Expenses" ? (total ? (closingValueEquity / total) * 100 : 0) : (totalExpenses ? (equityExpenses / totalExpenses) * 100 : 0);
   const debtPct = mode != "Expenses" ? (total ? (closingValueDebt / total) * 100 : 0) : (totalExpenses ? (debtExpenses / totalExpenses) * 100 : 0);
-  const equityXirr = equityData ? Number(equityData.xirr) : 0;
-  const debtXirr = debtData ? Number(debtData.xirr) : 0;
-  const totalXirr = totalData ? Number(totalData.xirr) : 0;
+  const equityXirr = equityData ? Number(equityData.xirr || 0) : 0;
+  const debtXirr = debtData ? Number(debtData.xirr || 0) : 0;
+  const totalXirr = totalData ? Number(totalData.xirr || 0) : 0;
   
   // console.log(equityPct);
   // console.log(debtPct);
@@ -299,7 +311,35 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 }
               </div>
             </div>
-          
+              
+            {mode=="Expenses" ? 
+              <div className={`flex justify-around w-full ${grayText2} `}>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-emerald cursor-pointer" 
+                  onClick={() => {
+                    setHovered(1)
+                    filterUpdate(setFilters, 'asset_type', 'Equity')
+                  }}
+                  />
+                  <div>Equity</div>
+                  {(equityPct <= 30 && equityPct!=0) && 
+                    <div>₹ {formatNumber(equityExpenses)}</div>
+                  }
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-ruby cursor-pointer"
+                  onClick={() => {
+                    setHovered(1)
+                    filterUpdate(setFilters, 'asset_type', 'Debt')
+                  }}/>
+                  <div>Debt</div>
+                  {(debtPct <= 30 && debtPct!=0) && 
+                    <div>₹ {formatNumber(debtExpenses)}</div>
+                  }
+                </div>
+              </div>
+            : 
             <div className={`flex justify-around w-full ${grayText2} `}>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-emerald cursor-pointer" 
@@ -310,7 +350,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 />
                 <div>Equity</div>
                 {(equityPct <= 30 && equityPct!=0) && 
-                  <div>₹ {closingValueEquity.toLocaleString("en-IN")}</div>
+                  <div>₹ {formatNumber(closingValueEquity)}</div>
                 }
               </div>
               
@@ -322,10 +362,11 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 }}/>
                 <div>Debt</div>
                 {(debtPct <= 30 && debtPct!=0) && 
-                  <div>₹ {closingValueDebt.toLocaleString("en-IN")}</div>
+                  <div>₹ {formatNumber(closingValueDebt)}</div>
                 }
               </div>
             </div>
+            }
           </div>
           
         </div>

@@ -13,36 +13,74 @@ let cachedData: { holdData: any; perfData: any, expData: any } | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
+// Function to clear cache and force refresh
+export function clearCache() {
+    cachedData = null;
+    cacheTimestamp = 0;
+    console.log('Cache cleared');
+}
+
+// Function to check cache status (for debugging)
+export function checkCacheStatus() {
+    const now = Date.now();
+    const timeSinceCache = now - cacheTimestamp;
+    const remainingTime = CACHE_DURATION - timeSinceCache;
+    
+    console.log('Cache Status:', {
+        hasCachedData: !!cachedData,
+        cacheTimestamp: new Date(cacheTimestamp).toLocaleTimeString(),
+        timeSinceCache: Math.round(timeSinceCache / 1000) + 's',
+        remainingTime: Math.round(remainingTime / 1000) + 's',
+        isExpired: remainingTime <= 0,
+        nextRefresh: new Date(cacheTimestamp + CACHE_DURATION).toLocaleTimeString()
+    });
+    
+    return {
+        hasCachedData: !!cachedData,
+        isExpired: remainingTime <= 0,
+        remainingTime: Math.round(remainingTime / 1000)
+    };
+}
+
+// Make functions available globally for debugging
+if (typeof window !== 'undefined') {
+    (window as any).clearDashboardCache = clearCache;
+    (window as any).checkDashboardCache = checkCacheStatus;
+}
+
 // Simple cached fetch function
 async function getDashboardData() {
     const now = Date.now();
     
     // Return cached data if it's still valid
     if (cachedData && (now - cacheTimestamp) < CACHE_DURATION) {
-        console.log('Returning cached dashboard data');
+        const remainingTime = Math.round((CACHE_DURATION - (now - cacheTimestamp)) / 1000);
+        console.log(`Returning cached dashboard data (${remainingTime}s remaining in cache)`);
         return cachedData;
     }
     
-    const holdingslink = "http://13.202.119.24/irr/holdingsnew/";
-    const performancelink = "http://13.202.119.24/irr/perfnew/";
-    const expenselink = "http://13.202.119.24/irr/expenses/";
+    const timestamp = Date.now(); // Cache busting parameter
+    const holdingslink = `http://13.202.119.24/irr/holdingsnew/?t=${timestamp}`;
+    const performancelink = `http://13.202.119.24/irr/perfnew/?t=${timestamp}`;
+    const expenselink = `http://13.202.119.24/irr/expenses/?t=${timestamp}`;
     
-    console.log('Fetching dashboard data (fresh)...');
+    console.log('Cache expired or no cache found. Fetching fresh dashboard data...');
+    console.log('Fetch URLs:', { holdingslink, performancelink, expenselink });
     
     try {
         // Fetch both endpoints in parallel
         const [holdingsResponse, performanceResponse, expenseResponse] = await Promise.all([
             fetch(holdingslink, {
                 headers: { 'Content-Type': 'application/json' },
-                cache: 'force-cache'
+                cache: 'no-cache' // Allow fresh requests but respect cache headers
             }),
             fetch(performancelink, {
                 headers: { 'Content-Type': 'application/json' },
-                cache: 'force-cache'
+                cache: 'no-cache' // Allow fresh requests but respect cache headers
             }),
             fetch(expenselink, {
                 headers: { 'Content-Type': 'application/json' },
-                cache: 'force-cache'
+                cache: 'no-cache' // Allow fresh requests but respect cache headers
             })
         ]);
         
@@ -67,7 +105,8 @@ async function getDashboardData() {
         cachedData = { holdData, perfData, expData };
         cacheTimestamp = now;
         
-        console.log('Dashboard data fetched and cached successfully');
+        console.log('Dashboard data fetched and cached successfully at:', new Date(now).toLocaleTimeString());
+        console.log('Next cache refresh will be at:', new Date(now + CACHE_DURATION).toLocaleTimeString());
         return cachedData;
         
     } catch (error) {
@@ -102,18 +141,16 @@ async function DashboardContent() {
          
         console.log('Data checks:', { hasHoldingsData, hasPerformanceData, hasExpenseData });
         
-        if(hasHoldingsData && hasPerformanceData){
             return (        
                 <DashBoardComp holdingData={holdData.data} performanceData={perfData.data} expenseData={expData.data}/>
             );
-        }
-        else{
-            return (
-                <div className="flex items-center justify-center h-screen gap-5">
-                    <p className="text-white/80 text-lg">No data available</p>
-                </div>
-            );
-        }
+        // else{
+        //     return (
+        //         <div className="flex items-center justify-center h-screen gap-5">
+        //             <p className="text-white/80 text-lg">No data available</p>
+        //         </div>
+        //     );
+        // }
     } catch (error) {
         console.error('Fetch error:', error);
         

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useState , useEffect } from "react";
 import "../globals.css"
-import { Table2 } from "lucide-react";
+import { Table2, RefreshCw } from "lucide-react";
 import { download } from "../Utilities/download";
 import { glass, sideglass } from "../styling";
 import SideBar from "../Components/SideBar";
@@ -65,6 +65,14 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
       <div 
         className="text-white text-center bg-transparent p-0 m-0">
         <Tooltip id="BCTooltip" float place="top" className='z-50'/>
+        <RefreshCw 
+          data-tooltip-id="BCTooltip"
+          data-tooltip-content="Refresh Data"
+          data-tooltip-place="top"
+          data-tooltip-float
+          className="fixed top-36 right-12 h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none cursor-pointer"
+          onClick={() => window.location.reload()}
+        />
         <Table2 
           data-tooltip-id="BCTooltip"
           data-tooltip-content="View Overview Table"
