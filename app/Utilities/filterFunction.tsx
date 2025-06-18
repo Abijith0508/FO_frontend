@@ -1,33 +1,5 @@
 import { xirr, Cashflow } from './xirr';
-
-interface DataItem {
-  id: number;
-  entity: string;
-  advisor: string;
-  substrategy: string;
-  isin: string;
-  folio_no: string;
-  name: string;
-  quantity: string;
-  avg_cost: string;
-  market_price: string;
-  closing_cost: string;
-  closing_value: string;
-  unrealized_gain: string;
-  irr: string;
-  gain_cq: string | null;
-  irr_cq: string | null;
-  asset_type: string;
-  strategy: string;
-  opening_cost: string;
-  realized_gain: string;
-  opening_value: string;
-  cashflows: string[];
-  dates: string[];
-  other_expenses: string;
-  stamp_duty: string;
-  stt_paid: string;
-}
+import DataItem from './dataItem';
 
 function groupBy(
   data: any[],
@@ -206,24 +178,128 @@ const filterUpdate = (
 ) => {
   const newFilter = `${groupByField}:${value}`;
 
-  // Add the new filter if it's not already present (to avoid duplicates)
   setFilters((prevFilters: string[]) => {
-    if (prevFilters.length == 0) return [newFilter]
-    if (prevFilters.includes(newFilter)) {
-      return prevFilters; // no change
+    const alreadyGrouped = prevFilters.some(filter => filter.startsWith(`${groupByField}:`));
+    if (alreadyGrouped) {
+      return prevFilters;
     }
     return [...prevFilters, newFilter];
   });
 };
 
+/**
+ * Creates a time filter in the format "Time:fromYear-toYear"
+ * @param fromYear - Starting year of the financial year
+ * @param toYear - Ending year of the financial year
+ * @returns Time filter string
+ */
+const createTimeFilter = (fromYear: number, toYear: number): string => {
+  return `Time:${fromYear}-${toYear}`;
+};
+
+/**
+ * Updates filters with a time filter, replacing any existing time filter
+ * @param setFilters - Function to update filters
+ * @param fromYear - Starting year of the financial year
+ * @param toYear - Ending year of the financial year
+ */
+const updateTimeFilter = (
+  setFilters: React.Dispatch<React.SetStateAction<string[]>>,
+  fromYear: number,
+  toYear: number
+) => {
+  const newTimeFilter = createTimeFilter(fromYear, toYear);
+  
+  setFilters((prevFilters: string[]) => {
+    // Remove any existing time filter
+    const filtersWithoutTime = prevFilters.filter(filter => !filter.startsWith('Time:'));
+    // Add the new time filter
+    return [...filtersWithoutTime, newTimeFilter];
+  });
+};
+
 const filterFunction = (data: DataItem[], filters: string[]): DataItem[] => {
-  // alert('filter')
   return data.filter((item) => {
     return filters.every((filter) => {
       const [group, value] = filter.split(':');
+      
+      // Handle time-based filtering
+      if (group === 'Time') {
+        const [fromYear, toYear] = value.split('-').map(Number);
+        if (!fromYear || !toYear || !item.tran_date) return false;
+        
+        try {
+          // Create date range for financial year (April 1st fromYear to March 31st toYear)
+          const startDate = new Date(fromYear, 3, 1); // April 1st (month is 0-indexed, so 3 = April)
+          const endDate = new Date(toYear, 2, 31, 23, 59, 59, 999); // March 31st (month is 0-indexed, so 2 = March)
+          
+          const transactionDate = new Date(item.tran_date);
+          return transactionDate >= startDate && transactionDate <= endDate;
+        } catch (error) {
+          console.warn('Invalid transaction date format:', item.tran_date);
+          return false;
+        }
+      }
+      
+      // Handle regular field filtering
       return String(item[group as keyof DataItem]) === value;
     });
   });
 };
 
-export { filterFunction, groupBy, filterUpdate };
+
+const filterExpenseByFinancialYear = (expenseData: DataItem[],filters: string[] , fromYear: number, toYear: number): DataItem[] => {
+  // Create date range for financial year (April 1st fromYear to March 31st toYear)
+  const startDate = new Date(fromYear, 3, 1); // April 1st (month is 0-indexed, so 3 = April)
+  const endDate = new Date(toYear, 2, 31, 23, 59, 59, 999); // March 31st (month is 0-indexed, so 2 = March)
+
+  return expenseData.filter((item) => {
+    if (!item.tran_date) return false;
+    
+    try {
+      const transactionDate = new Date(item.tran_date);
+      return transactionDate >= startDate && transactionDate <= endDate;
+    } catch (error) {
+      console.warn('Invalid transaction date format:', item.tran_date);
+      return false;
+    }
+  });
+};
+
+const filterExpenseByDateRange = (expenseData: DataItem[], startDate: Date, endDate: Date): DataItem[] => {
+  return expenseData.filter((item) => {
+    if (!item.tran_date) return false;
+    
+    try {
+      const transactionDate = new Date(item.tran_date);
+      
+      // Check if the transaction date falls within the specified range
+      return transactionDate >= startDate && transactionDate <= endDate;
+    } catch (error) {
+      console.warn('Invalid transaction date format:', item.tran_date);
+      return false;
+    }
+  });
+};
+
+const getCurrentFinancialYear = (): { fromYear: number; toYear: number } => {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth(); // 0-indexed
+  
+  // If current month is January to March, financial year is previous year to current year
+  // If current month is April to December, financial year is current year to next year
+  if (currentMonth < 3) { // January (0), February (1), March (2)
+    return {
+      fromYear: currentYear - 1,
+      toYear: currentYear
+    };
+  } else { // April (3) to December (11)
+    return {
+      fromYear: currentYear,
+      toYear: currentYear + 1
+    };
+  }
+};
+
+export { filterFunction, groupBy, filterUpdate, filterExpenseByFinancialYear, filterExpenseByDateRange, getCurrentFinancialYear, createTimeFilter, updateTimeFilter };

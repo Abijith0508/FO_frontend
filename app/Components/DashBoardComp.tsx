@@ -50,6 +50,7 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
         setOgData(holdingData)
         setFilteredData(holdingData)
     }
+    setFilters([]);
   }, [mode]);
 
   useEffect(()=>{
@@ -59,7 +60,7 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
 
 
   return (
-    mode=='expense'? <ExpenseDashBoard ogData={ogData} filteredData={filteredData}/> :
+    
     (<div>
       <div 
         className="text-white text-center bg-transparent p-0 m-0">
@@ -76,7 +77,7 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
         <div className = 'px-10'>
           <div className="flex flex-col gap-5 justify-around pb-5">
             <Heading filters = {filters} setFilters = {setFilters} className = "px-20 pb-5 pt-8"/>
-            <Total data={filteredData} setFilters={setFilters} className={` ${glass} py-6 px-15`} mode={mode} setMode={setMode}/>
+            <Total data={filteredData} ogData={ogData} filters={filters} setFilters={setFilters} className={` ${glass} py-6 px-15`} mode={mode} setMode={setMode} setFilteredData={setFilteredData}/>
             
           </div>
           <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
@@ -126,8 +127,4 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
       <footer className='w-full h-[400] bg-primary mt-[15px]'></footer>
     </div>)   
   );
-}
-
-function ExpenseDashBoard({ogData,filteredData}) {
-  
 }

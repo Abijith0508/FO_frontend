@@ -37,8 +37,24 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
         // Cleanup on unmount
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-    const [selectedTab, setSelectedTab] = useState("Bar");
 
+    // Determine the default tab based on mode and title
+    const getDefaultTab = () => {
+        if (mode === "Expenses") {
+            return "Table";
+        }
+        if (title === "Strategy-wise" || title === "Sub-Strategy") {
+            return "Pie";
+        }
+        return "Bar";
+    };
+
+    const [selectedTab, setSelectedTab] = useState(getDefaultTab());
+
+    // Update selected tab when mode changes
+    useEffect(() => {
+        setSelectedTab(getDefaultTab());
+    }, [mode, title]);
 
     return (
     <div className ={`
@@ -47,29 +63,33 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
     `} >
         <div className={`${grayText2}`}>{title}</div>
         <ScrollArea className="w-full h-[400px]">
-            <Tabs onValueChange={setSelectedTab}
-             defaultValue = {(title == "Strategy-wise" || title == "Sub-Strategy" ) ? "Pie" : "Bar"} 
-             className="w-full h-full flex flex-col items-center justify-between gap-5 "
+            <Tabs 
+                value={selectedTab}
+                onValueChange={setSelectedTab}
+                className="w-full h-full flex flex-col items-center justify-between gap-5 "
             >
                 <TabsList className={`${glass} overflow-hidden p-0 flex gap-0 ${grayText2}`}>
+                    {mode != 'Expenses' && 
                     <TabsTrigger 
                         value="Bar" 
                         className={`px-4 data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
                     >
                         Bar
-                    </TabsTrigger>
+                    </TabsTrigger>}
+                    {mode != 'Expenses' && 
                     <TabsTrigger 
                         value="Pie" 
                         className={`px-4 data-[state=active]:bg-white/20 tab-trigger bg-none focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
                     >
                         Pie
-                    </TabsTrigger>
-                    {!isLargeScreen && <TabsTrigger 
+                    </TabsTrigger>}
+                    {!isLargeScreen && mode != 'Expenses' && <TabsTrigger 
                         value="Legend" 
                         className={` data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
                     >
                         Legend
                     </TabsTrigger>}
+                    
                     <TabsTrigger 
                         value="Table" 
                         className={`px-4 data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
@@ -79,13 +99,13 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
                 </TabsList>
 
 
-                <TabsContent value="Bar" key={1} className = 'flex justify-center w-full'>   
+                {mode != 'Expenses' &&  <TabsContent value="Bar" key={1} className = 'flex justify-center w-full'>   
                     <div className="h-full w-full  flex items-center justify-center">
                         <BChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className=''/>
                     </div>    
-                </TabsContent>
+                </TabsContent>}
                 
-                <TabsContent value="Pie" key={2} className = 'flex justify-center'>
+                {mode != 'Expenses' &&  <TabsContent value="Pie" key={2} className = 'flex justify-center'>
                     <div className="h-full w-full flex items-center justify-around max-w-[620] ">
                         <PChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className = 'max-w-full max-h-full'/>
                         <div
@@ -97,8 +117,9 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
                             <Legend data={data} groupByField={groupByField} className = ''/>
                         </div>
                     </div>      
-                </TabsContent>
-                {!isLargeScreen && 
+                </TabsContent>}
+
+                {!isLargeScreen && mode != 'Expenses' &&  
                 <TabsContent value="legend" key={4} 
                 className = 'flex justify-center w-full '
                 // style={{
@@ -112,7 +133,7 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
                 }
                 <TabsContent value="Table" key={3} className = 'flex justify-center'>
                     <ScrollArea className="h-full w-full">
-                        <SubTable ogdata={data} groupByField={groupByField} mode={mode}/> 
+                        <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
                     </ScrollArea>
                 </TabsContent>
 

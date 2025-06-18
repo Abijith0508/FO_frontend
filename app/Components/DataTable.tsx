@@ -3,7 +3,7 @@ import { grayText2, tableGlass } from '../styling';
 import { ScrollArea , ScrollBar} from "@/components/ui/scroll-area"
 import DataItem from "../Utilities/dataItem"
 import { xirr } from '../Utilities/xirr';
-import { groupBy as filterGroupBy } from '../Utilities/filterFunction';
+import { groupBy, filterUpdate } from '../Utilities/filterFunction';
 import { Download, EllipsisVerticalIcon } from 'lucide-react';
 import { download } from '../Utilities/download';
 
@@ -25,7 +25,10 @@ type GroupedRow = {
     opening_cost?: number; 
     realized_gain?:number;
     opening_value? : number; 
-    total_gain?: number
+    total_gain?: number;
+    stamp_duty?: number;
+    stt_paid?: number;
+    other_expenses?: number;
   };
 };
 
@@ -46,6 +49,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
     acc.opening_value += parseFloat(row.opening_value || '0');
     acc.realized_gain += parseFloat(row.realized_gain || '0');
     acc.total_gain = acc.unrealized_gain + acc.realized_gain;
+    acc.stamp_duty += parseFloat(row.stamp_duty || '0');
+    acc.stt_paid += parseFloat(row.stt_paid || '0');
+    acc.other_expenses += parseFloat(row.other_expenses || '0');
     return acc;
   }, { 
     closing_cost: 0, 
@@ -54,7 +60,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
     opening_cost: 0,
     opening_value: 0,
     realized_gain: 0,
-    total_gain: 0
+    total_gain: 0,
+    stamp_duty: 0,
+    stt_paid: 0,
+    other_expenses: 0
   });
 
   const computePercent = (value: number, total: number) =>
@@ -78,6 +87,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
       acc.opening_value += parseFloat(row.opening_value || '0');
       acc.realized_gain += parseFloat(row.realized_gain || '0');
       acc.total_gain = acc.unrealized_gain + acc.realized_gain;
+      acc.stamp_duty += parseFloat(row.stamp_duty || '0');
+      acc.stt_paid += parseFloat(row.stt_paid || '0');
+      acc.other_expenses += parseFloat(row.other_expenses || '0');
       return acc;
     }, { 
       closing_cost: 0, 
@@ -86,7 +98,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
       opening_cost: 0,
       opening_value: 0,
       realized_gain: 0,
-      total_gain: 0
+      total_gain: 0,
+      stamp_duty: 0,
+      stt_paid: 0,
+      other_expenses: 0
     });
 
     grouped.push({
@@ -104,6 +119,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
         opening_value: assetTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         realized_gain: assetTotals.realized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         total_gain: assetTotals.total_gain.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        stamp_duty: assetTotals.stamp_duty.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        stt_paid: assetTotals.stt_paid.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+        other_expenses: assetTotals.other_expenses.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
         irr: '0.00', gain_cq: null, irr_cq: null, asset_type, strategy: '', substrategy: ''
       },
       percentages: {
@@ -113,7 +131,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
         opening_cost: computePercent(assetTotals.opening_cost, grandTotals.opening_cost),
         opening_value: computePercent(assetTotals.opening_value, grandTotals.opening_value),
         realized_gain: computePercent(assetTotals.realized_gain, grandTotals.realized_gain),
-        total_gain: computePercent(assetTotals.total_gain, grandTotals.total_gain)
+        total_gain: computePercent(assetTotals.total_gain, grandTotals.total_gain),
+        stamp_duty: computePercent(assetTotals.stamp_duty, grandTotals.stamp_duty),
+        stt_paid: computePercent(assetTotals.stt_paid, grandTotals.stt_paid),
+        other_expenses: computePercent(assetTotals.other_expenses, grandTotals.other_expenses)
       }
     });
 
@@ -135,6 +156,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
         acc.opening_value += parseFloat(row.opening_value || '0');
         acc.realized_gain += parseFloat(row.realized_gain || '0');
         acc.total_gain = acc.unrealized_gain + acc.realized_gain;
+        acc.stamp_duty += parseFloat(row.stamp_duty || '0');
+        acc.stt_paid += parseFloat(row.stt_paid || '0');
+        acc.other_expenses += parseFloat(row.other_expenses || '0');
         return acc;
       }, { 
         closing_cost: 0, 
@@ -143,7 +167,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
         opening_cost: 0,
         opening_value: 0,
         realized_gain: 0,
-        total_gain: 0
+        total_gain: 0,
+        stamp_duty: 0,
+        stt_paid: 0,
+        other_expenses: 0
       });
 
       grouped.push({
@@ -161,6 +188,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
           opening_value: strategyTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           realized_gain: strategyTotals.realized_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           total_gain: strategyTotals.total_gain.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          stamp_duty: strategyTotals.stamp_duty.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          stt_paid: strategyTotals.stt_paid.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
+          other_expenses: strategyTotals.other_expenses.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }),
           irr: '0.00', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy: ''
         },
         percentages: {
@@ -170,7 +200,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
           opening_cost: computePercent(strategyTotals.opening_cost, grandTotals.opening_cost),
           opening_value: computePercent(strategyTotals.opening_value, grandTotals.opening_value),
           realized_gain: computePercent(strategyTotals.realized_gain, grandTotals.realized_gain),
-          total_gain: computePercent(strategyTotals.total_gain, grandTotals.total_gain)
+          total_gain: computePercent(strategyTotals.total_gain, grandTotals.total_gain),
+          stamp_duty: computePercent(strategyTotals.stamp_duty, grandTotals.stamp_duty),
+          stt_paid: computePercent(strategyTotals.stt_paid, grandTotals.stt_paid),
+          other_expenses: computePercent(strategyTotals.other_expenses, grandTotals.other_expenses)
         }
       });
 
@@ -191,6 +224,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
           acc.opening_value += parseFloat(row.opening_value || '0');
           acc.realized_gain += parseFloat(row.realized_gain || '0');
           acc.total_gain = acc.unrealized_gain + acc.realized_gain;
+          acc.stamp_duty += parseFloat(row.stamp_duty || '0');
+          acc.stt_paid += parseFloat(row.stt_paid || '0');
+          acc.other_expenses += parseFloat(row.other_expenses || '0');
           return acc;
         }, { 
           closing_cost: 0, 
@@ -199,7 +235,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
           opening_cost: 0,
           opening_value: 0,
           realized_gain: 0,
-          total_gain: 0
+          total_gain: 0,
+          stamp_duty: 0,
+          stt_paid: 0,
+          other_expenses: 0
         });
 
         grouped.push({
@@ -217,6 +256,9 @@ function groupData(data: DataItem[]): GroupedRow[] {
             opening_value: substrategyTotals.opening_value.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
             realized_gain: substrategyTotals.realized_gain.toFixed(2),
             total_gain: substrategyTotals.total_gain.toFixed(2),
+            stamp_duty: substrategyTotals.stamp_duty.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+            stt_paid: substrategyTotals.stt_paid.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+            other_expenses: substrategyTotals.other_expenses.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
             irr: '0.00', gain_cq: null, irr_cq: null, asset_type, strategy, substrategy
           },
           percentages: {
@@ -226,7 +268,10 @@ function groupData(data: DataItem[]): GroupedRow[] {
             opening_cost: computePercent(substrategyTotals.opening_cost, grandTotals.opening_cost),
             opening_value: computePercent(substrategyTotals.opening_value, grandTotals.opening_value),
             realized_gain: computePercent(substrategyTotals.realized_gain, grandTotals.realized_gain),
-            total_gain: computePercent(substrategyTotals.total_gain, grandTotals.total_gain)
+            total_gain: computePercent(substrategyTotals.total_gain, grandTotals.total_gain),
+            stamp_duty: computePercent(substrategyTotals.stamp_duty, grandTotals.stamp_duty),
+            stt_paid: computePercent(substrategyTotals.stt_paid, grandTotals.stt_paid),
+            other_expenses: computePercent(substrategyTotals.other_expenses, grandTotals.other_expenses)
           }
         });
       });
@@ -381,6 +426,52 @@ const holdingsColumns = [
   },
 ];
 
+const expensesColumns = [
+  {
+    accessorKey: 'label',
+    header: 'Hierarchy',
+    // Custom cell rendering to apply padding based on level
+    renderCell: (row: GroupedRow) => (
+      <span
+        style={{ 
+            paddingLeft: `${(row.level + 1) * 20}px`,
+            
+        }}
+        className={row.level < 3 ? "font-bold" : ""} // Make summary labels bold
+      >
+        {row.label}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'stamp_duty',
+    header: 'Stamp Duty',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.stamp_duty || '0';
+      const pct = row.percentages?.stamp_duty;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'stt_paid',
+    header: 'STT Paid',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.stt_paid || '0';
+      const pct = row.percentages?.stt_paid;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'other_expenses',
+    header: 'Other Expenses',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.other_expenses || '0';
+      const pct = row.percentages?.other_expenses;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+];
+
 // Inline Shadcn UI Table components (simplified for direct use without imports)
 const Table = ({ children }: { children: React.ReactNode }) => (
   <div className = "relative">
@@ -430,18 +521,21 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
   const [error, setError] = useState<string | null>(null);
 
   // Select columns based on mode
-  const columns = mode === "Performance" ? performanceColumns : holdingsColumns;
+  const columns = mode === "Performance" ? performanceColumns : mode === "Expenses" ? expensesColumns : holdingsColumns ;
 
   // Process data when it changes
   useEffect(() => {
     try {
       setIsLoading(true);
+      console.log('GroupedDataTable - Mode:', mode);
+      console.log('GroupedDataTable - Data:', data);
       const processedData = groupData(data);
+      console.log('GroupedDataTable - Processed Data:', processedData);
       
       // Get XIRR values using the same method as charts and SubTable
-      const assetTypeXIRR = filterGroupBy(data, 'asset_type');
-      const strategyXIRR = filterGroupBy(data, 'strategy');
-      const substrategyXIRR = filterGroupBy(data, 'substrategy');
+      const assetTypeXIRR = groupBy(data, 'asset_type');
+      const strategyXIRR = groupBy(data, 'strategy');
+      const substrategyXIRR = groupBy(data, 'substrategy');
       
       // Update XIRR values in the processed data
       processedData.forEach(row => {
@@ -616,6 +710,8 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
                     {groupedRows.map((row, index) => {
                     if (!isRowVisible(row, index)) return null;
                     
+                    console.log('Rendering row:', row.label, 'Mode:', mode, 'Level:', row.level);
+                    
                     return (
                         <TableRow
                         key={row.key}
@@ -668,12 +764,13 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
 };
  
 // components/ui/data-table.tsx
-import { groupBy } from '../Utilities/filterFunction';
+// import { groupBy } from '../Utilities/filterFunction';
 
 interface DataTableProps{
   ogdata: DataItem[];
   groupByField: any;
   mode?: string;
+  setFilters?: any;
 }
 
 type GroupedDataItem = {
@@ -684,9 +781,12 @@ type GroupedDataItem = {
   sumOfOpeningCost: number;
   sumOfRealizedGain: number;
   sumOfOpeningValue: number;
+  sumOfOtherExpenses: number;
+  sumOfStampDuty: number;
+  sumOfSttPaid: number;
 };
 
-function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
+function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: DataTableProps) {
   
   const data = groupBy(ogdata, groupByField) as GroupedDataItem[];
   // console.log(data)
@@ -712,6 +812,13 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
         "Total Gain",
         "Gain %",
         "XIRR"
+      ];
+    } else if (mode === "Expenses") {
+      return [
+        "Name",
+        "Stamp Duty",
+        "STT Paid",
+        "Other Expenses"
       ];
     } else {
       return [
@@ -758,6 +865,9 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
               const gainPercentage = closingCosts !== 0 
                 ? (unrealizedGain / closingCosts) * 100 
                 : 0;
+              const stampDuty = Number(item.sumOfStampDuty || 0);
+              const sttPaid = Number(item.sumOfSttPaid || 0);
+              const otherExpenses = Number(item.sumOfOtherExpenses || 0);
 
               if (mode === "Performance") {
                 return (
@@ -765,7 +875,10 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
                     key={index}
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td 
+                      className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                    >
                       {String(item[groupByField])}
                     </td>
                     <td className="px-6 py-4 text-sm text-left text-white/80">
@@ -797,13 +910,39 @@ function SubTable({ogdata, groupByField, mode = "Holdings"}: DataTableProps) {
                     </td>
                   </tr>
                 );
+              } else if (mode === "Expenses") {
+                return (
+                  <tr 
+                    key={index}
+                    className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
+                  >
+                    <td 
+                      className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                    >
+                      {String(item[groupByField])}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {formatCurrency(stampDuty)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {formatCurrency(sttPaid)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {formatCurrency(otherExpenses)}
+                    </td>
+                  </tr>
+                );
               } else {
                 return (
                   <tr 
                     key={index}
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td 
+                      className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                    >
                       {String(item[groupByField])}
                     </td>
                     <td className="px-6 py-4 text-sm text-left text-white/80">
