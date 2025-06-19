@@ -472,6 +472,60 @@ const expensesColumns = [
   },
 ];
 
+const gainColumns = [
+  {
+    accessorKey: 'label',
+    header: 'Hierarchy',
+    // Custom cell rendering to apply padding based on level
+    renderCell: (row: GroupedRow) => (
+      <span
+        style={{ 
+            paddingLeft: `${(row.level + 1) * 20}px`,
+            
+        }}
+        className={row.level < 3 ? "font-bold" : ""} // Make summary labels bold
+      >
+        {row.label}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'closing_cost',
+    header: 'Invested Amount ',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.closing_cost;
+      const pct = row.percentages?.closing_cost;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'closing_value',
+    header: 'Holding Value',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.closing_value;
+      const pct = row.percentages?.closing_value;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'unrealized_gain',
+    header: 'Unrealised Gain',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.unrealized_gain;
+      const pct = row.percentages?.unrealized_gain;
+      return pct ? `${val} (${pct.toFixed(2)}%)` : val;
+    }
+  },
+  {
+    accessorKey: 'irr',
+    header: 'XIRR',
+    renderCell: (row: GroupedRow) => {
+      const val = row.row?.irr;
+      return val ? `${val}%` : '0.00%';
+    }
+  },
+];
+
 // Inline Shadcn UI Table components (simplified for direct use without imports)
 const Table = ({ children }: { children: React.ReactNode }) => (
   <div className = "relative">
@@ -521,8 +575,10 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
   const [error, setError] = useState<string | null>(null);
 
   // Select columns based on mode
-  const columns = mode === "Performance" ? performanceColumns : mode === "Expenses" ? expensesColumns : holdingsColumns ;
-
+  var columns : any  = holdingsColumns;
+  if(mode === "Performance")columns = performanceColumns
+  else if (mode===  "Expenses") columns = expensesColumns 
+  else if (mode ===  "Gain") columns = gainColumns
   // Process data when it changes
   useEffect(() => {
     try {
@@ -700,7 +756,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
               <Table>
                 <TableHeader>
                     <TableRow className = "rounded-t-lg">
-                    {columns.map((column, index) => (
+                    {columns.map((column : any, index : any) => (
                         <TableHead key={index}>{column.header}</TableHead>
                     ))}
                     </TableRow>
@@ -743,7 +799,7 @@ const GroupedDataTable: React.FC<GroupedDataTableProps> = ({ className, data, mo
                             </div>
                         </TableCell>
 
-                        {columns.slice(1).map((column, colIndex) => (
+                        {columns.slice(1).map((column : any, colIndex : any) => (
                             <TableCell key={colIndex}>
                             {column.renderCell(row)}
                             </TableCell>

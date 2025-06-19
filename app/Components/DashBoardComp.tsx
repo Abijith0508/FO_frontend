@@ -25,10 +25,11 @@ type Stock = {
 type Props = {
   holdingData : any[], 
   performanceData: any[],
-  expenseData: any[]
+  expenseData: any[],
+  gainData: any[]
 }
 
-export default function DashBoardComp({holdingData, performanceData, expenseData} : Props) {
+export default function DashBoardComp({holdingData, performanceData, expenseData,  gainData} : Props) {
   const [ogData, setOgData] = useState<any[]>(holdingData);
   const [filteredData, setFilteredData] = useState<any[]>(holdingData);
   const [filters, setFilters] = useState<string[]>([]);
@@ -70,31 +71,32 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
           data-tooltip-content="Refresh Data"
           data-tooltip-place="top"
           data-tooltip-float
-          className="fixed top-36 right-12 h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none cursor-pointer"
+          className="fixed top-24 right-12 h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none cursor-pointer"
           onClick={() => window.location.reload()}
         />
-        <Table2 
-          data-tooltip-id="BCTooltip"
-          data-tooltip-content="View Overview Table"
-          data-tooltip-place="top"
-          data-tooltip-float
-          className="fixed top-24 right-12 h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none"
-          onClick={() => setIsTableVisible(()=>!isTableVisible)}
-        />
+        
         <SideBar isOpen = {isOpen} setIsOpen={setIsOpen}/>
         <div className = 'px-10'>
           <div className="flex flex-col gap-5 justify-around pb-5">
             <Heading filters = {filters} setFilters = {setFilters} className = "px-20 pb-5 pt-8"/>
-            <Total data={filteredData} ogData={ogData} filters={filters} setFilters={setFilters} className={` ${glass} py-6 px-15`} mode={mode} setMode={setMode} setFilteredData={setFilteredData}/>
+            <Total data={filteredData} ogData={ogData} filters={filters} 
+            setFilters={setFilters} className={` ${glass} py-6 px-15`} 
+            mode={mode} setMode={setMode} setFilteredData={setFilteredData} 
+            setIsTableVisible={setIsTableVisible} isTableVisible={isTableVisible}
+            />
             
           </div>
-          <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
-            {isTableVisible && 
-            <motion.div className="pb-5">
+
+          <div>
+            <motion.div layout className="pb-5"  transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+              
+              {isTableVisible &&
               <DataTable data={filteredData} mode={mode}/>
-            </motion.div>
-            }
-          </motion.div>
+              
+              }
+            </motion.div> 
+            
+          </div>
           <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="w-full bg-transparent text-white justify-around gap-5 
             flex flex-wrap"
@@ -113,6 +115,7 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
               filters={filters} 
               setFilters={setFilters} 
               className={`
+              
                 `}
               mode={mode}
             />

@@ -9,7 +9,7 @@ type Stock = {
 };
 
 // Module-level cache to prevent multiple fetches
-let cachedData: { holdData: any; perfData: any, expData: any } | null = null;
+let cachedData: { holdData: any; perfData: any, expData: any, gainData: any } | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -63,13 +63,14 @@ async function getDashboardData() {
     const holdingslink = `http://13.202.119.24/irr/holdingsnew/?t=${timestamp}`;
     const performancelink = `http://13.202.119.24/irr/perfnew/?t=${timestamp}`;
     const expenselink = `http://13.202.119.24/irr/expenses/?t=${timestamp}`;
-    
+    const gainLink= `http://10.0.0.199:8096/irr/dashgain/?t=${timestamp}`
+
     console.log('Cache expired or no cache found. Fetching fresh dashboard data...');
     console.log('Fetch URLs:', { holdingslink, performancelink, expenselink });
     
     try {
         // Fetch both endpoints in parallel
-        const [holdingsResponse, performanceResponse, expenseResponse] = await Promise.all([
+        const [holdingsResponse, performanceResponse, expenseResponse, gainResponse] = await Promise.all([
             fetch(holdingslink, {
                 headers: { 'Content-Type': 'application/json' },
                 cache: 'no-cache' // Allow fresh requests but respect cache headers
@@ -79,6 +80,10 @@ async function getDashboardData() {
                 cache: 'no-cache' // Allow fresh requests but respect cache headers
             }),
             fetch(expenselink, {
+                headers: { 'Content-Type': 'application/json' },
+                cache: 'no-cache' // Allow fresh requests but respect cache headers
+            }),
+            fetch(gainLink, {
                 headers: { 'Content-Type': 'application/json' },
                 cache: 'no-cache' // Allow fresh requests but respect cache headers
             })
@@ -94,15 +99,19 @@ async function getDashboardData() {
         if (!expenseResponse.ok) {
             throw new Error(`Performance fetch failed: ${expenseResponse.status}`);
         }
+        if (!gainResponse.ok) {
+            throw new Error(`Performance fetch failed: ${gainResponse.status}`);
+        }
 
-        const [holdData, perfData, expData] = await Promise.all([
+        const [holdData, perfData, expData, gainData] = await Promise.all([
             holdingsResponse.json(),
             performanceResponse.json(),
-            expenseResponse.json()
+            expenseResponse.json(),
+            gainResponse.json()
         ]);
         
         // Cache the results
-        cachedData = { holdData, perfData, expData };
+        cachedData = { holdData, perfData, expData, gainData };
         cacheTimestamp = now;
         
         console.log('Dashboard data fetched and cached successfully at:', new Date(now).toLocaleTimeString());
@@ -130,9 +139,9 @@ async function DashboardContent() {
     try {
         console.log('Starting to fetch dashboard data...');
         
-        const { holdData, perfData, expData } = await getDashboardData();
+        const { holdData, perfData, expData ,  gainData } = await getDashboardData();
         
-        console.log('Fetched data:', { holdData, perfData, expData });
+        // console.log('Fetched data:', { holdData, perfData, expData });
         
         // Check if data exists and has the expected structure
         const hasHoldingsData = holdData && holdData.data && Array.isArray(holdData.data) && holdData.data.length > 0;
@@ -142,7 +151,11 @@ async function DashboardContent() {
         console.log('Data checks:', { hasHoldingsData, hasPerformanceData, hasExpenseData });
         
             return (        
-                <DashBoardComp holdingData={holdData.data} performanceData={perfData.data} expenseData={expData.data}/>
+                <DashBoardComp 
+                holdingData={holdData.data} 
+                performanceData={perfData.data} 
+                expenseData={expData.data} 
+                gainData={gainData.data}/>
             );
         // else{
         //     return (

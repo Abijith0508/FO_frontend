@@ -91,7 +91,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
       enabled : true,
       formatter: function(this: any) {
         const point = this.point;
-        const value = formatIndianNumber(point.y);
+        const value =  point.y.toLocaleString('en-IN');;
         const xirr = point.xirr || 0;
         return `<b>${point.name}</b><br/>
                 Value: ₹${value}<br/>
