@@ -63,51 +63,57 @@ async function getDashboardData() {
     const holdingslink = `http://13.202.119.24/irr/holdingsnew/?t=${timestamp}`;
     const performancelink = `http://13.202.119.24/irr/perfnew/?t=${timestamp}`;
     const expenselink = `http://13.202.119.24/irr/expenses/?t=${timestamp}`;
-    const gainLink= `http://10.0.0.199:8096/irr/dashgain/?t=${timestamp}`
+    const gainLink= `http://10.0.0.199:8096/irr/dashgain/`
 
     console.log('Cache expired or no cache found. Fetching fresh dashboard data...');
     console.log('Fetch URLs:', { holdingslink, performancelink, expenselink });
     
     try {
-        // Fetch both endpoints in parallel
-        const [holdingsResponse, performanceResponse, expenseResponse, gainResponse] = await Promise.all([
+        // Fetch both endpoints in parallel, but handle gain fetch separately
+        const [holdingsResponse, performanceResponse, expenseResponse] = await Promise.all([
             fetch(holdingslink, {
                 headers: { 'Content-Type': 'application/json' },
-                cache: 'no-cache' // Allow fresh requests but respect cache headers
+                cache: 'no-cache'
             }),
             fetch(performancelink, {
                 headers: { 'Content-Type': 'application/json' },
-                cache: 'no-cache' // Allow fresh requests but respect cache headers
+                cache: 'no-cache'
             }),
             fetch(expenselink, {
                 headers: { 'Content-Type': 'application/json' },
-                cache: 'no-cache' // Allow fresh requests but respect cache headers
-            }),
-            fetch(gainLink, {
-                headers: { 'Content-Type': 'application/json' },
-                cache: 'no-cache' // Allow fresh requests but respect cache headers
+                cache: 'no-cache'
             })
         ]);
-        
+
+        let gainData = { data: [] };
+        try {
+            const gainResponse = await fetch(gainLink, {
+                headers: { 'Content-Type': 'application/json' },
+                cache: 'no-cache'
+            });
+            if (gainResponse.ok) {
+                gainData = await gainResponse.json();
+            } else {
+                console.warn(`Gain fetch failed: ${gainResponse.status}`);
+            }
+        } catch (gainError) {
+            console.warn('Gain fetch error:', gainError);
+        }
+
         if (!holdingsResponse.ok) {
             throw new Error(`Holdings fetch failed: ${holdingsResponse.status}`);
         }
-        
         if (!performanceResponse.ok) {
             throw new Error(`Performance fetch failed: ${performanceResponse.status}`);
         }
         if (!expenseResponse.ok) {
-            throw new Error(`Performance fetch failed: ${expenseResponse.status}`);
-        }
-        if (!gainResponse.ok) {
-            throw new Error(`Performance fetch failed: ${gainResponse.status}`);
+            throw new Error(`Expense fetch failed: ${expenseResponse.status}`);
         }
 
-        const [holdData, perfData, expData, gainData] = await Promise.all([
+        const [holdData, perfData, expData] = await Promise.all([
             holdingsResponse.json(),
             performanceResponse.json(),
-            expenseResponse.json(),
-            gainResponse.json()
+            expenseResponse.json()
         ]);
         
         // Cache the results
@@ -147,23 +153,25 @@ async function DashboardContent() {
         const hasHoldingsData = holdData && holdData.data && Array.isArray(holdData.data) && holdData.data.length > 0;
         const hasPerformanceData = perfData && perfData.data && Array.isArray(perfData.data) && perfData.data.length > 0;
         const hasExpenseData = expData && expData.data && Array.isArray(expData.data) && expData.data.length > 0;
-         
-        console.log('Data checks:', { hasHoldingsData, hasPerformanceData, hasExpenseData });
+        const hasGainData = gainData && gainData.data && Array.isArray(gainData.data) && gainData.data.length > 0;
+
+        console.log('Data checks:', { hasHoldingsData, hasPerformanceData, hasExpenseData, hasGainData });
         
-            return (        
-                <DashBoardComp 
-                holdingData={holdData.data} 
-                performanceData={perfData.data} 
-                expenseData={expData.data} 
-                gainData={gainData.data}/>
+        if (!hasHoldingsData && !hasPerformanceData && !hasExpenseData && !hasGainData) {
+            return (
+                <div className="flex items-center justify-center h-screen gap-5">
+                    <p className="text-white/80 text-lg">No data available</p>
+                </div>
             );
-        // else{
-        //     return (
-        //         <div className="flex items-center justify-center h-screen gap-5">
-        //             <p className="text-white/80 text-lg">No data available</p>
-        //         </div>
-        //     );
-        // }
+        }
+        
+        return (        
+            <DashBoardComp 
+            holdingData={holdData.data} 
+            performanceData={perfData.data} 
+            expenseData={expData.data} 
+            gainData={gainData.data}/>
+        );
     } catch (error) {
         console.error('Fetch error:', error);
         

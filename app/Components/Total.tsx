@@ -196,10 +196,13 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
             
           </div>
           
-          <div className="text-[40px] font-bold flex items-center gap-5">
-            ₹ <animated.span>
+          <div className="text-[30px] sm:text-[40px] sm:font-bold flex items-center gap-5">
+            <div className="flex">
+               ₹ <animated.span>
               {animatedTotal.to(val => Math.round(val).toLocaleString('en-IN'))}
             </animated.span> 
+            </div>
+           
             <Table2 
                 data-tooltip-id="BCTooltip"
                 data-tooltip-content="View Overview Table"
@@ -211,7 +214,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
           </div>
           
           <div className="flex flex-col items-center justify-center">
-            <div className={`relative w-full min-w-[400px] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
+            <div className={`relative min-w-[225px] sm:min-w-[400px] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
               {/* Equity Bar */}
               <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
               <div
@@ -259,8 +262,8 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
             </div>
               
             
-            <div className={`flex justify-around w-full ${grayText2} `}>
-              <div className="flex items-center gap-2">
+            <div className={`flex justify-around w-[100%] ${grayText2} gap-1`}>
+              <div className="flex items-center sm:gap-2 gap-1">
                 <div className="w-3 h-3 bg-emerald cursor-pointer" 
                 onClick={() => {
                   setHovered(1)
@@ -269,11 +272,11 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 />
                 <div>Equity</div>
                 {(equityPct <= 30 && equityPct!=0) && 
-                  <div>₹ {formatNumber(closingValueEquity)}</div>
+                  <div>₹{formatNumber(closingValueEquity)}</div>
                 }
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center sm:gap-2 gap-1">
                 <div className="w-3 h-3 bg-ruby cursor-pointer"
                 onClick={() => {
                   setHovered(1)
@@ -281,7 +284,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 }}/>
                 <div>Debt</div>
                 {(debtPct <= 30 && debtPct!=0) && 
-                  <div>₹ {formatNumber(closingValueDebt)}</div>
+                  <div>₹{formatNumber(closingValueDebt)}</div>
                 }
               </div>
             </div>
@@ -322,7 +325,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 <div className="text-white/30">as on yesterday</div>
               </div>
               <div className = " text-[23px] text-white/90">
-                ₹ <animated.span>
+                ₹<animated.span>
                   {animatedCC.to(val => Math.round(val).toLocaleString('en-IN'))}
                 </animated.span>{' '}
               </div>
@@ -375,12 +378,8 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
   const totalData = groupAll[0];
   // console.log(totalData)
   
-  const closingValueEquity = equityData ? Number(equityData.sumOfClosingValue || 0) : 0;
-  const closingValueDebt = debtData ? Number(debtData.sumOfClosingValue || 0) : 0;
-  const total = totalData ? Number(totalData.sumOfClosingValue || 0) : 0;
-  const totalClosingCost = totalData ? Number(totalData.sumOfClosingCosts || 0) : 0;
   const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain || 0) : 0;
-  const totalOpeningCost = totalData ? Number(totalData.sumOfOpeningCost || 0) : 0;
+  
   const totalRealizedGain = totalData ? Number(totalData.sumOfRealizedGain || 0) : 0;
   const totalOtherExpenses = totalData ? Number(totalData.sumOfOtherExpenses || 0) : 0;
   const totalSttPaid = totalData ? Number(totalData.sumOfSttPaid || 0) : 0;
@@ -393,13 +392,10 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
   const equityPct = (totalExpenses ? (equityExpenses / totalExpenses) * 100 : 0);
   const debtPct = (totalExpenses ? (debtExpenses / totalExpenses) * 100 : 0);
   
-  const debtXirr = debtData ? Number(debtData.xirr || 0) : 0;
-  
   const { number: animatedEquityExpenses } = useSpring({
     number: equityExpenses,
     from: { number: 0 },
     config: { duration: 500 },
-
   });
 
   const { number: animatedDebtExpenses } = useSpring({
@@ -449,7 +445,7 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
   }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
-      <div className={`flex justify-around w-full h-[300px] ${className}`} >
+      <div className={`flex justify-around w-full h-[300px] ${className} overflow-hidden`} >
         <div className = "flex flex-col items-center justify-center gap-3">
           <div className={`${grayText} flex gap-2 `}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -478,32 +474,32 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-              <div className="flex items-center gap-2">
-                <div className="flex w-[200px] divide-x divide-white/50 overflow-hidden rounded-2xl">
-                  <Input 
-                    placeholder="From Year" 
-                    value={fromYear === 0 ? '' : fromYear}
-                    className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
-                    onChange={(e) => setFromYear(parseInt(e.target.value) | 0)}
-                  />
-                  <Input 
-                    placeholder="To Year" 
-                    value={toYear === 3000 ? '' : toYear}
-                    className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
-                    onChange={(e) => setToYear(parseInt(e.target.value) | 0)}
-                  /> 
-                </div>
-                <Funnel 
-                  className="cursor-pointer stroke-white/50 hover:stroke-white/80 transition-colors duration-200" 
-                  onClick={() => {
-                    if (fromYear && toYear && fromYear <= toYear && fromYear > 1900 && toYear < 2100) {
-                      updateTimeFilter(setFilters, fromYear, toYear);
-                    } else {
-                      console.warn('Please enter valid years (1900-2100) with From Year <= To Year');
-                    }
-                  }}
+            <div className="flex items-center gap-2">
+              <div className="flex w-[200px] divide-x divide-white/50 overflow-hidden rounded-2xl">
+                <Input 
+                  placeholder="From Year" 
+                  value={fromYear === 0 ? '' : fromYear}
+                  className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
+                  onChange={(e) => setFromYear(parseInt(e.target.value) | 0)}
+                />
+                <Input 
+                  placeholder="To Year" 
+                  value={toYear === 3000 ? '' : toYear}
+                  className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
+                  onChange={(e) => setToYear(parseInt(e.target.value) | 0)}
                 /> 
-              </div>     
+              </div>
+              <Funnel 
+                className="cursor-pointer stroke-white/50 hover:stroke-white/80 transition-colors duration-200" 
+                onClick={() => {
+                  if (fromYear && toYear && fromYear <= toYear && fromYear > 1900 && toYear < 2100) {
+                    updateTimeFilter(setFilters, fromYear, toYear);
+                  } else {
+                    console.warn('Please enter valid years (1900-2100) with From Year <= To Year');
+                  }
+                }}
+              /> 
+            </div>     
           </div>
           
           <div className="text-[40px] font-bold">
@@ -513,7 +509,7 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
           </div>
           
           <div className="flex flex-col items-center justify-center ">
-            <div className={`relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
+            <div className={`hidden sm:block relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
               {/* Equity Bar */}
               <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
               <div
@@ -554,31 +550,31 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
               </div>
             </div>
 
-            <div className={`flex justify-around w-full ${grayText2} `}>
-            <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-emerald cursor-pointer" 
-                onClick={() => {
-                setHovered(1)
-                filterUpdate(setFilters, 'asset_type', 'Equity')
-                }}
-                />
-                <div>Equity</div>
-                {(equityPct <= 30 && equityPct!=0) && 
-                <div>₹ {formatNumber(equityExpenses)}</div>
-                }
-            </div>
-            
-            <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-ruby cursor-pointer"
-                onClick={() => {
-                setHovered(1)
-                filterUpdate(setFilters, 'asset_type', 'Debt')
-                }}/>
-                <div>Debt</div>
-                {(debtPct <= 30 && debtPct!=0) && 
-                <div>₹ {formatNumber(debtExpenses)}</div>
-                }
-            </div>
+            <div className={`md:flex justify-around w-full ${grayText2} `}>
+              <div className="flex sm:flex-col flex-row items-center sm:gap-2 gap-1">
+                  <div className="w-3 h-3 bg-emerald cursor-pointer" 
+                  onClick={() => {
+                  setHovered(1)
+                  filterUpdate(setFilters, 'asset_type', 'Equity')
+                  }}
+                  />
+                  <div>Equity</div>
+                  {(equityPct <= 30 && equityPct!=0) && 
+                  <div>₹ {formatNumber(equityExpenses)}</div>
+                  }
+              </div>
+              
+              <div className="flex items-center sm:gap-2 gap-1">
+                  <div className="w-3 h-3 bg-ruby cursor-pointer"
+                  onClick={() => {
+                  setHovered(1)
+                  filterUpdate(setFilters, 'asset_type', 'Debt')
+                  }}/>
+                  <div>Debt</div>
+                  {(debtPct <= 30 && debtPct!=0) && 
+                  <div>₹ {formatNumber(debtExpenses)}</div>
+                  }
+              </div>
             </div>
           </div>
           

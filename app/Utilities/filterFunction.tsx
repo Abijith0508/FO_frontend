@@ -20,6 +20,7 @@ function groupBy(
         acc.sumOfOtherExpenses += parseFloat(item.other_expenses) || 0;
         acc.sumOfStampDuty += parseFloat(item.stamp_duty) || 0;
         acc.sumOfSttPaid += parseFloat(item.stt_paid) || 0;
+        acc.sumOfDividends += parseFloat(item.dividends) || 0;
         return acc;
       },
       {
@@ -32,6 +33,7 @@ function groupBy(
         sumOfOtherExpenses: 0,
         sumOfStampDuty: 0,
         sumOfSttPaid: 0,
+        sumOfDividends: 0,
       }
     );
 
@@ -68,6 +70,7 @@ function groupBy(
         sumOfOtherExpenses: totalSums.sumOfOtherExpenses,
         sumOfStampDuty: totalSums.sumOfStampDuty,
         sumOfSttPaid: totalSums.sumOfSttPaid,
+        sumOfDividends: totalSums.sumOfDividends,
         xirr: combinedXIRR,
       },
     ];
@@ -84,6 +87,7 @@ function groupBy(
       sumOfOtherExpenses: number;
       sumOfStampDuty: number;
       sumOfSttPaid: number;
+      sumOfDividends: number;
       cashflows: string[];
       dates: string[];
     } 
@@ -113,6 +117,7 @@ function groupBy(
         sumOfOtherExpenses: 0,
         sumOfStampDuty: 0,
         sumOfSttPaid: 0,
+        sumOfDividends: 0,
         cashflows: [],
         dates: []
       };
@@ -127,6 +132,7 @@ function groupBy(
     grouped[key].sumOfOtherExpenses += otherExpenses;
     grouped[key].sumOfStampDuty += stampDuty;
     grouped[key].sumOfSttPaid += sttPaid;
+    grouped[key].sumOfDividends += parseFloat(item.dividends) || 0;
 
     // Append cashflows and dates
     if (item.cashflows && item.dates) {
@@ -164,6 +170,7 @@ function groupBy(
       sumOfOtherExpenses: values.sumOfOtherExpenses,
       sumOfStampDuty: values.sumOfStampDuty,
       sumOfSttPaid: values.sumOfSttPaid,
+      sumOfDividends: values.sumOfDividends,
       xirr: groupXIRR,
     };
     // console.log(obj)

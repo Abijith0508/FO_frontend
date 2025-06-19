@@ -47,6 +47,9 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
   
   
   const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain || 0) : 0;
+  const totalDividends = totalData ? Number(totalData.sumOfDividends || 0) : 0;
+  // For now, use totalUnrealisedGain as a placeholder for short+long term unrealised gain
+  const totalGain = totalUnrealisedGain + totalDividends;
   const totalRealizedGain = totalData ? Number(totalData.sumOfRealizedGain || 0) : 0;
   const totalOtherExpenses = totalData ? Number(totalData.sumOfOtherExpenses || 0) : 0;
   const totalSttPaid = totalData ? Number(totalData.sumOfSttPaid || 0) : 0;
@@ -173,9 +176,7 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
           </div>
           
           <div className="text-[40px] font-bold">
-            ₹ <animated.span>
-              {animatedTotalExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-            </animated.span>
+            ₹ {formatNumber(totalGain)}
           </div>
           
           <div className="flex flex-col items-center justify-center ">

@@ -91,7 +91,7 @@ function SideBar({isOpen, setIsOpen} : Props){
   return (
     <>
       <Icon 
-          className = "fixed top-12 right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none"
+          className = "fixed top-6 sm:top-12 right-6 sm:right-12 h-8 w-8 z-50 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
           data-tooltip-id="BCTooltip"
           data-tooltip-content={isOpen ? "Close Menu" : "Open Menu"}
@@ -100,7 +100,7 @@ function SideBar({isOpen, setIsOpen} : Props){
         />
       <Accordion type="single" collapsible 
           className={` scroll-auto h-screen fixed top-0 
-                  w-[20%]
+                  
                   min-w-[calc((100%/11.3*2))]
                   ${sideglass} shadow-md 
                   z-40

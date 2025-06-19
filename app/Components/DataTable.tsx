@@ -876,6 +876,16 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
         "STT Paid",
         "Other Expenses"
       ];
+    } else if (mode === "Gain") {
+      return [
+        "Name",
+        "Realised Gain",
+        "Short Realised Gains",
+        "Long Realised Gains",
+        "Total Gain",
+        "Cost Basis",
+        "Dividends"
+      ];
     } else {
       return [
         "Name",
@@ -924,6 +934,40 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
               const stampDuty = Number(item.sumOfStampDuty || 0);
               const sttPaid = Number(item.sumOfSttPaid || 0);
               const otherExpenses = Number(item.sumOfOtherExpenses || 0);
+
+              // GAIN MODE
+              if (mode === "Gain") {
+                return (
+                  <tr 
+                    key={index}
+                    className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
+                  >
+                    <td className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                        onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                    >
+                      {String(item[groupByField])}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {Number(item.realized_gains || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {Number(item.short_realized_gains || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {Number(item.long_realized_gains || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {Number(item.total_gain || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {Number(item.costbasis || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                      {Number(item.dividends || 0).toLocaleString('en-IN')}
+                    </td>
+                  </tr>
+                );
+              }
 
               if (mode === "Performance") {
                 return (

@@ -12,7 +12,7 @@ type Props = {
 
 const Heading = ({ filters, setFilters, className }: Props) => {
   return (
-    <div className={`px-[5px] flex justify-center items-right w-full ${className}`}>
+    <div className={`px-[5px] flex flex-wrap justify-center items-right w-full ${className}`}>
       <Crumbs filters={filters} setFilters={setFilters} />
     </div>
   );

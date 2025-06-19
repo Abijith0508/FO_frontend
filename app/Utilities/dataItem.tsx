@@ -38,5 +38,11 @@ export default interface DataItem  {
   other_expenses? : string;
   stamp_duty? : string; 
   stt_paid? : string;
+
+  short_realized_gains? : string;
+  long_realized_gains? : string;
+  costbasis? : string;
+  dividends? : string;
+  
 }
  

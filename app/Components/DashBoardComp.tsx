@@ -71,16 +71,16 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
           data-tooltip-content="Refresh Data"
           data-tooltip-place="top"
           data-tooltip-float
-          className="fixed top-24 right-12 h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none cursor-pointer"
+          className="fixed top-16 sm:top-24 right-6 sm:right-12 h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none cursor-pointer"
           onClick={() => window.location.reload()}
         />
         
         <SideBar isOpen = {isOpen} setIsOpen={setIsOpen}/>
-        <div className = 'px-10'>
+        <div className = 'px-2 sm:px-10'>
           <div className="flex flex-col gap-5 justify-around pb-5">
             <Heading filters = {filters} setFilters = {setFilters} className = "px-20 pb-5 pt-8"/>
             <Total data={filteredData} ogData={ogData} filters={filters} 
-            setFilters={setFilters} className={` ${glass} py-6 px-15`} 
+            setFilters={setFilters} className={` ${glass} py-6 px-2 sm:px-15`} 
             mode={mode} setMode={setMode} setFilteredData={setFilteredData} 
             setIsTableVisible={setIsTableVisible} isTableVisible={isTableVisible}
             />
@@ -88,10 +88,10 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
           </div>
 
           <div>
-            <motion.div layout className="pb-5"  transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+            <motion.div layout className=""  transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
               
               {isTableVisible &&
-              <DataTable data={filteredData} mode={mode}/>
+              <DataTable data={filteredData} mode={mode} className="pb-5"/>
               
               }
             </motion.div> 
