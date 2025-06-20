@@ -11,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Table2 } from 'lucide-react';
-
+const today = new Date()
+today.setDate(today.getDate()-1)
+const date = today.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    
 // Utility function to format numbers consistently
 const formatNumber = (value: number): string => {
   if (isNaN(value) || !isFinite(value)) return '0';
@@ -299,10 +302,10 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
         
         <div className = "flex flex-wrap items-center justify-center p-0 gap-5 max-w-[50%]">
             {mode === "Performance" && (
-              <div className = "flex flex-col">
-                <div className = {`${grayText2} ` }>
+              <div className = "flex flex-col gap-1">
+                <div className = {`${grayText2} leading-tight` }>
                   Opening Cost 
-                  <div className="text-white/30">as on April 1</div>
+                  <div className="text-white/30 p-0 m-0">as on April 1</div>
                 </div>
                 <div className = " text-[23px] text-white/90">
                   ₹ <animated.span>
@@ -312,8 +315,8 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
               </div> 
             )}
             {mode === "Performance" && (
-              <div className = "flex flex-col">
-                <div className = {`${grayText2} ` }>
+              <div className = "flex flex-col gap-1">
+                <div className = {`${grayText2} leading-tight` }>
                   Opening Value 
                   <div className="text-white/30">as on April 1</div>
                 </div>
@@ -324,10 +327,10 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 </div>
               </div> 
             )}
-            <div className = "flex flex-col items-center text-center justify-center">
-              <div className = {`${grayText2} ` }>
+            <div className = "flex flex-col items-center text-center justify-center gap-1">
+              <div className = {`${grayText2} leading-tight` }>
                 Invested Amount
-                <div className="text-white/30">as on yesterday</div>
+                <div className="text-white/30">as on {date}</div>
               </div>
               <div className = " text-[23px] text-white/90">
                 ₹<animated.span>
@@ -338,7 +341,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
             <div className = "flex flex-col items-center justify-around ">
               <div className = "text-gray whitespace-nowrap">Unrealised Gain/Loss</div>
               <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>
-                ₹ <animated.span>
+                ₹<animated.span>
                   {animatedUG.to(val => Math.round(val).toLocaleString('en-IN'))}
                 </animated.span>{' '}
                 {ugColor == 'emerald' ? <ArrowUpRight/> :<ArrowDownLeft/>}

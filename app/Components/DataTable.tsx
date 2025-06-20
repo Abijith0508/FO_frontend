@@ -6,7 +6,9 @@ import { xirr } from '../Utilities/xirr';
 import { groupBy, filterUpdate } from '../Utilities/filterFunction';
 import { Download, EllipsisVerticalIcon, X } from 'lucide-react';
 import { download } from '../Utilities/download';
-const date = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+const today = new Date()
+today.setDate(today.getDate()-1)
+const date = today.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
     
 type Cashflow = {
   amount: number;
@@ -311,7 +313,7 @@ const performanceColumns = [
   },
   {
     accessorKey: 'closing_cost',
-    header: 'Invested Amount ',
+    header: 'Invested Amount as on ' + date,
     renderCell: (row: GroupedRow) => {
       const val = row.row?.closing_cost;
       const pct = row.percentages?.closing_cost;
@@ -392,7 +394,7 @@ const holdingsColumns = [
   },
   {
     accessorKey: 'closing_cost',
-    header: 'Invested Amount ',
+    header: 'Invested Amount as on ' + date,
     renderCell: (row: GroupedRow) => {
       const val = row.row?.closing_cost;
       const pct = row.percentages?.closing_cost;
@@ -492,7 +494,7 @@ const gainColumns = [
   },
   {
     accessorKey: 'closing_cost',
-    header: 'Invested Amount ',
+    header: 'Invested Amount as on ' + date,
     renderCell: (row: GroupedRow) => {
       const val = row.row?.closing_cost;
       const pct = row.percentages?.closing_cost;
@@ -501,7 +503,7 @@ const gainColumns = [
   },
   {
     accessorKey: 'closing_value',
-    header: 'Holding Value',
+    header: 'Holding Value as on ' + date,
     renderCell: (row: GroupedRow) => {
       const val = row.row?.closing_value;
       const pct = row.percentages?.closing_value;
@@ -1131,7 +1133,7 @@ const ISINLevelView = ({ data, mode = "Holdings Value", setIsISINTableVisible, i
         "Performance": {
             headers: [
                 "Name", "Opening Cost as on April 1", "Closing Cost as on " + date, "Opening Value as on April 1", "Closing Value as on " + date,
-                "Market Price", "Current Price", "Realised Gain", "Unrealised Gain", "Total Gain", "IRR"
+                "Market Price", "Realised Gain", "Unrealised Gain", "Total Gain", "IRR"
             ],
             renderRow: (item) => (
                 <>
@@ -1141,7 +1143,7 @@ const ISINLevelView = ({ data, mode = "Holdings Value", setIsISINTableVisible, i
                     <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.opening_value)}</td>
                     <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.closing_value)}</td>
                     <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.market_price)}</td>
-                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.current_price)}</td>
+                    {/* <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.current_price)}</td> */}
                     <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.realized_gain)}</td>
                     <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.unrealized_gain)}</td>
                     <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.total_gain)}</td>
