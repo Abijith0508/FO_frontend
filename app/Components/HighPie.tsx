@@ -14,6 +14,8 @@ type Props = {
   setFilters : any;
   className : string;
   groupByField : any;
+  setIsISINTableVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  isISINTableVisible: boolean;
 };
 
 type PiePoint = {
@@ -23,7 +25,7 @@ type PiePoint = {
   drilldown?: string;
 };
 
-const PieChart = ({ data, groupByField , filters, setFilters, className }: Props) => {
+const PieChart = ({ data, groupByField , filters, setFilters, className, setIsISINTableVisible, isISINTableVisible }: Props) => {
   
   const [chartData, setChartData] = useState<PiePoint[]>([]);
   
@@ -98,7 +100,7 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
       point: {
         events: {
           click: function () {
-            filterUpdate(setFilters, groupByField, this.name);
+            filterUpdate(setFilters, groupByField, this.name, setIsISINTableVisible, isISINTableVisible);
             // console.log(filters)
           },
         },

@@ -35,9 +35,11 @@ type Props = {
   ogData? : any
   setIsTableVisible: any
   isTableVisible: boolean
+  setIsISINTableVisible: any
+  isISINTableVisible: boolean
 };
 
-const Total = ({ data, className, filters, setFilters, mode, setMode, setFilteredData, ogData, setIsTableVisible, isTableVisible }: Props) => {
+const Total = ({ data, className, filters, setFilters, mode, setMode, setFilteredData, ogData, setIsTableVisible, isTableVisible, setIsISINTableVisible, isISINTableVisible }: Props) => {
   // console.log(data)
   const [hovered, setHovered] = useState<0 | 1>(1);
   useEffect(()=>{
@@ -144,6 +146,8 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
         setFilteredData={setFilteredData}
         setIsTableVisible={setIsTableVisible}
         isTableVisible={isTableVisible}
+        setIsISINTableVisible={setIsISINTableVisible}
+        isISINTableVisible={isISINTableVisible}
       />
     );
   }
@@ -160,6 +164,8 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
         setFilteredData={setFilteredData}
         setIsTableVisible={setIsTableVisible}
         isTableVisible={isTableVisible}
+        setIsISINTableVisible={setIsISINTableVisible}
+        isISINTableVisible={isISINTableVisible} 
       />
     );
   }
@@ -198,7 +204,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
           
           <div className="text-[30px] sm:text-[40px] sm:font-bold flex items-center gap-2">
             <div className="flex">
-               ₹ <animated.span>
+               ₹<animated.span>
               {animatedTotal.to(val => Math.round(val).toLocaleString('en-IN'))}
             </animated.span> 
             </div>
@@ -222,7 +228,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 style={{ width: `${equityPct}%` }}
                 onClick={() => {
                   setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Equity')
+                  filterUpdate(setFilters, 'asset_type', 'Equity', setIsISINTableVisible, isISINTableVisible)
                 }}
                 data-tooltip-id="BCTooltip1"
                 data-tooltip-content={"XIRR: " +equityXirr.toFixed(2) + "%"}
@@ -244,7 +250,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 style={{ width: `${debtPct}%` }}
                 onClick={() => {
                   setHovered(0)
-                  filterUpdate(setFilters, 'asset_type', 'Debt')
+                    filterUpdate(setFilters, 'asset_type', 'Debt' , setIsISINTableVisible, isISINTableVisible)
                 }}
                 data-tooltip-id="BCTooltip1"
                 data-tooltip-content= {"XIRR: " + debtXirr.toFixed(2) + "%"}
@@ -266,7 +272,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 <div className="w-3 h-3 bg-emerald cursor-pointer" 
                 onClick={() => {
                   setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Equity')
+                  filterUpdate(setFilters, 'asset_type', 'Equity', setIsISINTableVisible, isISINTableVisible)
                 }}
                 />
                 <div>Equity</div>
@@ -279,7 +285,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 <div className="w-3 h-3 bg-ruby cursor-pointer"
                 onClick={() => {
                   setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Debt')
+                  filterUpdate(setFilters, 'asset_type', 'Debt', setIsISINTableVisible, isISINTableVisible)
                 }}/>
                 <div>Debt</div>
                 {(debtPct <= 30 && debtPct!=0) && 
@@ -366,7 +372,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
 export default Total;
 
 
-const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, setFilteredData, ogData }: Props) => {
+const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, setFilteredData, ogData, setIsISINTableVisible, isISINTableVisible }: Props) => {
   // console.log(data)
   const [hovered, setHovered] = useState<0 | 1>(1);
   
@@ -479,23 +485,23 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
               
               {/* Equity Bar */}
               <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
-              <div className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${equityPct}%` }} onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}>
+              <div className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${equityPct}%` }} onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity', setIsISINTableVisible, isISINTableVisible); }}>
                 {equityPct > 30 && <div className = {`${grayText2} `}>₹ <animated.span>{animatedEquityExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
               {/* Debt Bar */}
-              <div className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${debtPct}%` }} onClick={() => { setHovered(0); filterUpdate(setFilters, 'asset_type', 'Debt'); }}>
+              <div className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${debtPct}%` }} onClick={() => { setHovered(0); filterUpdate(setFilters, 'asset_type', 'Debt', setIsISINTableVisible, isISINTableVisible); }}>
                 {debtPct > 30 && <div className = {`${grayText2} hover:text-white/80`}>₹ <animated.span>{animatedDebtExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
             </div>
 
             <div className={`flex flex-col sm:flex-row justify-around items-center w-full ${grayText2} `}>
               <div className="flex sm:flex-col flex-row items-center sm:gap-2 gap-1">
-                <div className="w-3 h-3 bg-emerald cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}/>
+                <div className="w-3 h-3 bg-emerald cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity', setIsISINTableVisible, isISINTableVisible); }}/>
                 <div>Equity</div>
                 {(equityPct <= 30 && equityPct!=0) && <div>₹ {formatNumber(equityExpenses)}</div>}
               </div>
               <div className="flex items-center sm:gap-2 gap-1">
-                <div className="w-3 h-3 bg-ruby cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Debt'); }}/>
+                <div className="w-3 h-3 bg-ruby cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Debt', setIsISINTableVisible, isISINTableVisible); }}/>
                 <div>Debt</div>
                 {(debtPct <= 30 && debtPct!=0) && <div>₹ {formatNumber(debtExpenses)}</div>}
               </div>
@@ -504,7 +510,7 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
           
         </div>
         
-        <div className = "flex flex-col flex-wrap items-center justify-around p-0 gap-5 ">
+        <div className = "flex flex-col flex-wrap items-center justify-around e-0 gap-5 ">
             <div className = "flex flex-col">
             <div className = {`${grayText2} ` }>Stamp Duty</div>
             <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedStampDuty.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
@@ -525,7 +531,7 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
 
 
 
-const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFilteredData, ogData }: Props) => {
+const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFilteredData, ogData, setIsISINTableVisible, isISINTableVisible }: Props) => {
   // console.log(data)
   const [hovered, setHovered] = useState<0 | 1>(1);
   
@@ -640,22 +646,22 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
             <div className={`hidden sm:block relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
               {/* Equity Bar */}
               <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
-              <div className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${equityPct}%` }} onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}>
+              <div className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${equityPct}%` }} onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity', setIsISINTableVisible, isISINTableVisible); }}>
                 {equityPct > 30 && <div className = {`${grayText2} `}>₹ <animated.span>{animatedEquityExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
               {/* Debt Bar */}
-              <div className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${debtPct}%` }} onClick={() => { setHovered(0); filterUpdate(setFilters, 'asset_type', 'Debt'); }}>
+              <div className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${debtPct}%` }} onClick={() => { setHovered(0); filterUpdate(setFilters, 'asset_type', 'Debt', setIsISINTableVisible, isISINTableVisible); }}>
                 {debtPct > 30 && <div className = {`${grayText2} hover:text-white/80`}>₹ <animated.span>{animatedDebtExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
             </div>
             <div className={`md:flex justify-around w-full ${grayText2} `}>
               <div className="flex sm:flex-col flex-row items-center sm:gap-2 gap-1">
-                <div className="w-3 h-3 bg-emerald cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}/>
+                <div className="w-3 h-3 bg-emerald cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity', setIsISINTableVisible, isISINTableVisible); }}/>
                 <div>Equity</div>
                 {(equityPct <= 30 && equityPct!=0) && <div>₹ {formatNumber(equityExpenses)}</div>}
               </div>
               <div className="flex items-center sm:gap-2 gap-1">
-                <div className="w-3 h-3 bg-ruby cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Debt'); }}/>
+                <div className="w-3 h-3 bg-ruby cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Debt', setIsISINTableVisible, isISINTableVisible ); }}/>
                 <div>Debt</div>
                 {(debtPct <= 30 && debtPct!=0) && <div>₹ {formatNumber(debtExpenses)}</div>}
               </div>

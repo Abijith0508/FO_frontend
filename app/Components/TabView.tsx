@@ -18,10 +18,12 @@ type Props = {
     data : DataItem[],
     filters : string[], 
     setFilters : any,
-    mode?: string
+    mode?: string,
+    setIsISINTableVisible: any,
+    isISINTableVisible: boolean
 }
 
-const TabView = ({title, groupByField, className, data, filters, setFilters, mode} : Props) => {
+const TabView = ({title, groupByField, className, data, filters, setFilters, mode, setIsISINTableVisible, isISINTableVisible} : Props) => {
     const [isLargeScreen, setIsLargeScreen] = useState(false);
 
     useEffect(() => {
@@ -56,12 +58,12 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
 
 
     if(mode=="Expenses"){           
-        return <ExpenseTabView title={title} groupByField={groupByField} data={data} filters={filters} setFilters={setFilters} 
+        return <ExpenseTabView title={title} groupByField={groupByField} data={data} filters={filters} setFilters={setFilters} setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}
               className={className}
               mode={mode}/>
     }
     if (mode=="Gain") {
-        return <GainTabView title={title} groupByField={groupByField} data={data} filters={filters} setFilters={setFilters} 
+        return <GainTabView title={title} groupByField={groupByField} data={data} filters={filters} setFilters={setFilters} setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}
               className={className}
               mode={mode}/>
     }
@@ -111,7 +113,7 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
             <TabsContent value="Bar" key={1} className = 'flex justify-center max-w-full'>   
                 <div className="
                     flex items-center justify-center max-w-full">
-                    <BChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className=''/>
+                    <BChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className='' setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}/>
                 </div> 
             </TabsContent>
             
@@ -125,6 +127,8 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
                             filters={filters}
                             setFilters={setFilters}
                             className="max-w-full max-h-full"
+                            setIsISINTableVisible={setIsISINTableVisible}
+                            isISINTableVisible={isISINTableVisible}
                         />
                     </div>
                     {/* Legend: below chart on mobile/tablet, right of chart on desktop */}
@@ -153,7 +157,7 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
 
             <TabsContent value="Table" key={3} className = 'flex justify-center w-full h-full'>
                 <ScrollArea className="h-full w-full">
-                    <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
+                    <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters} setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}/> 
                     <ScrollBar orientation="horizontal" />       
                 </ScrollArea>
             </TabsContent>
@@ -162,7 +166,7 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
     );
 }
 
-const ExpenseTabView = ({title, groupByField, className, data, filters, setFilters, mode} : Props) => {
+const ExpenseTabView = ({title, groupByField, className, data, filters, setFilters, mode, setIsISINTableVisible, isISINTableVisible} : Props) => {
     const [isLargeScreen, setIsLargeScreen] = useState(false);
 
     useEffect(() => {
@@ -190,7 +194,7 @@ const ExpenseTabView = ({title, groupByField, className, data, filters, setFilte
         <div className={`${grayText2}`}>{title}</div>
         <ScrollArea className="top-10 w-fullh-[400px] overflow-x-auto overflow-y-auto">
             <ScrollArea className="h-full w-full overflow-x-auto overflow-y-auto">
-                <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
+                <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters} setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}/> 
             </ScrollArea>
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -199,7 +203,7 @@ const ExpenseTabView = ({title, groupByField, className, data, filters, setFilte
     );
 }
 
-const GainTabView = ({title, groupByField, className, data, filters, setFilters, mode} : Props) => {
+const GainTabView = ({title, groupByField, className, data, filters, setFilters, mode, setIsISINTableVisible, isISINTableVisible} : Props) => {
     const [isLargeScreen, setIsLargeScreen] = useState(false);
 
     useEffect(() => {
@@ -227,7 +231,7 @@ const GainTabView = ({title, groupByField, className, data, filters, setFilters,
         <div className={`${grayText2}`}>{title}</div>
         <ScrollArea className="top-10 w-fullh-[400px] overflow-x-auto overflow-y-auto">
             <ScrollArea className="h-full w-full  overflow-x-auto overflow-y-auto">
-                <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
+                <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters} setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}/> 
             </ScrollArea>
         </ScrollArea>
             

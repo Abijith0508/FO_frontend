@@ -15,12 +15,16 @@ function groupBy(
         acc.sumOfUnrealizedGain += parseFloat(item.unrealized_gain) || 0;
         acc.sumOfClosingValue += parseFloat(item.closing_value) || 0;
         acc.sumOfOpeningCost += parseFloat(item.opening_cost) || 0;
-        acc.sumOfRealizedGain += parseFloat(item.realized_gain) || 0;
+        acc.sumOfRealizedGain += parseFloat(item.realized_gains) || 0;
         acc.sumOfOpeningValue += parseFloat(item.opening_value) || 0;
         acc.sumOfOtherExpenses += parseFloat(item.other_expenses) || 0;
         acc.sumOfStampDuty += parseFloat(item.stamp_duty) || 0;
         acc.sumOfSttPaid += parseFloat(item.stt_paid) || 0;
         acc.sumOfDividends += parseFloat(item.dividends) || 0;
+        acc.sumOfCostBasis += parseFloat(item.costbasis) || 0;
+        acc.sumOfLongRealizedGains += parseFloat(item.long_realized_gains) || 0;
+        acc.sumOfShortRealizedGains += parseFloat(item.short_realized_gains) || 0;
+        acc.sumOfStt += parseFloat(item.stt) || 0;
         return acc;
       },
       {
@@ -34,6 +38,10 @@ function groupBy(
         sumOfStampDuty: 0,
         sumOfSttPaid: 0,
         sumOfDividends: 0,
+        sumOfCostBasis: 0,
+        sumOfLongRealizedGains: 0,
+        sumOfShortRealizedGains: 0,
+        sumOfStt: 0,
       }
     );
 
@@ -71,6 +79,10 @@ function groupBy(
         sumOfStampDuty: totalSums.sumOfStampDuty,
         sumOfSttPaid: totalSums.sumOfSttPaid,
         sumOfDividends: totalSums.sumOfDividends,
+        sumOfCostBasis: totalSums.sumOfCostBasis,
+        sumOfLongRealizedGains: totalSums.sumOfLongRealizedGains,
+        sumOfShortRealizedGains: totalSums.sumOfShortRealizedGains,
+        sumOfStt: totalSums.sumOfStt,
         xirr: combinedXIRR,
       },
     ];
@@ -90,6 +102,10 @@ function groupBy(
       sumOfDividends: number;
       cashflows: string[];
       dates: string[];
+      sumOfCostBasis: number;
+      sumOfLongRealizedGains: number;
+      sumOfShortRealizedGains: number;
+      sumOfStt: number;
     } 
   } = {};
 
@@ -100,11 +116,16 @@ function groupBy(
     const closingCost = parseFloat(item.closing_cost) || 0;
     const unrealizedGain = parseFloat(item.unrealized_gain) || 0;
     const openingCost = parseFloat(item.opening_cost) || 0;
-    const realizedGain = parseFloat(item.realized_gain) || 0;
+    const realizedGain = parseFloat(item.realized_gains) || 0;
     const openingValue = parseFloat(item.opening_value) || 0;
     const otherExpenses = parseFloat(item.other_expenses) || 0;
     const stampDuty = parseFloat(item.stamp_duty) || 0;
     const sttPaid = parseFloat(item.stt_paid) || 0;
+    const costBasis = parseFloat(item.costbasis) || 0;
+    const longRealizedGains = parseFloat(item.long_realized_gains) || 0;
+    const shortRealizedGains = parseFloat(item.short_realized_gains) || 0;
+    const stt = parseFloat(item.stt) || 0;
+    const dividends = parseFloat(item.dividends) || 0;
 
     if (!grouped[key]) {
       grouped[key] = {
@@ -119,7 +140,11 @@ function groupBy(
         sumOfSttPaid: 0,
         sumOfDividends: 0,
         cashflows: [],
-        dates: []
+        dates: [],
+        sumOfCostBasis: 0,
+        sumOfLongRealizedGains: 0,
+        sumOfShortRealizedGains: 0,
+        sumOfStt: 0,
       };
     }
 
@@ -132,7 +157,11 @@ function groupBy(
     grouped[key].sumOfOtherExpenses += otherExpenses;
     grouped[key].sumOfStampDuty += stampDuty;
     grouped[key].sumOfSttPaid += sttPaid;
-    grouped[key].sumOfDividends += parseFloat(item.dividends) || 0;
+    grouped[key].sumOfDividends += dividends;
+    grouped[key].sumOfCostBasis += costBasis;
+    grouped[key].sumOfLongRealizedGains += longRealizedGains;
+    grouped[key].sumOfShortRealizedGains += shortRealizedGains;
+    grouped[key].sumOfStt += stt;
 
     // Append cashflows and dates
     if (item.cashflows && item.dates) {
@@ -172,22 +201,30 @@ function groupBy(
       sumOfSttPaid: values.sumOfSttPaid,
       sumOfDividends: values.sumOfDividends,
       xirr: groupXIRR,
+      sumOfCostBasis: values.sumOfCostBasis,
+      sumOfLongRealizedGains: values.sumOfLongRealizedGains,
+      sumOfShortRealizedGains: values.sumOfShortRealizedGains,
+      sumOfStt: values.sumOfStt,
     };
     // console.log(obj)
     return obj;
   });
 }
 
+
 const filterUpdate = (
   setFilters: React.Dispatch<React.SetStateAction<string[]>>, 
   groupByField: string, 
-  value: string
+  value: string,
+  setisISINTableVisible: any,
+  isISINTableVisible: boolean
 ) => {
   const newFilter = `${groupByField}:${value}`;
 
   setFilters((prevFilters: string[]) => {
     const alreadyGrouped = prevFilters.some(filter => filter.startsWith(`${groupByField}:`));
     if (alreadyGrouped) {
+      setisISINTableVisible(!isISINTableVisible); 
       return prevFilters;
     }
     return [...prevFilters, newFilter];

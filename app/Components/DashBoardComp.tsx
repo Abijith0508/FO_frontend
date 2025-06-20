@@ -37,7 +37,7 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
   const [isOpen, setIsOpen] = useState(false);
   const [mode , setMode] = useState("Holding Value");
   const [isTableVisible, setIsTableVisible] = useState(false);
-  const [isISINTableVisible, setIsISINTableVisible] = useState(false);
+  const [isISINTableVisible, setIsISINTableVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if(mode == 'Performance') {
@@ -60,14 +60,14 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
     setFilteredData(x);
   }, [filters]);
 
-  const Icon = isISINTableVisible ? EyeOff : Eye;
+  const Icon = isISINTableVisible ? X : Eye;
 
   const Icon2 = isOpen ? X : Menu;
 
   return (
     
     (<div className ="">
-      <div className="fixed top-7 sm:top-12 right-6 sm:right-12 z-50 flex flex-col gap-3">
+      <div className="fixed top-5 right-6 sm:right-12 z-50 flex flex-row-reverse gap-3">
         {!isISINTableVisible && <>
         <Icon2 
             className = {`${responsiveIcon}`}
@@ -86,36 +86,34 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
           onClick={() => window.location.reload()}
         />}
         </>}
-        {!isOpen && <Icon
-          data-tooltip-id="BCTooltip"
-          data-tooltip-content="Toggle ISIN Table"
-          data-tooltip-place="top"
-          data-tooltip-float
-          className={`${responsiveIcon}`}
-          onClick={() => setIsISINTableVisible(!isISINTableVisible)}
-        />}
+        
       </div>
       
 
-      {isISINTableVisible ? 
-      <div className="w-full min-h-full mt-5 fixed top-0 -translate-y-[20px] left-0 backdrop-blur-3xl z-30">
-          <ISINLevelView data={filteredData} mode={mode}/>
-      </div> :
+      {isISINTableVisible &&
+      <div className={`w-full min-h-full mt-5 pt-10 px-5 sm:px-10 fixed top-0 -translate-y-[20px] left-0 backdrop-blur-3xl z-40 `}>
+          
+          <ISINLevelView data={filteredData} mode={mode} setIsISINTableVisible={setIsISINTableVisible} isISINTableVisible={isISINTableVisible}/>
+      </div> 
+      }
+      {
       <div 
         className="text-white text-center bg-transparent p-0 m-0">
         <Tooltip id="BCTooltip" float place="top" className='z-50'/>
         
         
         <SideBar isOpen = {isOpen} setIsOpen={setIsOpen}/>
-        {!isOpen&&
+        {
           <div className="">
-            <Heading filters = {filters} setFilters = {setFilters} className = "sm:pl-10 py-5 top-0 sticky z-40 backdrop-blur-3xl"/>
+            <Heading filters = {filters} setFilters = {setFilters} className = "sm:pl-10 py-5 top-0 sticky z-30 backdrop-blur-3xl"/>
             <div className = 'px-2 sm:px-10 backdrop-blur-3xl'>
               <Total data={filteredData} ogData={ogData} filters={filters} 
               setFilters={setFilters} className={` ${glass} py-6 sm:px-15 mb-5`} 
               mode={mode} setMode={setMode} setFilteredData={setFilteredData} 
               setIsTableVisible={setIsTableVisible} isTableVisible={isTableVisible}
-              />
+              setIsISINTableVisible={setIsISINTableVisible}
+              isISINTableVisible={isISINTableVisible}
+                />
 
               <div>
                 <motion.div layout className=""  transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
@@ -131,10 +129,13 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
                 className="w-full bg-transparent text-white justify-around gap-5 
                 flex flex-wrap"
               >
-                <TabView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} 
+                <TabView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters}  
                   className={`grow-1
                   ${glass}`}
-                  mode={mode}/>
+                  mode={mode}
+                  setIsISINTableVisible={setIsISINTableVisible}
+                  isISINTableVisible={isISINTableVisible}
+                  />
 
                 <TabView 
                   title={filters.some(filter => filter.startsWith('strategy')) ? 'Sub-Strategy' : 'Strategy-wise'}
@@ -145,7 +146,8 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
                   className={` grow-1
                   ${glass}  `}
                   mode={mode}
-                  
+                  setIsISINTableVisible={setIsISINTableVisible}
+                  isISINTableVisible={isISINTableVisible}
                 />
 
                 <TabView 
@@ -157,6 +159,8 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
                   className={`
                     grow-1`}
                   mode={mode}
+                  setIsISINTableVisible={setIsISINTableVisible}
+                  isISINTableVisible={isISINTableVisible}
                   />
 
 

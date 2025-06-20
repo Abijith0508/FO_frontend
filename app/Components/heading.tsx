@@ -27,8 +27,8 @@ function Crumbs({ filters, setFilters }: BreadCrumbProps) {
   return (
     <>
       <Tooltip id="BC-tooltip" float place="top"  className='z-10'/>
-      <Breadcrumb className="cursor-pointer px-[2%] text-lg sm:text-xl w-full text-left flex flex-wrap">
-        <BreadcrumbItem className="items-baseline" >
+      <Breadcrumb className="cursor-pointer px-[2%] text-lg sm:text-xl w-full text-left flex flex-wrap items-center">
+        <BreadcrumbItem className="items-baseline w-full sm:w-auto" >
           <BreadcrumbLink onClick={() => setFilters([])} className={`${breadCrumbs} sm:text-3xl`}>
             Dashboard
           </BreadcrumbLink>

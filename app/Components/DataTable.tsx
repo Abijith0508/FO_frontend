@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { grayText2, tableGlass } from '../styling';
+import { glass, grayText2, responsiveIcon, tableGlass } from '../styling';
 import { ScrollArea , ScrollBar} from "@/components/ui/scroll-area"
 import DataItem from "../Utilities/dataItem"
 import { xirr } from '../Utilities/xirr';
 import { groupBy, filterUpdate } from '../Utilities/filterFunction';
-import { Download, EllipsisVerticalIcon } from 'lucide-react';
+import { Download, EllipsisVerticalIcon, X } from 'lucide-react';
 import { download } from '../Utilities/download';
-
+const date = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    
 type Cashflow = {
   amount: number;
   date: Date;
@@ -301,7 +302,7 @@ const performanceColumns = [
   },
   {
     accessorKey: 'opening_cost',
-    header: 'Opening Cost',
+    header: 'Opening Cost as on April 1',
     renderCell: (row: GroupedRow) => {
       const val = row.row?.opening_cost;
       const pct = row.percentages?.opening_cost;
@@ -319,7 +320,7 @@ const performanceColumns = [
   },
   {
     accessorKey: 'opening_value',
-    header: 'Opening Value',
+    header: 'Opening Value as on April 1',
     renderCell: (row: GroupedRow) => {
       const val = row.row?.opening_value;
       const pct = row.percentages?.opening_value;
@@ -328,7 +329,7 @@ const performanceColumns = [
   },
   {
     accessorKey: 'closing_value',
-    header: 'Holding Value',
+    header: 'Holding Value as on ' + date,
     renderCell: (row: GroupedRow) => {
       const val = row.row?.closing_value;
       const pct = row.percentages?.closing_value;
@@ -400,7 +401,7 @@ const holdingsColumns = [
   },
   {
     accessorKey: 'closing_value',
-    header: 'Holding Value',
+    header: 'Holding Value as on ' + date,
     renderCell: (row: GroupedRow) => {
       const val = row.row?.closing_value;
       const pct = row.percentages?.closing_value;
@@ -542,6 +543,7 @@ const Table = ({ children }: { children: React.ReactNode }) => (
     </table>
   </div>
 );
+
 const TableHeader = ({ children }: { children: React.ReactNode }) => (
   <thead className={`bg-white/5 text-white/50 text-sm`}>{children}</thead>
 );
@@ -827,6 +829,8 @@ interface DataTableProps{
   groupByField: any;
   mode?: string;
   setFilters?: any;
+  setIsISINTableVisible: any;
+  isISINTableVisible: boolean;
 }
 
 type GroupedDataItem = {
@@ -842,7 +846,7 @@ type GroupedDataItem = {
   sumOfSttPaid: number;
 };
 
-function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: DataTableProps) {
+function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters, setIsISINTableVisible, isISINTableVisible}: DataTableProps) {
   
   const data = groupBy(ogdata, groupByField) as GroupedDataItem[];
   // console.log(data)
@@ -859,10 +863,10 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
     if (mode === "Performance") {
       return [
         "Name",
-        "Opening Cost",
-        "Invested Amount",
-        "Opening Value",
-        "Holding Value",
+        "Opening Cost as on April 1",
+        "Invested Amount" + " as on " + date,
+        "Opening Value as on April 1",
+        "Holding Value" + " as on " + date,
         "Unrealized Gain",
         "Realized Gain",
         "Total Gain",
@@ -889,8 +893,8 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
     } else {
       return [
         "Name",
-        "Invested Amount",
-        "Holding Value",
+        "Invested Amount" + " as on " + date ,
+        "Holding Value" + " as on " + date,
         "Unrealized Gain",
         "Gain %",
         "XIRR"
@@ -913,7 +917,7 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
           <thead>
             <tr className="bg-white/5 backdrop-blur-md">
               {headers.map((header, index) => (
-                <th key={index} className="px-6 py-3 text-left text-sm text-white/80 font-medium ">
+                <th key={index} className="px-6 py-3 text-center text-sm text-white/80 font-medium ">
                   {header}
                 </th>
               ))}
@@ -943,27 +947,27 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
                     <td className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
-                        onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                        onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]) , setIsISINTableVisible, isISINTableVisible )}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
-                      {Number(item.realized_gains || 0).toLocaleString('en-IN')}
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
+                      {realizedGain.toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
-                      {Number(item.short_realized_gains || 0).toLocaleString('en-IN')}
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
+                      {Number(item.sumOfShortRealizedGains || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
-                      {Number(item.long_realized_gains || 0).toLocaleString('en-IN')}
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
+                      {Number(item.sumOfLongRealizedGains || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
-                      {Number(item.total_gain || 0).toLocaleString('en-IN')}
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
+                      {totalGain.toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
-                      {Number(item.costbasis || 0).toLocaleString('en-IN')}
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
+                      {Number(item.sumOfCostBasis || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
-                      {Number(item.dividends || 0).toLocaleString('en-IN')}
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
+                      {Number(item.sumOfDividends || 0).toLocaleString('en-IN')}
                     </td>
                   </tr>
                 );
@@ -977,35 +981,35 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
                   >
                     <td 
                       className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
-                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]) , setIsISINTableVisible, isISINTableVisible)}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(openingCost)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(closingCosts)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(openingValue)} {/* Opening Value - using opening cost as placeholder */}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(closingValue)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60 font-medium`}>
                       {formatCurrency(unrealizedGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60 font-medium`}>
                       {formatCurrency(realizedGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60 font-medium`}>
                       {formatCurrency(totalGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60 font-medium`}>
                       {gainPercentage.toFixed(2)}%
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60 font-medium`}>
                       {Number(item.xirr || 0).toFixed(2)}%
                     </td>
                   </tr>
@@ -1020,17 +1024,17 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
                   >
                     <td 
                       className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
-                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]) , setIsISINTableVisible, isISINTableVisible    )}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(stampDuty)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(sttPaid)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(otherExpenses)}
                     </td>
                   </tr>
@@ -1045,23 +1049,23 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
                   >
                     <td 
                       className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
-                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
+                      onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]) , setIsISINTableVisible, isISINTableVisible)}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(closingCosts)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/60">
+                    <td className="px-6 py-4 text-sm text-center text-white/60">
                       {formatCurrency(closingValue)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60 `}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60 `}>
                       {formatCurrency(unrealizedGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60`}>
                       {gainPercentage.toFixed(2)}%
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left text-white/60`}>
+                    <td className={`px-6 py-4 text-sm text-center text-white/60`}>
                       {Number(item.xirr || 0).toFixed(2)}%
                     </td>
                   </tr>
@@ -1076,11 +1080,8 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
 
 export {GroupedDataTable, SubTable}
 
-type ISINLevelViewProps = {
-    data: DataItem[];
-};
 
-const ISINLevelView = ({ data, mode = "Holdings Value" }: { data: DataItem[], mode?: string }) => {
+const ISINLevelView = ({ data, mode = "Holdings Value", setIsISINTableVisible, isISINTableVisible }: { data: DataItem[], mode?: string, setIsISINTableVisible: any, isISINTableVisible: boolean }) => {
     const formatNumber = (value: string | number | null | undefined) => {
         if (value === null || value === undefined) return '';
         const num = Number(value);
@@ -1090,13 +1091,13 @@ const ISINLevelView = ({ data, mode = "Holdings Value" }: { data: DataItem[], mo
     const formatCurrency = (value: string | number | null | undefined) => {
         return "₹" + formatNumber(value);
     };
-
+    
     const modeConfig: Record<string, {
         headers: string[],
         renderRow: (item: any) => React.ReactNode
     }> = {
         "Holdings Value": {
-            headers: ["Name", "Market Price", "Closing Cost", "Closing Value", "Unrealised Gain", "IRR"],
+            headers: ["Name", "Market Price", "Closing Cost as on " + date, "Closing Value as on " + date , "Unrealised Gain", "IRR"],
             renderRow: (item) => (
                 <>
                     <td className="px-6 py-4 text-sm text-left text-white/60 bg-white/5 border-b border-white/10">{item.name}</td>
@@ -1129,7 +1130,7 @@ const ISINLevelView = ({ data, mode = "Holdings Value" }: { data: DataItem[], mo
         },
         "Performance": {
             headers: [
-                "Name", "Opening Cost", "Closing Cost", "Opening Value", "Closing Value",
+                "Name", "Opening Cost as on April 1", "Closing Cost as on " + date, "Opening Value as on April 1", "Closing Value as on " + date,
                 "Market Price", "Current Price", "Realised Gain", "Unrealised Gain", "Total Gain", "IRR"
             ],
             renderRow: (item) => (
@@ -1177,18 +1178,27 @@ const ISINLevelView = ({ data, mode = "Holdings Value" }: { data: DataItem[], mo
     // }, [mode]);
 
     return (
-        <div className={`w-full h-full rounded-xl shadow-md ${tableGlass} p-2`}>
-            <div className='flex justify-between items-center py-2'>
-                <div onClick={() => download("all_data")} className='cursor-pointer p-2 rounded-md hover:bg-gray-700'>
+        <div className={`w-full h-full shadow-md p-2 ${glass}`}>
+            <div className={`flex justify-between items-center py-2 rounded-2xl `}>
+                <div onClick={() => download("all_data")} className='cursor-pointer p-2 rounded-md'>
                     <EllipsisVerticalIcon size={20} 
                     data-tooltip-id="BCTooltip"
                     data-tooltip-content="Download Table"
                     data-tooltip-place="top"
                     data-tooltip-float
+                    className  ="stroke-white/50 hover:stroke-white/80"
                     />
                 </div>
+                <X
+                  data-tooltip-id="BCTooltip"
+                  data-tooltip-content="Close ISIN Table"
+                  data-tooltip-place="top"
+                  data-tooltip-float
+                  className={`${responsiveIcon} z-50`}
+                  onClick={() => setIsISINTableVisible(!isISINTableVisible)}
+                />
             </div>
-            <ScrollArea className="w-full h-[600px]">
+            <ScrollArea className="z-50 w-full h-[600px] pb-2">
                 <table className="w-full border-collapse text-gray backdrop-blur-lg rounded-lg" id="all_data">
                     <thead>
                         <tr className="bg-emerald transition-colors duration-200 sticky top-0"

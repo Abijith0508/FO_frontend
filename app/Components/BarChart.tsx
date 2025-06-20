@@ -7,12 +7,14 @@ import { filterUpdate, groupBy } from '../Utilities/filterFunction';
 import { grayText2, COLORS } from '../styling';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-type Props = {
+type Props = {    
   data: any;
   filters: string[];
   setFilters: any;
   className?: string;
   groupByField: any;
+  setIsISINTableVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  isISINTableVisible: boolean;
 };
 
 type BarPoint = {
@@ -28,7 +30,7 @@ const formatIndianNumber = (value : number) => {
   return value.toLocaleString('en-IN');
 };
 
-const BChart = ({ data, groupByField, filters, setFilters, className }: Props) => {
+const BChart = ({ data, groupByField, filters, setFilters, className, setIsISINTableVisible, isISINTableVisible  }: Props) => {
   const [chartData, setChartData] = useState<BarPoint[]>([]);
 
   useEffect(() => {
@@ -141,7 +143,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
           point: {
             events: {
               click: function (this: Highcharts.Point) {
-                filterUpdate(setFilters, groupByField, this.name);
+                filterUpdate(setFilters, groupByField, this.name, setIsISINTableVisible, isISINTableVisible); 
               },
             },
           },
