@@ -8,6 +8,7 @@ import {Legend, BChart} from "./BarChart";
 import { useEffect, useState } from "react";
 import { SubTable } from "./DataTable";
 import DataItem from "../Utilities/dataItem";
+import { Divide } from "react-feather";
 
 type Props = { 
     title : string, 
@@ -64,95 +65,99 @@ const TabView = ({title, groupByField, className, data, filters, setFilters, mod
               className={className}
               mode={mode}/>
     }
+
     return (
     <div className ={`
-        ${className} ${glass} py-6 flex grow-1 flex-col gap-2 w-[100%] items-center justify-between
+        ${className} ${glass} py-6 flex flex-col gap-2 items-center justify-between h-auto overflow-x-auto 
     `}>
-        
-        <div className="w-full h-[400px] overflow-x-auto ">
-            <Tabs 
-                defaultValue={selectedTab}
-                className="w-full h-full flex flex-col items-center justify-between gap-5 overflow-hidden"
-            >   
-                <div className="flex flex-col gap-2">
-                    <div className={`${grayText2}`}>{title}</div>
-                    <TabsList className={`${glass} overflow-hidden p-0 flex gap-0 ${grayText2}`}>
-                        
-                        <TabsTrigger 
-                            value="Bar" 
-                            className={`px-4 data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
-                        >
-                            Bar
-                        </TabsTrigger>
-                        
-                        <TabsTrigger 
-                            value="Pie" 
-                            className={`px-4 data-[state=active]:bg-white/20 tab-trigger bg-none focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
-                        >
-                            Pie
-                        </TabsTrigger>
-                        {/* {!isLargeScreen && mode != 'Expenses' && <TabsTrigger 
-                            value="Legend" 
-                            className={` data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
-                        >
-                            Legend
-                        </TabsTrigger>} */}
-                        
-                        <TabsTrigger 
-                            value="Table" 
-                            className={`px-4 data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
-                        >
-                            Table
-                        </TabsTrigger>
-                    </TabsList>
-                </div>
+        <Tabs 
+            defaultValue={selectedTab}
+            className="w-full h-full flex flex-col items-center justify-between gap-5 overflow-hidden"
+        >   
+            <div className="flex flex-col gap-2">
+                <div className={`${grayText2}`}>{title}</div>
+                <TabsList className={`${glass} overflow-hidden p-0 flex gap-0 ${grayText2}`}>
+                    
+                    <TabsTrigger 
+                        value="Bar" 
+                        className={`px-4 data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
+                    >
+                        Bar
+                    </TabsTrigger>
+                    
+                    <TabsTrigger 
+                        value="Pie" 
+                        className={`px-4 data-[state=active]:bg-white/20 tab-trigger bg-none focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
+                    >
+                        Pie
+                    </TabsTrigger>
+                    {/* {!isLargeScreen && mode != 'Expenses' && <TabsTrigger 
+                        value="Legend" 
+                        className={` data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
+                    >
+                        Legend
+                    </TabsTrigger>} */}
+                    
+                    <TabsTrigger 
+                        value="Table" 
+                        className={`px-4 data-[state=active]:bg-white/20 focus:bg-none focus:outline-none focus:ring-0 hover:bg-white/20 h-full border-none ${grayText2}`}
+                    >
+                        Table
+                    </TabsTrigger>
+                </TabsList>
+            </div>
 
 
-                <TabsContent value="Bar" key={1} className = 'flex justify-center w-full'>   
-                    <ScrollArea className="h-full w-full  flex items-center justify-center">
-                        <BChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className=''/>
-                    <ScrollBar orientation="horizontal" />       
-                    </ScrollArea> 
-                </TabsContent>
-                
-                <TabsContent value="Pie" key={2} className = 'flex justify-center w-full'>
-                    <ScrollArea className="h-full w-full  flex items-center justify-center">
-                        <PChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className = 'max-w-full max-h-full'/>
-                        <div
-                        className={`border-none`}
-                        style={{
-                            display: isLargeScreen ? 'block' : 'none', // Show only on large screens
-                        }}
-                        >
-                            <Legend data={data} groupByField={groupByField} className = ''/>
+            <TabsContent value="Bar" key={1} className = 'flex justify-center max-w-full'>   
+                <div className="
+                    flex items-center justify-center max-w-full">
+                    <BChart data={data} groupByField={groupByField} filters={filters} setFilters={setFilters} className=''/>
+                </div> 
+            </TabsContent>
+            
+            <TabsContent value="Pie" key={2} className="flex justify-center">
+                <div className="flex flex-col lg:flex-row items-center justify-center w-full h-full">
+                    {/* Pie Chart */}
+                    <div className="flex justify-center">
+                        <PChart
+                            data={data}
+                            groupByField={groupByField}
+                            filters={filters}
+                            setFilters={setFilters}
+                            className="max-w-full max-h-full"
+                        />
+                    </div>
+                    {/* Legend: below chart on mobile/tablet, right of chart on desktop */}
+                    <div className="mt-4 lg:mt-0">
+                        {/* Mobile/Tablet: horizontal scroll */}
+                        <div className="block lg:hidden w-full overflow-x-auto">
+                            <div className="flex flex-row whitespace-nowrap items-center">
+                                <Legend
+                                    data={data}
+                                    groupByField={groupByField}
+                                    className=""
+                                />
+                            </div>
                         </div>
+                        {/* Desktop: vertical legend */}
+                        <div className="hidden lg:block ml-4">
+                            <Legend
+                                data={data}
+                                groupByField={groupByField}
+                                className=""
+                            />
+                        </div>
+                    </div>
+                </div>
+            </TabsContent>
+
+            <TabsContent value="Table" key={3} className = 'flex justify-center w-full h-full'>
+                <ScrollArea className="h-full w-full">
+                    <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
                     <ScrollBar orientation="horizontal" />       
-                    </ScrollArea>      
-                </TabsContent>
-
-                {/* {!isLargeScreen && 
-                <TabsContent value="legend" key={4} 
-                className = 'flex justify-center w-full '
-                // style={{
-                //     display: isLargeScreen ? 'block' : 'none', // Show only on large screens
-                // }}
-                >   
-                    <div className="h-full w-full  flex items-center justify-center lg:hidden">
-                        <Legend data={data} groupByField={groupByField} className = ''/>
-                    </div>    
-                </TabsContent>
-                } */}
-
-                <TabsContent value="Table" key={3} className = 'flex justify-center w-full h-full'>
-                    <ScrollArea className="h-full w-full">
-                        <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
-                        <ScrollBar orientation="horizontal" />       
-                    </ScrollArea>
-                </TabsContent>
-
-            </Tabs>
-        </div> 
-        {/* <ScrollBar orientation="horizontal" />       */}
+                </ScrollArea>
+            </TabsContent>
+        </Tabs>
     </div>
     );
 }
@@ -183,10 +188,11 @@ const ExpenseTabView = ({title, groupByField, className, data, filters, setFilte
         flex-col justify-between gap-2 overflow-hidden
     `} >
         <div className={`${grayText2}`}>{title}</div>
-        <ScrollArea className="top-10 w-full h-[400px] overflow-x-auto overflow-y-auto">
+        <ScrollArea className="top-10 w-fullh-[400px] overflow-x-auto overflow-y-auto">
             <ScrollArea className="h-full w-full overflow-x-auto overflow-y-auto">
                 <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
             </ScrollArea>
+            <ScrollBar orientation="horizontal" />
         </ScrollArea>
             
     </div>
@@ -219,8 +225,8 @@ const GainTabView = ({title, groupByField, className, data, filters, setFilters,
         flex-col justify-between gap-2 overflow-hidden
     `} >
         <div className={`${grayText2}`}>{title}</div>
-        <ScrollArea className="top-10 w-full h-[400px] overflow-x-auto overflow-y-auto">
-            <ScrollArea className="h-full w-full overflow-x-auto overflow-y-auto">
+        <ScrollArea className="top-10 w-fullh-[400px] overflow-x-auto overflow-y-auto">
+            <ScrollArea className="h-full w-full  overflow-x-auto overflow-y-auto">
                 <SubTable ogdata={data} groupByField={groupByField} mode={mode} setFilters={setFilters}/> 
             </ScrollArea>
         </ScrollArea>

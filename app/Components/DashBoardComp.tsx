@@ -37,7 +37,8 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
   const [isOpen, setIsOpen] = useState(false);
   const [mode , setMode] = useState("Holding Value");
   const [isTableVisible, setIsTableVisible] = useState(false);
-
+  const [isISINTableVisible, setIsISINTableVisible] = useState(false);
+  
   useEffect(() => {
     if(mode == 'Performance') {
         setOgData(performanceData)
@@ -76,6 +77,9 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
         />
         
         <SideBar isOpen = {isOpen} setIsOpen={setIsOpen}/>
+        <div className="w-full min-h-full">
+
+        </div>
         <div className = 'px-2 sm:px-10'>
           <div className="flex flex-col gap-5 justify-around pb-5">
             <Heading filters = {filters} setFilters = {setFilters} className = "px-20 pb-5 pt-8"/>
@@ -92,20 +96,18 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
               
               {isTableVisible &&
               <DataTable data={filteredData} mode={mode} className="pb-5"/>
-              
               }
             </motion.div> 
             
           </div>
-          <motion.div layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+
+          <div 
             className="w-full bg-transparent text-white justify-around gap-5 
             flex flex-wrap"
           >
             <TabView title='Entity-wise' groupByField="entity" data={filteredData} filters={filters} setFilters={setFilters} 
-              
-              className={`
-                
-              ${glass}  `}
+              className={`grow-1
+              ${glass}`}
               mode={mode}/>
 
             <TabView 
@@ -114,10 +116,10 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
               data={filteredData} 
               filters={filters} 
               setFilters={setFilters} 
-              className={`
-              
-                `}
+              className={` grow-1
+              ${glass}  `}
               mode={mode}
+              
             />
 
             <TabView 
@@ -126,12 +128,13 @@ export default function DashBoardComp({holdingData, performanceData, expenseData
               data={filteredData} 
               filters={filters} 
               setFilters={setFilters} 
-              className={` `}
+              className={`
+                grow-1`}
               mode={mode}
               />
 
 
-          </motion.div>
+          </div>
         </div>
           
       </div>

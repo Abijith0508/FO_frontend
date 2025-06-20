@@ -149,14 +149,17 @@ const PieChart = ({ data, groupByField , filters, setFilters, className }: Props
   const memoOptions = useMemo(() => options, [chartData])
 
   return (
-    <HighchartsReact 
-    highcharts={Highcharts} 
-    options={memoOptions} 
-    allowChartUpdate={true}
-    updateArgs={[true, true, true]} // [redraw, oneToOne, animate]
-    immutable={false}
-    className={className}
-    />
+    <div className="w-[300] h-[300]">
+        <HighchartsReact 
+      highcharts={Highcharts} 
+      options={memoOptions} 
+      allowChartUpdate={true}
+      updateArgs={[true, true, true]} // [redraw, oneToOne, animate]
+      immutable={false}
+      className={className}
+      />
+    </div>
+    
   );
 };
 

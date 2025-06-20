@@ -5,6 +5,7 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { filterUpdate, groupBy } from '../Utilities/filterFunction';
 import { grayText2, COLORS } from '../styling';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 type Props = {
   data: any;
@@ -67,7 +68,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
           fontSize: '15px',
         },
       },
-      gridLineColor: '#555',
+      gridLineColor: '#5555550',
     },
     yAxis: {
       min: 0,
@@ -76,6 +77,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
         align: 'high',
       },
       labels: {
+        enabled: false,
         formatter: function (this: Highcharts.AxisLabelsFormatterContextObject) {
           return formatIndianNumber(Number(this.value));
         },
@@ -85,7 +87,7 @@ const BChart = ({ data, groupByField, filters, setFilters, className }: Props) =
           fontWeight: 'bold',
         },
       },
-      gridLineColor: '#555',
+      gridLineColor: '#5555550',
     },
     tooltip: {
       enabled : true,
@@ -199,15 +201,16 @@ const Legend = ({ data, groupByField, className }: LegendProps) => {
 
   
   return (
-      <div className = {`flex flex-col h-full items-right text-left lg:block ${className}`}>
+      <ScrollArea className = {`flex w-full items-right text-left lg:block ${className} gap-1`}>
         {legend.map((item, idx) => (
           <div className="flex h-full items-center gap-2" key={idx}>
-            <div className={`h-[10] w-[10]`}
+            <div className={`h-[10] w-[30] sm:w-[10]`}
             style={{ backgroundColor: item.color }}/>
             <div className = {`${grayText2}`}>{item.name}</div>
           </div>
         ))}
-      </div>
+        <ScrollBar/>
+      </ScrollArea>
   )
 }
 export {Legend, BChart};

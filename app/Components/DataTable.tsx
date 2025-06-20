@@ -534,7 +534,7 @@ const Table = ({ children }: { children: React.ReactNode }) => (
         data-tooltip-content="Download Overview Table"
         data-tooltip-place="top"
         data-tooltip-float
-        className="absolute top-3 left-3 h-5 w-5  stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200 border border-none focus:outline-none"  
+        className="absolute top-1 sm:top-3 left-1 sm:left-3 h-5 w-5  stroke-white/50 hover:stroke-white/80 z-20 transition-colors duration-200 border border-none focus:outline-none"  
         onClick={() => download('Total')}
       />
     <table id="Total" className="min-w-full rounded-lg overflow-y-scroll scroll-smooth bg-transparent backdrop-blur-md ">
@@ -1069,6 +1069,8 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
     </div>
   );
 }
+
+
 
 export {GroupedDataTable, SubTable};
  

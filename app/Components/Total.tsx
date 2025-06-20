@@ -261,8 +261,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
               </div>
             </div>
               
-            
-            <div className={`flex justify-around w-[100%] ${grayText2} gap-1`}>
+            <div className={`flex flex-col items-center justify-around w-[100%] ${grayText2} gap-1`}>
               <div className="flex items-center sm:gap-2 gap-1">
                 <div className="w-3 h-3 bg-emerald cursor-pointer" 
                 onClick={() => {
@@ -331,7 +330,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
               </div>
             </div> 
             <div className = "flex flex-col items-center justify-around ">
-              <div className = "text-gray">Unrealised Gain/Loss</div>
+              <div className = "text-gray whitespace-nowrap">Unrealised Gain/Loss</div>
               <div className =  {`flex items-center text-[23px] text-${ugColor} transition`}>
                 ₹ <animated.span>
                   {animatedUG.to(val => Math.round(val).toLocaleString('en-IN'))}
@@ -445,135 +444,60 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
   }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
-      <div className={`flex justify-around w-full h-[300px] ${className} overflow-hidden`} >
+      <div className={`flex flex-wrap justify-around w-full min-h-[300px] ${className} overflow-hidden gap-5`} >
         <div className = "flex flex-col items-center justify-center gap-3">
-          <div className={`${grayText} flex gap-2 `}>
+          <div className={`${grayText} flex gap-2 flex-col sm:flex-row items-center`}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild>
-                <div
-                  className="cursor-pointer flex items-center"
-                >
+                <div className="cursor-pointer flex items-center">
                   {mode}
-                  <ChevronDown
-                    className={`transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
-                  />
+                  <ChevronDown className={`transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}/>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 bg-black/80 border border-none outline-none text-white/80" align="start">
-                <DropdownMenuItem onClick={() => setMode("Holdings Value")} className=" text-lg">
-                  Holdings Value
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("Performance")} className=" text-lg">
-                  Performance
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("Expenses")} className=" text-lg">
-                  Expenses
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("Gain")} className=" text-lg">
-                  Gain
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Holdings Value")} className=" text-lg">Holdings Value</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Performance")} className=" text-lg">Performance</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Expenses")} className=" text-lg">Expenses</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Gain")} className=" text-lg">Gain</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="flex items-center gap-2">
               <div className="flex w-[200px] divide-x divide-white/50 overflow-hidden rounded-2xl">
-                <Input 
-                  placeholder="From Year" 
-                  value={fromYear === 0 ? '' : fromYear}
-                  className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
-                  onChange={(e) => setFromYear(parseInt(e.target.value) | 0)}
-                />
-                <Input 
-                  placeholder="To Year" 
-                  value={toYear === 3000 ? '' : toYear}
-                  className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
-                  onChange={(e) => setToYear(parseInt(e.target.value) | 0)}
-                /> 
+                <Input placeholder="From Year" value={fromYear === 0 ? '' : fromYear} className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" onChange={(e) => setFromYear(parseInt(e.target.value) | 0)} />
+                <Input placeholder="To Year" value={toYear === 3000 ? '' : toYear} className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" onChange={(e) => setToYear(parseInt(e.target.value) | 0)} /> 
               </div>
-              <Funnel 
-                className="cursor-pointer stroke-white/50 hover:stroke-white/80 transition-colors duration-200" 
-                onClick={() => {
-                  if (fromYear && toYear && fromYear <= toYear && fromYear > 1900 && toYear < 2100) {
-                    updateTimeFilter(setFilters, fromYear, toYear);
-                  } else {
-                    console.warn('Please enter valid years (1900-2100) with From Year <= To Year');
-                  }
-                }}
-              /> 
+              <Funnel className="cursor-pointer stroke-white/50 hover:stroke-white/80 transition-colors duration-200" onClick={() => { if (fromYear && toYear && fromYear <= toYear && fromYear > 1900 && toYear < 2100) { updateTimeFilter(setFilters, fromYear, toYear); } else { console.warn('Please enter valid years (1900-2100) with From Year <= To Year'); } }}/>
             </div>     
           </div>
           
-          <div className="text-[40px] font-bold">
-            ₹ <animated.span>
-              {animatedTotalExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-            </animated.span>
+          <div className="text-[30px] sm:text-[40px] sm:font-bold font-bold">
+            ₹ <animated.span>{animatedTotalExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>
           </div>
           
           <div className="flex flex-col items-center justify-center ">
-            <div className={`hidden sm:block relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
+            <div className={`relative min-w-[225px] sm:min-w-[400px] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
+              
               {/* Equity Bar */}
               <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
-              <div
-                className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out"
-                style={{ width: `${equityPct}%` }}
-                onClick={() => {
-                  setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Equity')
-                }}
-                
-              >
-                {equityPct > 30 && 
-                  <div className = {`${grayText2} `}>
-                    ₹ <animated.span>
-                      {animatedEquityExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-                    </animated.span>
-                  </div>
-                }
+              <div className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${equityPct}%` }} onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}>
+                {equityPct > 30 && <div className = {`${grayText2} `}>₹ <animated.span>{animatedEquityExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
-
               {/* Debt Bar */}
-              <div
-                className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out"
-                style={{ width: `${debtPct}%` }}
-                onClick={() => {
-                  setHovered(0)
-                  filterUpdate(setFilters, 'asset_type', 'Debt')
-                }}
-              >
-                {debtPct > 30 && 
-                  <div className = {`${grayText2} hover:text-white/80`}>
-                    ₹ 
-                      <animated.span>
-                        {animatedDebtExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-                      </animated.span>
-                  </div>
-                }
+              <div className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${debtPct}%` }} onClick={() => { setHovered(0); filterUpdate(setFilters, 'asset_type', 'Debt'); }}>
+                {debtPct > 30 && <div className = {`${grayText2} hover:text-white/80`}>₹ <animated.span>{animatedDebtExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
             </div>
 
-            <div className={`md:flex justify-around w-full ${grayText2} `}>
+            <div className={`flex flex-col sm:flex-row justify-around items-center w-full ${grayText2} `}>
               <div className="flex sm:flex-col flex-row items-center sm:gap-2 gap-1">
-                  <div className="w-3 h-3 bg-emerald cursor-pointer" 
-                  onClick={() => {
-                  setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Equity')
-                  }}
-                  />
-                  <div>Equity</div>
-                  {(equityPct <= 30 && equityPct!=0) && 
-                  <div>₹ {formatNumber(equityExpenses)}</div>
-                  }
+                <div className="w-3 h-3 bg-emerald cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}/>
+                <div>Equity</div>
+                {(equityPct <= 30 && equityPct!=0) && <div>₹ {formatNumber(equityExpenses)}</div>}
               </div>
-              
               <div className="flex items-center sm:gap-2 gap-1">
-                  <div className="w-3 h-3 bg-ruby cursor-pointer"
-                  onClick={() => {
-                  setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Debt')
-                  }}/>
-                  <div>Debt</div>
-                  {(debtPct <= 30 && debtPct!=0) && 
-                  <div>₹ {formatNumber(debtExpenses)}</div>
-                  }
+                <div className="w-3 h-3 bg-ruby cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Debt'); }}/>
+                <div>Debt</div>
+                {(debtPct <= 30 && debtPct!=0) && <div>₹ {formatNumber(debtExpenses)}</div>}
               </div>
             </div>
           </div>
@@ -582,34 +506,16 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
         
         <div className = "flex flex-col flex-wrap items-center justify-around p-0 gap-5 ">
             <div className = "flex flex-col">
-            <div className = {`${grayText2} ` }>
-                Stamp Duty
-            </div>
-            <div className = " text-[23px] text-emerald">
-                ₹ <animated.span>
-                {animatedStampDuty.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
-            </div>
+            <div className = {`${grayText2} ` }>Stamp Duty</div>
+            <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedStampDuty.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
             </div> 
             <div className = "flex flex-col">
-            <div className = {`${grayText2} ` }>
-                STT Paid
-            </div>
-            <div className = " text-[23px] text-emerald">
-                ₹ <animated.span>
-                {animatedSttPaid.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
-            </div>
+            <div className = {`${grayText2} ` }>STT Paid</div>
+            <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedSttPaid.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
             </div> 
             <div className = "flex flex-col">
-            <div className = {`${grayText2} ` }>
-                Other Expenses
-            </div>
-            <div className = " text-[23px] text-emerald">
-                ₹ <animated.span>
-                {animatedOtherExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
-            </div>
+            <div className = {`${grayText2} ` }>Other Expenses</div>
+            <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedOtherExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
             </div> 
             
         </div>
@@ -700,136 +606,59 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
   }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
-      <div className={`flex justify-around w-full h-[300px] ${className}`} >
+      <div className={`flex flex-wrap justify-around w-full h-[300px] ${className} overflow-hidden gap-5`} >
         <div className = "flex flex-col items-center justify-center gap-3">
           <div className={`${grayText} flex gap-2 `}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild>
-                <div
-                  className="cursor-pointer flex items-center"
-                >
+                <div className="cursor-pointer flex items-center">
                   {mode}
-                  <ChevronDown
-                    className={`transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
-                  />
+                  <ChevronDown className={`transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}/>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 bg-black/80 border border-none outline-none text-white/80" align="start">
-                <DropdownMenuItem onClick={() => setMode("Holdings Value")} className=" text-lg">
-                  Holdings Value
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("Performance")} className=" text-lg">
-                  Performance
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("Expenses")} className=" text-lg">
-                  Expenses
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("Gain")} className=" text-lg">
-                  Gain
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Holdings Value")} className=" text-lg">Holdings Value</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Performance")} className=" text-lg">Performance</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Expenses")} className=" text-lg">Expenses</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setMode("Gain")} className=" text-lg">Gain</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-              <div className="flex items-center gap-2">
-                <div className="flex w-[200px] divide-x divide-white/50 overflow-hidden rounded-2xl">
-                  <Input 
-                    placeholder="From Year" 
-                    value={fromYear === 0 ? '' : fromYear}
-                    className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
-                    onChange={(e) => setFromYear(parseInt(e.target.value) | 0)}
-                  />
-                  <Input 
-                    placeholder="To Year" 
-                    value={toYear === 3000 ? '' : toYear}
-                    className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" 
-                    onChange={(e) => setToYear(parseInt(e.target.value) | 0)}
-                  /> 
-                </div>
-                <Funnel 
-                  className="cursor-pointer stroke-white/50 hover:stroke-white/80 transition-colors duration-200" 
-                  onClick={() => {
-                    if (fromYear && toYear && fromYear <= toYear && fromYear > 1900 && toYear < 2100) {
-                      updateTimeFilter(setFilters, fromYear, toYear);
-                    } else {
-                      console.warn('Please enter valid years (1900-2100) with From Year <= To Year');
-                    }
-                  }}
-                /> 
-              </div>     
+            <div className="flex items-center gap-2">
+              <div className="flex w-[200px] divide-x divide-white/50 overflow-hidden rounded-2xl">
+                <Input placeholder="From Year" value={fromYear === 0 ? '' : fromYear} className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" onChange={(e) => setFromYear(parseInt(e.target.value) | 0)} />
+                <Input placeholder="To Year" value={toYear === 3000 ? '' : toYear} className="bg-white/10 h-[30px] outline-none border-none focus:outline-none focus:border-none text-white/80 placeholder:text-white/50" onChange={(e) => setToYear(parseInt(e.target.value) | 0)} /> 
+              </div>
+              <Funnel className="cursor-pointer stroke-white/50 hover:stroke-white/80 transition-colors duration-200" onClick={() => { if (fromYear && toYear && fromYear <= toYear && fromYear > 1900 && toYear < 2100) { updateTimeFilter(setFilters, fromYear, toYear); } else { console.warn('Please enter valid years (1900-2100) with From Year <= To Year'); } }}/>
+            </div>     
           </div>
           
-          <div className="text-[40px] font-bold">
-            ₹ <animated.span>
-              {animatedTotalExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-            </animated.span>
+          <div className="text-[30px] sm:text-[40px] sm:font-bold font-bold">
+            ₹ <animated.span>{animatedTotalExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>
           </div>
           
           <div className="flex flex-col items-center justify-center ">
-            <div className={`relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
+            <div className={`hidden sm:block relative w-full min-w-[500] h-[40px] mt-6 mb-3 text-[${grayText2}] hover:text-white/80 overflow-hidden rounded-[8px] flex`}>
               {/* Equity Bar */}
               <Tooltip id="BCTooltip1" float place="top" className='z-40'/>
-              <div
-                className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out"
-                style={{ width: `${equityPct}%` }}
-                onClick={() => {
-                  setHovered(1)
-                  filterUpdate(setFilters, 'asset_type', 'Equity')
-                }}
-                
-              >
-                {equityPct > 30 && 
-                  <div className = {`${grayText2} `}>
-                    ₹ <animated.span>
-                      {animatedEquityExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-                    </animated.span>
-                  </div>
-                }
+              <div className="h-full bg-emerald cursor-pointer flex items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${equityPct}%` }} onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}>
+                {equityPct > 30 && <div className = {`${grayText2} `}>₹ <animated.span>{animatedEquityExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
-
               {/* Debt Bar */}
-              <div
-                className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out"
-                style={{ width: `${debtPct}%` }}
-                onClick={() => {
-                  setHovered(0)
-                  filterUpdate(setFilters, 'asset_type', 'Debt')
-                }}
-              >
-                {debtPct > 30 && 
-                  <div className = {`${grayText2} hover:text-white/80`}>
-                    ₹ 
-                      <animated.span>
-                        {animatedDebtExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-                      </animated.span>
-                  </div>
-                }
+              <div className="flex absolute right-0 h-full bg-ruby cursor-pointer  items-center justify-center transition-all duration-500 ease-in-out" style={{ width: `${debtPct}%` }} onClick={() => { setHovered(0); filterUpdate(setFilters, 'asset_type', 'Debt'); }}>
+                {debtPct > 30 && <div className = {`${grayText2} hover:text-white/80`}>₹ <animated.span>{animatedDebtExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span></div>}
               </div>
             </div>
-
-            <div className={`flex justify-around w-full ${grayText2} `}>
-            <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-emerald cursor-pointer" 
-                onClick={() => {
-                setHovered(1)
-                filterUpdate(setFilters, 'asset_type', 'Equity')
-                }}
-                />
+            <div className={`md:flex justify-around w-full ${grayText2} `}>
+              <div className="flex sm:flex-col flex-row items-center sm:gap-2 gap-1">
+                <div className="w-3 h-3 bg-emerald cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Equity'); }}/>
                 <div>Equity</div>
-                {(equityPct <= 30 && equityPct!=0) && 
-                <div>₹ {formatNumber(equityExpenses)}</div>
-                }
-            </div>
-            
-            <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-ruby cursor-pointer"
-                onClick={() => {
-                setHovered(1)
-                filterUpdate(setFilters, 'asset_type', 'Debt')
-                }}/>
+                {(equityPct <= 30 && equityPct!=0) && <div>₹ {formatNumber(equityExpenses)}</div>}
+              </div>
+              <div className="flex items-center sm:gap-2 gap-1">
+                <div className="w-3 h-3 bg-ruby cursor-pointer" onClick={() => { setHovered(1); filterUpdate(setFilters, 'asset_type', 'Debt'); }}/>
                 <div>Debt</div>
-                {(debtPct <= 30 && debtPct!=0) && 
-                <div>₹ {formatNumber(debtExpenses)}</div>
-                }
-            </div>
+                {(debtPct <= 30 && debtPct!=0) && <div>₹ {formatNumber(debtExpenses)}</div>}
+              </div>
             </div>
           </div>
           
@@ -837,34 +666,16 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
         
         <div className = "flex flex-col flex-wrap items-center justify-around p-0 gap-5 ">
             <div className = "flex flex-col">
-            <div className = {`${grayText2} ` }>
-                Stamp Duty
-            </div>
-            <div className = " text-[23px] text-emerald">
-                ₹ <animated.span>
-                {animatedStampDuty.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
-            </div>
+            <div className = {`${grayText2} ` }>Stamp Duty</div>
+            <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedStampDuty.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
             </div> 
             <div className = "flex flex-col">
-            <div className = {`${grayText2} ` }>
-                STT Paid
-            </div>
-            <div className = " text-[23px] text-emerald">
-                ₹ <animated.span>
-                {animatedSttPaid.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
-            </div>
+            <div className = {`${grayText2} ` }>STT Paid</div>
+            <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedSttPaid.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
             </div> 
             <div className = "flex flex-col">
-            <div className = {`${grayText2} ` }>
-                Other Expenses
-            </div>
-            <div className = " text-[23px] text-emerald">
-                ₹ <animated.span>
-                {animatedOtherExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}
-                </animated.span>{' '}
-            </div>
+            <div className = {`${grayText2} ` }>Other Expenses</div>
+            <div className = " text-[23px] text-emerald">₹ <animated.span>{animatedOtherExpenses.to(val => Math.round(val).toLocaleString('en-IN'))}</animated.span>{' '}</div>
             </div> 
             
         </div>
