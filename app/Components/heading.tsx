@@ -27,9 +27,9 @@ function Crumbs({ filters, setFilters }: BreadCrumbProps) {
   return (
     <>
       <Tooltip id="BC-tooltip" float place="top"  className='z-10'/>
-      <Breadcrumb className="cursor-pointer px-[2%] flex items-center justify-left gap-1 text-xl w-full">
+      <Breadcrumb className="cursor-pointer px-[2%] text-lg sm:text-xl w-full text-left flex flex-wrap">
         <BreadcrumbItem className="items-baseline" >
-          <BreadcrumbLink onClick={() => setFilters([])} className={`${breadCrumbs} text-3xl`}>
+          <BreadcrumbLink onClick={() => setFilters([])} className={`${breadCrumbs} sm:text-3xl`}>
             Dashboard
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -38,14 +38,14 @@ function Crumbs({ filters, setFilters }: BreadCrumbProps) {
           const [group, value] = filter.split(':');
           return (
             <div className="flex items-center" key={idx}>
-              <ChevronRight size={28} className="stroke-white/40" />
+              <ChevronRight className="stroke-white/40 h-4 w-4 sm:h-8 sm:w-8" />
               <BreadcrumbItem
                 data-tooltip-id="BC-tooltip"
                 data-tooltip-content={group}
                 data-tooltip-place="top"
                 data-tooltip-float
                 onClick={() => setFilters((prev: string[]) => prev.slice(0, idx+1))}
-                className={`${breadCrumbs} text-xl`}
+                className={`${breadCrumbs}`}
               >
                 {convert(value)}
               </BreadcrumbItem>

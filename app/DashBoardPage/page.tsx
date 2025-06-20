@@ -63,7 +63,7 @@ async function getDashboardData() {
     const holdingslink = `http://13.202.119.24/irr/holdingsnew/?t=${timestamp}`;
     const performancelink = `http://13.202.119.24/irr/perfnew/?t=${timestamp}`;
     const expenselink = `http://13.202.119.24/irr/expenses/?t=${timestamp}`;
-    const gainLink= `http://10.0.0.199:8096/irr/dashgain/`
+    const gainLink= `http://10.0.0.199:8096/irr/dashgain/?t=${timestamp}`
 
     console.log('Cache expired or no cache found. Fetching fresh dashboard data...');
     console.log('Fetch URLs:', { holdingslink, performancelink, expenselink });

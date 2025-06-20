@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { grayText, grayText2, glass } from '../styling';
+import { grayText, grayText2, glass, responsiveIcon } from '../styling';
 
 import { groupBy, filterUpdate, updateTimeFilter } from '../Utilities/filterFunction';
 import { useSpring, animated } from '@react-spring/web';
@@ -138,7 +138,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
         ogData={ogData} 
         filters={filters} 
         setFilters={setFilters} 
-        className={` ${glass} py-6 px-15`} 
+        className={` ${glass} py-6`} 
         mode={mode} 
         setMode={setMode} 
         setFilteredData={setFilteredData}
@@ -164,7 +164,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
     );
   }
   return (
-      <div className={`flex flex-wrap justify-around w-full ${className} gap-5`} >
+      <div className={`flex flex-wrap items-center justify-around w-full ${className} gap-5`} >
         <div className = "flex flex-col items-center justify-center gap-3">
           <div className={`${grayText} flex gap-2 `}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -196,7 +196,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
             
           </div>
           
-          <div className="text-[30px] sm:text-[40px] sm:font-bold flex items-center gap-5">
+          <div className="text-[30px] sm:text-[40px] sm:font-bold flex items-center gap-2">
             <div className="flex">
                ₹ <animated.span>
               {animatedTotal.to(val => Math.round(val).toLocaleString('en-IN'))}
@@ -208,7 +208,7 @@ const Total = ({ data, className, filters, setFilters, mode, setMode, setFiltere
                 data-tooltip-content="View Overview Table"
                 data-tooltip-place="top"
                 data-tooltip-float
-                className="h-8 w-8 z-40 stroke-white/50 hover:stroke-white/80 transition-colors duration-200 border border-none focus:outline-none"
+                className={`${responsiveIcon}`}
                 onClick={() => setIsTableVisible(()=>!isTableVisible)}
               />
           </div>
@@ -444,8 +444,8 @@ const ExpenseTotal = ({ data, className, filters, setFilters, mode, setMode, set
   }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
-      <div className={`flex flex-wrap justify-around w-full min-h-[300px] ${className} overflow-hidden gap-5`} >
-        <div className = "flex flex-col items-center justify-center gap-3">
+      <div className={`sm:flex flex-wrap items-center justify-around w-full ${className} mb-5`} >
+        <div className = "flex flex-col items-center justify-center gap-3 mb-3 sm:mb-0">
           <div className={`${grayText} flex gap-2 flex-col sm:flex-row items-center`}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild>
@@ -534,7 +534,7 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
   const equityData = groupedByAssetType.find(item => item.asset_type === 'Equity');
   const debtData = groupedByAssetType.find(item => item.asset_type === 'Debt');
   const totalData = groupAll[0];
-  // console.log(totalData)
+  console.log(totalData)
   
   
   const totalUnrealisedGain = totalData ? Number(totalData.sumOfUnrealizedGain || 0) : 0;
@@ -606,8 +606,8 @@ const GainTotal = ({ data, className, filters, setFilters, mode, setMode, setFil
   }, [totalUnrealisedGain, totalRealizedGain])
   
   return (
-      <div className={`flex flex-wrap justify-around w-full h-[300px] ${className} overflow-hidden gap-5`} >
-        <div className = "flex flex-col items-center justify-center gap-3">
+      <div className={`sm:flex flex-wrap items-center justify-around w-full ${className} overflow-hidden gap-5`} >
+        <div className = "flex flex-col items-center justify-center gap-3 sm:mb-0 mb-3">
           <div className={`${grayText} flex gap-2 `}>
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild>

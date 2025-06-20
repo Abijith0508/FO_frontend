@@ -553,7 +553,7 @@ const TableRow = ({ children, className }: { children: React.ReactNode, classNam
 );
 
 const TableHead = ({ children }: { children: React.ReactNode }) => (
-  <th scope="col" className={`px-6 py-3 text-center text-sm font-medium ${grayText2} `}>
+  <th scope="col" className={`px-6 py-3 text-center text-sm text-white/60 font-medium ${grayText2} `}>
     {children}
   </th>
 );
@@ -913,7 +913,7 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
           <thead>
             <tr className="bg-white/5 backdrop-blur-md">
               {headers.map((header, index) => (
-                <th key={index} className="px-6 py-3 text-left text-sm font-medium ">
+                <th key={index} className="px-6 py-3 text-left text-sm text-white/80 font-medium ">
                   {header}
                 </th>
               ))}
@@ -942,27 +942,27 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
                     key={index}
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                    <td className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
                         onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {Number(item.realized_gains || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {Number(item.short_realized_gains || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {Number(item.long_realized_gains || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {Number(item.total_gain || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {Number(item.costbasis || 0).toLocaleString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {Number(item.dividends || 0).toLocaleString('en-IN')}
                     </td>
                   </tr>
@@ -976,88 +976,92 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
                     <td 
-                      className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                      className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
                       onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(openingCost)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(closingCosts)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(openingValue)} {/* Opening Value - using opening cost as placeholder */}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(closingValue)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
                       {formatCurrency(unrealizedGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
                       {formatCurrency(realizedGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
                       {formatCurrency(totalGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
                       {gainPercentage.toFixed(2)}%
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60 font-medium`}>
                       {Number(item.xirr || 0).toFixed(2)}%
                     </td>
                   </tr>
                 );
-              } else if (mode === "Expenses") {
+              } 
+              
+              else if (mode === "Expenses") {
                 return (
                   <tr 
                     key={index}
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
                     <td 
-                      className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                      className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
                       onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(stampDuty)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(sttPaid)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(otherExpenses)}
                     </td>
                   </tr>
                 );
-              } else {
+              } 
+              
+              else {
                 return (
                   <tr 
                     key={index}
                     className="bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors duration-200"
                   >
                     <td 
-                      className="px-6 py-4 text-sm text-left text-white/80 cursor-pointer hover:underline"
+                      className="px-6 py-4 text-sm text-left text-white/60 cursor-pointer hover:underline"
                       onClick={() => setFilters && filterUpdate(setFilters, groupByField, String(item[groupByField]))}
                     >
                       {String(item[groupByField])}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(closingCosts)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-left text-white/80">
+                    <td className="px-6 py-4 text-sm text-left text-white/60">
                       {formatCurrency(closingValue)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60 `}>
                       {formatCurrency(unrealizedGain)}
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60`}>
                       {gainPercentage.toFixed(2)}%
                     </td>
-                    <td className={`px-6 py-4 text-sm text-left font-medium`}>
+                    <td className={`px-6 py-4 text-sm text-left text-white/60`}>
                       {Number(item.xirr || 0).toFixed(2)}%
                     </td>
                   </tr>
@@ -1070,7 +1074,151 @@ function SubTable({ogdata, groupByField, mode = "Holding Value", setFilters}: Da
   );
 }
 
+export {GroupedDataTable, SubTable}
 
+type ISINLevelViewProps = {
+    data: DataItem[];
+};
 
-export {GroupedDataTable, SubTable};
+const ISINLevelView = ({ data, mode = "Holdings Value" }: { data: DataItem[], mode?: string }) => {
+    const formatNumber = (value: string | number | null | undefined) => {
+        if (value === null || value === undefined) return '';
+        const num = Number(value);
+        if (isNaN(num)) return value?.toString() || '';
+        return num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    };
+    const formatCurrency = (value: string | number | null | undefined) => {
+        return "₹" + formatNumber(value);
+    };
+
+    const modeConfig: Record<string, {
+        headers: string[],
+        renderRow: (item: any) => React.ReactNode
+    }> = {
+        "Holdings Value": {
+            headers: ["Name", "Market Price", "Closing Cost", "Closing Value", "Unrealised Gain", "IRR"],
+            renderRow: (item) => (
+                <>
+                    <td className="px-6 py-4 text-sm text-left text-white/60 bg-white/5 border-b border-white/10">{item.name}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.market_price)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.closing_cost)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.closing_value)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.unrealized_gain)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatNumber(item.irr)}</td>
+                </>
+            )
+        },
+        "Expenses": {
+            headers: ["Name", "Stamp Duty", "STT Paid", "Other Expenses"],
+            renderRow: (item) => (
+                <>
+                    <td className="px-6 py-4 text-sm text-left text-white/60 bg-white/5 border-b border-white/10">
+                        {item.securityname || item.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">
+                        {formatCurrency(item.stamp_duty)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">
+                        {formatCurrency(item.stt_paid)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">
+                        {formatCurrency(item.other_expenses)}
+                    </td>
+                </>
+            )
+        },
+        "Performance": {
+            headers: [
+                "Name", "Opening Cost", "Closing Cost", "Opening Value", "Closing Value",
+                "Market Price", "Current Price", "Realised Gain", "Unrealised Gain", "Total Gain", "IRR"
+            ],
+            renderRow: (item) => (
+                <>
+                    <td className="px-6 py-4 text-sm text-left text-white/60 bg-white/5 border-b border-white/10">{item.securityname || item.name}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.opening_cost)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.closing_cost)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.opening_value)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.closing_value)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.market_price)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.current_price)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.realized_gain)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.unrealized_gain)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.total_gain)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatNumber(item.irr)}</td>
+                </>
+            )
+        },
+        "Gain": {
+            headers: [
+                "Name", "Realized Gains", "Realized Gains (L)", "Realized Gains (S)", "STT", "Cost Basis", "Dividends"
+            ],
+            renderRow: (item) => (
+                <>
+                    <td className="px-6 py-4 text-sm text-left text-white/60 bg-white/5 border-b border-white/10">{item.name}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.realized_gains)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.long_realized_gains)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.short_realized_gains)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.stt)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.costbasis)}</td>
+                    <td className="px-6 py-4 text-sm text-center text-white/60 bg-white/5 border-b border-white/10">{formatCurrency(item.dividends)}</td>
+                </>
+            )
+        }
+    };
+
+    // const config = modeConfig[mode] || modeConfig["Holdings Value"];
+
+    // const [config, setConfigs] = useState(modeConfig[mode] || modeConfig["Holdings Value"]);
+    const config = modeConfig[mode] || modeConfig["Holdings Value"];
+    // console.log("Isin", mode);
+
+    // useEffect(() => {
+    //   setConfigs(modeConfig[mode] || modeConfig["Holdings Value"]);
+    // }, [mode]);
+
+    return (
+        <div className={`w-full h-full rounded-xl shadow-md ${tableGlass} p-2`}>
+            <div className='flex justify-between items-center py-2'>
+                <div onClick={() => download("all_data")} className='cursor-pointer p-2 rounded-md hover:bg-gray-700'>
+                    <EllipsisVerticalIcon size={20} 
+                    data-tooltip-id="BCTooltip"
+                    data-tooltip-content="Download Table"
+                    data-tooltip-place="top"
+                    data-tooltip-float
+                    />
+                </div>
+            </div>
+            <ScrollArea className="w-full h-[600px]">
+                <table className="w-full border-collapse text-gray backdrop-blur-lg rounded-lg" id="all_data">
+                    <thead>
+                        <tr className="bg-emerald transition-colors duration-200 sticky top-0"
+                        >
+                            {config.headers.map((header) => (
+                                <th
+                                    key={header}
+                                    className={`px-6 py-2 text-sm text-center border-b border-white/10`}
+                                >
+                                    {header}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.map((item, index) => (
+                            <tr
+                                key={mode + '-' + String(item.isin || item.name || index) + index}
+                                className="hover:bg-white/10 transition-colors text-center border-b border-white/10"
+                            >
+                                {config.renderRow(item)}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+        </div>
+    );
+};
+
+export { ISINLevelView };
  
